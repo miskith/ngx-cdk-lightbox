@@ -15,6 +15,10 @@
       "lightbox",
       "camelCase"
     ],
+    "indent": [
+      true,
+      "tabs"
+    ]
     "component-selector": [
       true,
       "element",
