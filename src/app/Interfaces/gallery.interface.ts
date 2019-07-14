@@ -10,4 +10,6 @@ export interface GalleryConfigInterface
 	zoomSize?: number|'originalSize';
 	enableImageClick?: boolean;
 	loopGallery?: boolean;
+	enableImageCounter?: boolean;
+	imageCounterText?: string;
 }

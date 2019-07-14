@@ -15,6 +15,8 @@ export class LightboxService
 		zoomSize: 'originalSize',
 		enableImageClick: true,
 		loopGallery: true,
+		enableImageCounter: true,
+		imageCounterText: 'IMAGE_INDEX photo of IMAGE_COUNT',
 	};
 
 	constructor(

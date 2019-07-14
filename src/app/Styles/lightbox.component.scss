@@ -46,6 +46,13 @@
 			padding: 8px 12px;
 			background: $white;
 			border-radius: 0 0 3px 3px;
+
+			&:after {
+				content: "";
+				display: table;
+				clear: both;
+			}
+
 		}
 
 		&__zoom {
@@ -62,6 +69,10 @@
 
 		&__zoom-image {
 			display: block;
+		}
+
+		&__images-counter {
+			float: right;
 		}
 
 	}

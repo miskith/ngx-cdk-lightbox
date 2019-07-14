@@ -6,7 +6,10 @@
 				<img [src]="photo.source" class="ngx-cdk-lightbox__zoom-image" [alt]="photo.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
 			</div>
 		</div>
-		<figcaption *ngIf="photo.description" class="ngx-cdk-lightbox__image-caption">
+		<figcaption *ngIf="photo.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
+			<div class="ngx-cdk-lightbox__images-counter" *ngIf="config.enableImageCounter===true">
+				{{ imageCounter }}
+			</div>
 			{{ photo.description }}
 		</figcaption>
 	</figure>

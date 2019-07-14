@@ -39,6 +39,11 @@ export class LightboxComponent
 		return this.data.config;
 	}
 
+	get imageCounter():string
+	{
+		return this.config.imageCounterText.replace(/IMAGE\_INDEX/, ''+(this.currentIndex+1)).replace(/IMAGE\_COUNT/, ''+(this.data.photos.length));
+	}
+
 	@HostListener('document:keyup.arrowright', ['$event'])
 	public nextPhoto(event?: KeyboardEvent) {
 		if (event)
