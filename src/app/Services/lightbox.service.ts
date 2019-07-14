@@ -13,6 +13,8 @@ export class LightboxService
 	private defaultConfig: GalleryConfigInterface = {
 		enableZoom: false,
 		zoomSize: 'originalSize',
+		enableImageClick: true,
+		loopGallery: true,
 	};
 
 	constructor(

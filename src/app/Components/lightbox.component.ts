@@ -40,17 +40,37 @@ export class LightboxComponent
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	public nextPhoto(event: KeyboardEvent) {
-		event.preventDefault();
+	public nextPhoto(event?: KeyboardEvent) {
+		if (event)
+			event.preventDefault();
 
-		this.currentIndex = Math.min(this.currentIndex+1, this.data.photos.length-1);
+		if (this.config.loopGallery===false)
+			this.currentIndex = Math.min(this.currentIndex+1, this.data.photos.length-1);
+		else
+		{
+			const index = (this.currentIndex+1);
+			if (index>this.data.photos.length-1)
+				this.currentIndex = 0;
+			else
+				this.currentIndex = index;
+		}
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	public prevPhoto(event: KeyboardEvent) {
-		event.preventDefault();
+	public prevPhoto(event?: KeyboardEvent) {
+		if (event)
+			event.preventDefault();
 
-		this.currentIndex = Math.max(this.currentIndex-1, 0);
+		if (this.config.loopGallery===false)
+			this.currentIndex = Math.max(this.currentIndex-1, 0);
+		else
+		{
+			const index = (this.currentIndex-1);
+			if (index<0)
+				this.currentIndex = this.data.photos.length-1;
+			else
+				this.currentIndex = index;
+		}
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
@@ -58,16 +78,22 @@ export class LightboxComponent
 		this.modalRef.close();
 	}
 
-	public imageMouseIn(event: MouseEvent):void
+	private setImageDetails():void // ToDO - call after changing image
 	{
 		this.zoomStyles = {...this.zoomStyles, ...{
-			x: event.layerX,
-			y: event.layerY,
 			width: (<HTMLImageElement>event.target).clientWidth,
 			naturalWidth: (<HTMLImageElement>event.target).naturalWidth,
 			height: (<HTMLImageElement>event.target).clientHeight,
 			naturalHeight: (<HTMLImageElement>event.target).naturalHeight,
 		}};
+
+		return;
+	}
+
+	public imageMouseIn(event: MouseEvent):void
+	{
+		this.setImageDetails();
+		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
 		this.displayZoom = (this.config.enableZoom===true);
 
 		return;
@@ -83,6 +109,16 @@ export class LightboxComponent
 	public imageMouseOut():void
 	{
 		this.displayZoom = false;
+
+		return;
+	}
+
+	public imageClick(event: MouseEvent):void
+	{
+		if (event.layerX/this.zoomStyles.width<0.5)
+			this.prevPhoto();
+		else
+			this.nextPhoto();
 
 		return;
 	}

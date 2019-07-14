@@ -8,4 +8,6 @@ export interface GalleryConfigInterface
 {
 	enableZoom?: boolean;
 	zoomSize?: number|'originalSize';
+	enableImageClick?: boolean;
+	loopGallery?: boolean;
 }
