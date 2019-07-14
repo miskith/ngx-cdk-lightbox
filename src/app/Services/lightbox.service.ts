@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
-import { GalleryImageInterface } from './../Interfaces/gallery.interface';
+import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
 import { LightboxComponent } from './../Components/lightbox.component';
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 
@@ -10,6 +10,10 @@ import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverla
 export class LightboxService
 {
 	private photos: GalleryImageInterface[] = [];
+	private defaultConfig: GalleryConfigInterface = {
+		enableZoom: false,
+		zoomSize: 'originalSize',
+	};
 
 	constructor(
 		private overlay: Overlay,
@@ -18,16 +22,17 @@ export class LightboxService
 	{
 	}
 
-	public open(photos: GalleryImageInterface[]):void
+	public open(photos: GalleryImageInterface[], config: GalleryConfigInterface = {}):void
 	{
 		this.photos = photos;
+		config = {...this.defaultConfig, ...config};
 
 		if (this.photos.length<1)
 			return;
 
 		const overlayRef = this.createOverlayRef();
 		const modalRef = new LightboxOverlayRef(overlayRef);
-		const injector = this.getModalInjector(modalRef);
+		const injector = this.getModalInjector(modalRef, config);
 		// ToDo - save subscription
 		overlayRef.backdropClick().subscribe(() => {
 			modalRef.close();
@@ -59,12 +64,12 @@ export class LightboxService
 		return overlayRef;
 	}
 
-	private getModalInjector(modalRef: LightboxOverlayRef):PortalInjector
+	private getModalInjector(modalRef: LightboxOverlayRef, config: GalleryConfigInterface):PortalInjector
 	{
 		const injectionTokens = new WeakMap();
 
 		injectionTokens.set(LightboxOverlayRef, modalRef);
-		injectionTokens.set(LIGHTBOX_MODAL_DATA, {photos: this.photos});
+		injectionTokens.set(LIGHTBOX_MODAL_DATA, {photos: this.photos, config: config});
 
 		return new PortalInjector(this.injector, injectionTokens);
 	}

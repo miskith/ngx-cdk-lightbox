@@ -24,12 +24,18 @@
 
 		&__image-wrapper {
 			background: $white;
+			position: relative;
 		}
 
 		&__image {
 			display: block;
 			max-width: 100%;
 			max-height: 85vh;
+
+			&.is-zoom {
+				cursor: crosshair;
+			}
+
 		}
 
 		&__backdrop {
@@ -40,6 +46,22 @@
 			padding: 8px 12px;
 			background: $white;
 			border-radius: 0 0 3px 3px;
+		}
+
+		&__zoom {
+			position: absolute;
+			width: 160px;
+			height: 160px;
+			margin: -80px 0 0 -80px;
+			pointer-events: none;
+			left: 0;
+			top: 0;
+			overflow: hidden;
+			border-radius: 50%;
+		}
+
+		&__zoom-image {
+			display: block;
 		}
 
 	}

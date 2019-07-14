@@ -1,9 +1,9 @@
 import { InjectionToken } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 
-import { GalleryImageInterface } from './../Interfaces/gallery.interface';
+import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
 
-export const LIGHTBOX_MODAL_DATA = new InjectionToken<{photos: GalleryImageInterface[]}>('LIGHTBOX_MODAL_DATA');
+export const LIGHTBOX_MODAL_DATA = new InjectionToken<{photos: GalleryImageInterface[], config: GalleryConfigInterface}>('LIGHTBOX_MODAL_DATA');
 
 export class LightboxOverlayRef
 {

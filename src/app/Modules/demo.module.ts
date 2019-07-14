@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LightboxModule } from './lightbox.module';
+import { MatButtonModule } from '@angular/material/button';
 
 import { DemoComponent } from '../Components/demo.component';
 
@@ -11,6 +12,7 @@ import { DemoComponent } from '../Components/demo.component';
 	imports: [
 		BrowserModule,
 		LightboxModule,
+		MatButtonModule,
 	],
 	providers: [],
 	bootstrap: [

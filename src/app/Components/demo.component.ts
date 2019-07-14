@@ -23,7 +23,9 @@ export class DemoComponent
 			{source: 'assets/images/image3.jpg', 'description': 'test 2'},
 			{source: 'assets/images/image4.jpg', 'description': 'test 3'},
 			{source: 'assets/images/image5.jpg'},
-		]);
+		], {
+			enableZoom: true,
+		});
 
 		return;
 	}
