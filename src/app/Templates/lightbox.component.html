@@ -1,7 +1,9 @@
 <div class="ngx-cdk-lightbox__container">
 	<figure class="ngx-cdk-lightbox__image-container">
-		<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" />
-		<figcaption *ngIf="photo.description">
+		<div class="ngx-cdk-lightbox__image-wrapper">
+			<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" />
+		</div>
+		<figcaption *ngIf="photo.description" class="ngx-cdk-lightbox__image-caption">
 			{{ photo.description }}
 		</figcaption>
 	</figure>

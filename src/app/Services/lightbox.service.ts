@@ -1,15 +1,20 @@
-import { GalleryImageInterface } from './../Interfaces/gallery.interface';
-import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Injectable, Injector } from '@angular/core';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
+import { GalleryImageInterface } from './../Interfaces/gallery.interface';
 import { LightboxComponent } from './../Components/lightbox.component';
+import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 
 @Injectable()
 export class LightboxService
 {
 	private photos: GalleryImageInterface[] = [];
 
-	constructor(private modalObject: MatDialog)
+	constructor(
+		private overlay: Overlay,
+		private injector: Injector,
+	)
 	{
 	}
 
@@ -20,18 +25,48 @@ export class LightboxService
 		if (this.photos.length<1)
 			return;
 
-		const modalRef = this.modalObject.open(LightboxComponent, {
+		const overlayRef = this.createOverlayRef();
+		const modalRef = new LightboxOverlayRef(overlayRef);
+		const injector = this.getModalInjector(modalRef);
+		// ToDo - save subscription
+		overlayRef.backdropClick().subscribe(() => {
+			modalRef.close();
+		});
+		const lightboxPortal = new ComponentPortal(LightboxComponent, null, injector);
+		overlayRef.attach(lightboxPortal);
+
+		// ToDo - save subscription
+		/*modalRef.afterClosed().subscribe(() => {
+		});*/
+
+		return;
+	}
+
+	private createOverlayRef():OverlayRef
+	{
+		const positionStrategy = this.overlay.position().global().centerHorizontally().centerVertically();
+
+		const overlayRef = this.overlay.create({
 			maxWidth: '95vw',
 			maxHeight: '95vh',
 			panelClass: 'ngx-cdk-lightbox',
-			data: {photos: this.photos},
+			backdropClass: ['cdk-overlay-dark-backdrop', 'ngx-cdk-lightbox__backdrop'],
+			hasBackdrop: true,
+			scrollStrategy: this.overlay.scrollStrategies.block(),
+			positionStrategy,
 		});
 
-		// ToDo - save subscription
-		modalRef.afterClosed().subscribe(() => {
-		});
+		return overlayRef;
+	}
 
-		return;
+	private getModalInjector(modalRef: LightboxOverlayRef):PortalInjector
+	{
+		const injectionTokens = new WeakMap();
+
+		injectionTokens.set(LightboxOverlayRef, modalRef);
+		injectionTokens.set(LIGHTBOX_MODAL_DATA, {photos: this.photos});
+
+		return new PortalInjector(this.injector, injectionTokens);
 	}
 
 }

@@ -9,23 +9,39 @@
 		padding: 0;
 	}
 
-}
+	.ngx-cdk-lightbox {
 
-.ngx-cdk-lightbox {
+		&__container {
+			max-width: 100%;
+			max-height: 100%;
+		}
 
-	&__container {
-		background: $white;
-	}
+		&__image-container {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
 
-	&__image-container {
-		margin: 0;
-		padding: 0;
-		height: 100%;
-	}
+		&__image-wrapper {
+			background: $white;
+		}
 
-	&__image {
-		display: block;
-		max-width: 100%;
+		&__image {
+			display: block;
+			max-width: 100%;
+			max-height: 85vh;
+		}
+
+		&__backdrop {
+			cursor: pointer;
+		}
+
+		&__image-caption {
+			padding: 8px 12px;
+			background: $white;
+			border-radius: 0 0 3px 3px;
+		}
+
 	}
 
 }

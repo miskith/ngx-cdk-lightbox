@@ -1,8 +1,7 @@
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject, HostListener } from '@angular/core';
 
+import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 import { GalleryImageInterface } from './../Interfaces/gallery.interface';
-import { LightboxService } from './../Services/lightbox.service';
 
 @Component({
 	templateUrl: '../Templates/lightbox.component.html',
@@ -15,8 +14,8 @@ export class LightboxComponent
 	private currentIndex = 0;
 
 	constructor(
-		private modalRef: MatDialogRef<LightboxService>,
-		@Inject(MAT_DIALOG_DATA) private data: {photos: GalleryImageInterface[]},
+		private modalRef: LightboxOverlayRef,
+		@Inject(LIGHTBOX_MODAL_DATA) public data: {photos: GalleryImageInterface[]},
 	)
 	{
 	}
@@ -38,6 +37,11 @@ export class LightboxComponent
 		event.preventDefault();
 
 		this.currentIndex = Math.max(this.currentIndex-1, 0);
+	}
+
+	@HostListener('document:keyup.escape', ['$event'])
+	closeModal(event: KeyboardEvent) {
+		this.modalRef.close();
 	}
 
 }
