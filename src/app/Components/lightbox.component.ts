@@ -79,7 +79,8 @@ export class LightboxComponent
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
-	public closeModal(event: KeyboardEvent) {
+	public closeModal()
+	{
 		this.modalRef.close();
 	}
 

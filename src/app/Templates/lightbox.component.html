@@ -1,4 +1,5 @@
 <div class="ngx-cdk-lightbox__container">
+	<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-icon" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
 	<figure class="ngx-cdk-lightbox__image-container">
 		<div class="ngx-cdk-lightbox__image-wrapper">
 			<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': config.enableZoom}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" />

@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
-import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
+import { GalleryImageInterface, GalleryConfigInterface, closeIconSvg } from './../Interfaces/gallery.interface';
 import { LightboxComponent } from './../Components/lightbox.component';
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 
@@ -17,6 +17,8 @@ export class LightboxService
 		loopGallery: true,
 		enableImageCounter: true,
 		imageCounterText: 'IMAGE_INDEX photo of IMAGE_COUNT',
+		enableCloseIcon: true,
+		closeIcon: closeIconSvg,
 	};
 
 	constructor(

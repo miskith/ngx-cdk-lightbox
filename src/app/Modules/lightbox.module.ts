@@ -5,10 +5,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { LightboxComponent } from '../Components/lightbox.component';
 import { LightboxService } from './../Services/lightbox.service';
+import { SafeHtmlPipe } from '../Pipes/SafeHtml.pipe';
 
 @NgModule({
 	declarations: [
 		LightboxComponent,
+		SafeHtmlPipe,
 	],
 	imports: [
 		BrowserModule,
