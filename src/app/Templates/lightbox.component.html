@@ -1,6 +1,6 @@
 <div class="ngx-cdk-lightbox__container">
 	<ng-container *ngIf="imageLoading===false">
-		<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-icon" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
+		<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-button" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
 		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true">
 			<button type="button" (click)="prevPhoto($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml"></button>
 			<button type="button" (click)="nextPhoto($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml"></button>
