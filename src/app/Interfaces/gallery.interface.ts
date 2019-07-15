@@ -2,6 +2,7 @@ export interface GalleryImageInterface
 {
 	source: string;
 	description?: string;
+	copyright?: string;
 }
 
 export interface GalleryConfigInterface

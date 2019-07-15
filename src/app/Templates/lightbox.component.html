@@ -15,7 +15,12 @@
 			<div class="ngx-cdk-lightbox__images-counter" *ngIf="config.enableImageCounter===true">
 				{{ imageCounter }}
 			</div>
-			{{ photo.description }}
+			<div class="ngx-cdk-lightbox__caption">
+				{{ photo.description }}
+			</div>
+			<div class="ngx-cdk-lightbox__copyright" *ngIf="photo.copyright">
+				&copy;&nbsp;{{ photo.copyright }}
+			</div>
 		</figcaption>
 	</figure>
 </div>
