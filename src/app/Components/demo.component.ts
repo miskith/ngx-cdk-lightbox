@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { LightboxService } from './../Services/lightbox.service';
+import { LightboxService } from 'ngx-cdk-lightbox';
 
 @Component({
 	selector: 'lightbox-root',

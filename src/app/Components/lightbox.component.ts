@@ -1,10 +1,12 @@
-import { Component, Inject, HostListener, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { SubscriptionLike, Observable, fromEvent } from 'rxjs';
 
-import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
+import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
 import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
 
+
 @Component({
+	selector: 'lib-ngx-cdk-lightbox',
 	templateUrl: '../Templates/lightbox.component.html',
 	styleUrls: [
 		'../Styles/lightbox.component.scss',
@@ -24,11 +26,11 @@ export class LightboxComponent implements OnDestroy
 	};
 	public imageLoading = true;
 	private subscriptions: SubscriptionLike[] = [];
-	@ViewChild('imageElement', {static: false}) private imageElement: ElementRef;
+	@ViewChild('imageElement', {static: false}) private imageElement;
 
 	constructor(
 		private modalRef: LightboxOverlayRef,
-		@Inject(LIGHTBOX_MODAL_DATA) public data: {photos: GalleryImageInterface[], config: GalleryConfigInterface},
+		@Inject(LIGHTBOX_MODAL_DATA) public data: GalleryDataInterface,
 	)
 	{
 		this.currentIndex = Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1)));

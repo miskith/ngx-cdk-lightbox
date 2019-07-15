@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { LightboxModule } from './lightbox.module';
 import { MatButtonModule } from '@angular/material/button';
 
+import { LightboxService } from 'ngx-cdk-lightbox';
 import { DemoComponent } from '../Components/demo.component';
 
 @NgModule({
@@ -14,7 +15,9 @@ import { DemoComponent } from '../Components/demo.component';
 		LightboxModule,
 		MatButtonModule,
 	],
-	providers: [],
+	providers: [
+		LightboxService,
+	],
 	bootstrap: [
 		DemoComponent,
 	]
