@@ -26,10 +26,10 @@
 				"./node_modules/core-js/es/*"
 			],
 			"ngx-cdk-lightbox": [
-				"dist/ngx-cdk-lightbox"
+				"dist-lib"
 			],
 			"ngx-cdk-lightbox/*": [
-				"dist/ngx-cdk-lightbox/*"
+				"dist-lib/*"
 			]
 		}
 	},
