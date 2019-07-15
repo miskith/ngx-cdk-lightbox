@@ -106,7 +106,7 @@ export class LightboxComponent implements OnDestroy
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
-	public closeModal()
+	public closeModal(event?: KeyboardEvent)
 	{
 		this.modalRef.close();
 	}

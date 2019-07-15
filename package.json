@@ -1,14 +1,13 @@
 {
 	"name": "ngx-cdk-lightbox",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
 		"build": "ng build",
 		"test": "ng test",
 		"lint": "ng lint",
-		"e2e": "ng e2e",
-		"install": "npm run build"
+		"e2e": "ng e2e"
 	},
 	"dependencies": {
 		"@angular/animations": "~8.1.1",
