@@ -1,4 +1,4 @@
-import { Component, Inject, HostListener, OnDestroy } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { SubscriptionLike, Observable, fromEvent } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
@@ -24,6 +24,7 @@ export class LightboxComponent implements OnDestroy
 	};
 	public imageLoading = true;
 	private subscriptions: SubscriptionLike[] = [];
+	@ViewChild('imageElement', {static: false}) private imageElement: ElementRef;
 
 	constructor(
 		private modalRef: LightboxOverlayRef,
@@ -110,14 +111,15 @@ export class LightboxComponent implements OnDestroy
 		this.modalRef.close();
 	}
 
-	private setImageDetails():void // ToDO - call after changing image
+	private setImageDetails(image: HTMLImageElement):void
 	{
 		this.zoomStyles = {...this.zoomStyles, ...{
-			width: (<HTMLImageElement>event.target).clientWidth,
-			naturalWidth: (<HTMLImageElement>event.target).naturalWidth,
-			height: (<HTMLImageElement>event.target).clientHeight,
-			naturalHeight: (<HTMLImageElement>event.target).naturalHeight,
+			width: image.clientWidth,
+			naturalWidth: image.naturalWidth,
+			height: image.clientHeight,
+			naturalHeight: image.naturalHeight,
 		}};
+		this.switchDisplayZoom();
 
 		return;
 	}
@@ -126,6 +128,8 @@ export class LightboxComponent implements OnDestroy
 	{
 		if (this.config.zoomSize!=='originalSize' || this.zoomStyles.width<this.zoomStyles.naturalWidth || this.zoomStyles.height<this.zoomStyles.naturalHeight)
 			this.displayZoom = (this.config.enableZoom===true);
+		else
+			this.displayZoom = false;
 
 		return;
 	}
@@ -137,6 +141,9 @@ export class LightboxComponent implements OnDestroy
 		const subscription = this.preloadPhoto(this.data.photos[this.currentIndex]).subscribe(() => {
 			subscription.unsubscribe();
 			this.imageLoading = false;
+			setTimeout(() => {
+				this.setImageDetails(this.imageElement.nativeElement);
+			}, 10);
 
 			if (this.config.enableImagePreloading===true)
 			{
@@ -166,9 +173,8 @@ export class LightboxComponent implements OnDestroy
 
 	public imageMouseIn(event: MouseEvent):void
 	{
-		this.setImageDetails();
+		this.setImageDetails(<HTMLImageElement>event.target);
 		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
-		this.switchDisplayZoom();
 
 		return;
 	}

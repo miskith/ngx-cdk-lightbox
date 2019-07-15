@@ -7,7 +7,7 @@
 		</div>
 		<figure class="ngx-cdk-lightbox__image-container">
 			<div class="ngx-cdk-lightbox__image-wrapper">
-				<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" />
+				<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
 				<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
 					<img [src]="photo.source" class="ngx-cdk-lightbox__zoom-image" [alt]="photo.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
 				</div>
