@@ -101,6 +101,51 @@
 			float: right;
 		}
 
+		&__arrows-container {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			right: 0;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		&__arrow {
+			pointer-events: all;
+			cursor: pointer;
+			position: absolute;
+			background: $white;
+			border-radius: 50%;
+			padding: 2px;
+			width: 28px;
+			height: 28px;
+			border: 0;
+			transition: background-color .25s ease-out, opacity .25s ease-out;
+			box-sizing: border-box;
+			opacity: 0;
+
+			&:hover {
+				background: darken($white, 7);
+			}
+
+			&:active {
+				background: darken($white, 14);
+			}
+
+			&.is-left {
+				left: 6px;
+			}
+
+			&.is-right {
+				right: 6px;
+			}
+
+			.ngx-cdk-lightbox__container:hover & {
+				opacity: 1;
+			}
+
+		}
+
 	}
 
 }

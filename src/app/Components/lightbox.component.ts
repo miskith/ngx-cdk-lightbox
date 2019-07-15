@@ -45,7 +45,7 @@ export class LightboxComponent
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	public nextPhoto(event?: KeyboardEvent) {
+	public nextPhoto(event?: KeyboardEvent|MouseEvent) {
 		if (event)
 			event.preventDefault();
 
@@ -62,7 +62,7 @@ export class LightboxComponent
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	public prevPhoto(event?: KeyboardEvent) {
+	public prevPhoto(event?: KeyboardEvent|MouseEvent) {
 		if (event)
 			event.preventDefault();
 
@@ -96,11 +96,19 @@ export class LightboxComponent
 		return;
 	}
 
+	private switchDisplayZoom():void
+	{
+		if (this.config.zoomSize!=='originalSize' || this.zoomStyles.width<this.zoomStyles.naturalWidth || this.zoomStyles.height<this.zoomStyles.naturalHeight)
+			this.displayZoom = (this.config.enableZoom===true);
+
+		return;
+	}
+
 	public imageMouseIn(event: MouseEvent):void
 	{
 		this.setImageDetails();
 		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
-		this.displayZoom = (this.config.enableZoom===true);
+		this.switchDisplayZoom();
 
 		return;
 	}
