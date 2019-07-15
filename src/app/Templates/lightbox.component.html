@@ -1,26 +1,31 @@
 <div class="ngx-cdk-lightbox__container">
-	<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-icon" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
-	<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true">
-		<button type="button" (click)="prevPhoto($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml"></button>
-		<button type="button" (click)="nextPhoto($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml"></button>
-	</div>
-	<figure class="ngx-cdk-lightbox__image-container">
-		<div class="ngx-cdk-lightbox__image-wrapper">
-			<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" />
-			<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
-				<img [src]="photo.source" class="ngx-cdk-lightbox__zoom-image" [alt]="photo.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
-			</div>
+	<ng-container *ngIf="imageLoading===false">
+		<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-icon" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
+		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true">
+			<button type="button" (click)="prevPhoto($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml"></button>
+			<button type="button" (click)="nextPhoto($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml"></button>
 		</div>
-		<figcaption *ngIf="photo.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
-			<div class="ngx-cdk-lightbox__images-counter" *ngIf="config.enableImageCounter===true">
-				{{ imageCounter }}
+		<figure class="ngx-cdk-lightbox__image-container">
+			<div class="ngx-cdk-lightbox__image-wrapper">
+				<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" />
+				<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
+					<img [src]="photo.source" class="ngx-cdk-lightbox__zoom-image" [alt]="photo.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
+				</div>
 			</div>
-			<div class="ngx-cdk-lightbox__caption">
-				{{ photo.description }}
-			</div>
-			<div class="ngx-cdk-lightbox__copyright" *ngIf="photo.copyright">
-				&copy;&nbsp;{{ photo.copyright }}
-			</div>
-		</figcaption>
-	</figure>
+			<figcaption *ngIf="photo.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
+				<div class="ngx-cdk-lightbox__images-counter" *ngIf="config.enableImageCounter===true">
+					{{ imageCounter }}
+				</div>
+				<div class="ngx-cdk-lightbox__caption">
+					{{ photo.description }}
+				</div>
+				<div class="ngx-cdk-lightbox__copyright" *ngIf="photo.copyright">
+					&copy;&nbsp;{{ photo.copyright }}
+				</div>
+			</figcaption>
+		</figure>
+	</ng-container>
+	<div class="ngx-cdk-lightbox__loading-container" *ngIf="imageLoading===true">
+		<mat-spinner class="ngx-cdk-lightbox__loading" [diameter]="35"></mat-spinner>
+	</div>
 </div>

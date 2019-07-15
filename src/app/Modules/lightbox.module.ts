@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { LightboxComponent } from '../Components/lightbox.component';
 import { LightboxService } from './../Services/lightbox.service';
@@ -15,6 +16,7 @@ import { SafeHtmlPipe } from '../Pipes/SafeHtml.pipe';
 	imports: [
 		BrowserModule,
 		BrowserAnimationsModule,
+		MatProgressSpinnerModule,
 	],
 	providers: [
 		LightboxService,

@@ -151,6 +151,18 @@
 			margin: 2px 0 0;
 		}
 
+		&__loading-container {
+			height: 200px;
+			width: 200px;
+			background: $white;
+			border-radius: 3px;
+			display: flex;
+		}
+
+		&__loading {
+			margin: auto;
+		}
+
 	}
 
 }

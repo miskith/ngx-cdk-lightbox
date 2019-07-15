@@ -1,4 +1,5 @@
-import { Component, Inject, HostListener } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy } from '@angular/core';
+import { SubscriptionLike, Observable, fromEvent } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
@@ -9,7 +10,7 @@ import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/g
 		'../Styles/lightbox.component.scss',
 	],
 })
-export class LightboxComponent
+export class LightboxComponent implements OnDestroy
 {
 	private currentIndex = 0;
 	public displayZoom = false;
@@ -21,14 +22,23 @@ export class LightboxComponent
 		height: 0,
 		naturalHeight: 0,
 	};
+	public imageLoading = true;
+	private subscriptions: SubscriptionLike[] = [];
 
 	constructor(
 		private modalRef: LightboxOverlayRef,
 		@Inject(LIGHTBOX_MODAL_DATA) public data: {photos: GalleryImageInterface[], config: GalleryConfigInterface},
 	)
 	{
-		this.preloadNextPrevPhoto();
 		this.currentIndex = Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1)));
+
+		this.loadPhoto();
+	}
+
+	ngOnDestroy()
+	{
+		for (let i=0; i<this.subscriptions.length; i++)
+			this.subscriptions[i].unsubscribe();
 	}
 
 	get photo():GalleryImageInterface
@@ -81,7 +91,7 @@ export class LightboxComponent
 
 		const index = this.getNextIndex();
 		this.currentIndex = (index!==false ? index : (this.data.photos.length-1));
-		this.preloadNextPrevPhoto();
+		this.loadPhoto();
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
@@ -91,7 +101,7 @@ export class LightboxComponent
 
 		const index = this.getPrevIndex();
 		this.currentIndex = (index!==false ? index : 0);
-		this.preloadNextPrevPhoto();
+		this.loadPhoto();
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
@@ -120,27 +130,38 @@ export class LightboxComponent
 		return;
 	}
 
-	private preloadNextPrevPhoto():void
+	private loadPhoto():void
 	{
-		if (this.config.enableImagePreloading===true)
-		{
-			const nextIndex = this.getNextIndex();
-			if (nextIndex!==false)
-				this.preloadPhoto(this.data.photos[nextIndex]);
-			const prevIndex = this.getPrevIndex();
-			if (prevIndex!==false)
-				this.preloadPhoto(this.data.photos[prevIndex]);
-		}
+		this.imageLoading = true;
+
+		const subscription = this.preloadPhoto(this.data.photos[this.currentIndex]).subscribe(() => {
+			subscription.unsubscribe();
+			this.imageLoading = false;
+
+			if (this.config.enableImagePreloading===true)
+			{
+				const nextIndex = this.getNextIndex();
+				if (nextIndex!==false)
+					this.preloadPhoto(this.data.photos[nextIndex]);
+				const prevIndex = this.getPrevIndex();
+				if (prevIndex!==false)
+					this.preloadPhoto(this.data.photos[prevIndex]);
+			}
+		}, error => {
+			this.imageLoading = false;
+			console.error('Image could not be loaded.');
+		});
 
 		return;
 	}
 
-	private preloadPhoto(photo: GalleryImageInterface):void
+	private preloadPhoto(photo: GalleryImageInterface):Observable<Event>
 	{
 		const image = new Image();
+		const observable = fromEvent(image, 'load');
 		image.src = photo.source;
 
-		return;
+		return observable;
 	}
 
 	public imageMouseIn(event: MouseEvent):void

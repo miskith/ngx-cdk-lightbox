@@ -44,16 +44,12 @@ export class LightboxService
 		const overlayRef = this.createOverlayRef();
 		const modalRef = new LightboxOverlayRef(overlayRef);
 		const injector = this.getModalInjector(modalRef, config);
-		// ToDo - save subscription
-		overlayRef.backdropClick().subscribe(() => {
+		const backdropClickSubscription = overlayRef.backdropClick().subscribe(() => {
 			modalRef.close();
+			backdropClickSubscription.unsubscribe();
 		});
 		const lightboxPortal = new ComponentPortal(LightboxComponent, null, injector);
 		overlayRef.attach(lightboxPortal);
-
-		// ToDo - save subscription
-		/*modalRef.afterClosed().subscribe(() => {
-		});*/
 
 		return;
 	}
