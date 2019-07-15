@@ -22,6 +22,8 @@ export class LightboxService
 		enableArrows: true,
 		arrowRight: arrowRightSvg,
 		arrowLeft: arrowLeftSvg,
+		enableImagePreloading: true,
+		startingIndex: 0,
 	};
 
 	constructor(

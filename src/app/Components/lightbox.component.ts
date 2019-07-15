@@ -27,6 +27,8 @@ export class LightboxComponent
 		@Inject(LIGHTBOX_MODAL_DATA) public data: {photos: GalleryImageInterface[], config: GalleryConfigInterface},
 	)
 	{
+		this.preloadNextPrevPhoto();
+		this.currentIndex = Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1)));
 	}
 
 	get photo():GalleryImageInterface
@@ -44,21 +46,42 @@ export class LightboxComponent
 		return this.config.imageCounterText.replace(/IMAGE\_INDEX/, ''+(this.currentIndex+1)).replace(/IMAGE\_COUNT/, ''+(this.data.photos.length));
 	}
 
+	private getNextIndex(index: number = this.currentIndex):number|false
+	{
+		const nextIndex = (index+1);
+		if (nextIndex>this.data.photos.length-1)
+		{
+			if (this.config.loopGallery===true)
+				return 0;
+			else
+				return false;
+		}
+		else
+			return nextIndex;
+	}
+
+	private getPrevIndex(index: number = this.currentIndex):number|false
+	{
+		const prevIndex = (index-1);
+		if (prevIndex<0)
+		{
+			if (this.config.loopGallery===true)
+				return (this.data.photos.length-1);
+			else
+				return false;
+		}
+		else
+			return prevIndex;
+	}
+
 	@HostListener('document:keyup.arrowright', ['$event'])
 	public nextPhoto(event?: KeyboardEvent|MouseEvent) {
 		if (event)
 			event.preventDefault();
 
-		if (this.config.loopGallery===false)
-			this.currentIndex = Math.min(this.currentIndex+1, this.data.photos.length-1);
-		else
-		{
-			const index = (this.currentIndex+1);
-			if (index>this.data.photos.length-1)
-				this.currentIndex = 0;
-			else
-				this.currentIndex = index;
-		}
+		const index = this.getNextIndex();
+		this.currentIndex = (index!==false ? index : (this.data.photos.length-1));
+		this.preloadNextPrevPhoto();
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
@@ -66,16 +89,9 @@ export class LightboxComponent
 		if (event)
 			event.preventDefault();
 
-		if (this.config.loopGallery===false)
-			this.currentIndex = Math.max(this.currentIndex-1, 0);
-		else
-		{
-			const index = (this.currentIndex-1);
-			if (index<0)
-				this.currentIndex = this.data.photos.length-1;
-			else
-				this.currentIndex = index;
-		}
+		const index = this.getPrevIndex();
+		this.currentIndex = (index!==false ? index : 0);
+		this.preloadNextPrevPhoto();
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
@@ -100,6 +116,29 @@ export class LightboxComponent
 	{
 		if (this.config.zoomSize!=='originalSize' || this.zoomStyles.width<this.zoomStyles.naturalWidth || this.zoomStyles.height<this.zoomStyles.naturalHeight)
 			this.displayZoom = (this.config.enableZoom===true);
+
+		return;
+	}
+
+	private preloadNextPrevPhoto():void
+	{
+		if (this.config.enableImagePreloading===true)
+		{
+			const nextIndex = this.getNextIndex();
+			if (nextIndex!==false)
+				this.preloadPhoto(this.data.photos[nextIndex]);
+			const prevIndex = this.getPrevIndex();
+			if (prevIndex!==false)
+				this.preloadPhoto(this.data.photos[prevIndex]);
+		}
+
+		return;
+	}
+
+	private preloadPhoto(photo: GalleryImageInterface):void
+	{
+		const image = new Image();
+		image.src = photo.source;
 
 		return;
 	}
