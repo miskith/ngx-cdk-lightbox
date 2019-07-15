@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { OverlayModule } from '@angular/cdk/overlay';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 
@@ -15,7 +14,6 @@ import { SafeHtmlPipe } from '../Pipes/SafeHtml.pipe';
 	],
 	imports: [
 		CommonModule,
-		BrowserAnimationsModule,
 		MatProgressSpinnerModule,
 	],
 	providers: [
