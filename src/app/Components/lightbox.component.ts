@@ -151,9 +151,7 @@ export class LightboxComponent implements OnDestroy
 	{
 		this.imageLoading = true;
 
-		console.time('async');
 		this.addSubscription('animatePhoto', this.animatePhoto(index).subscribe(()=>{
-			console.timeEnd('async');
 			this.imageLoading = false;
 			setTimeout(()=>{
 				this.setImageDetails(this.imageElement.nativeElement);
