@@ -1,10 +1,9 @@
 # ngx-cdk-lightbox
 
-
-
 Custom implementation of CDK to display image gallery in lightbox.
 
-  ## Installation
+## Installation
+
 ### 1. Install npm package
 
 **npm**
