@@ -1,14 +1,14 @@
 <div class="ngx-cdk-lightbox__container">
-	<ng-container *ngIf="imageLoading===false">
+	<div *ngIf="photo!==false && (imageLoading===false || config.enableAnimations===true)">
 		<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-button" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
-		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true">
+		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true && imageLoading===false">
 			<button type="button" (click)="prevPhoto($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml"></button>
 			<button type="button" (click)="nextPhoto($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml"></button>
 		</div>
 		<figure class="ngx-cdk-lightbox__image-container">
 			<div class="ngx-cdk-lightbox__image-wrapper">
-				<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
-				<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
+				<img [src]="photo.source" class="ngx-cdk-lightbox__image" [alt]="photo.description" title="" [ngClass]="{'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
+				<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true && imageLoading===false" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
 					<img [src]="photo.source" class="ngx-cdk-lightbox__zoom-image" [alt]="photo.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
 				</div>
 			</div>
@@ -24,7 +24,7 @@
 				</div>
 			</figcaption>
 		</figure>
-	</ng-container>
+	</div>
 	<div class="ngx-cdk-lightbox__loading-container" *ngIf="imageLoading===true">
 		<mat-spinner class="ngx-cdk-lightbox__loading" [diameter]="35"></mat-spinner>
 	</div>

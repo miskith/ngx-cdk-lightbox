@@ -51,12 +51,21 @@
 		&__image-wrapper {
 			background: $white;
 			position: relative;
+			transition: width .25s ease-out, height .25s ease-out;
 		}
 
 		&__image {
 			display: block;
 			max-width: 100%;
 			max-height: 85vh;
+			transition: opacity .4s ease-out;
+			opacity: 1;
+
+			&.is-animating {
+				opacity: 0;
+				width: 0;
+				height: 0;
+			}
 
 			&.is-zoom {
 				cursor: crosshair;
@@ -152,15 +161,16 @@
 		}
 
 		&__loading-container {
-			height: 200px;
-			width: 200px;
-			background: $white;
-			border-radius: 3px;
-			display: flex;
-		}
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 5;
 
-		&__loading {
-			margin: auto;
+			circle {
+				stroke: $blue;
+			}
+
 		}
 
 	}

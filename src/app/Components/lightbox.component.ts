@@ -1,5 +1,5 @@
 import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/core';
-import { SubscriptionLike, Observable, fromEvent } from 'rxjs';
+import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
 import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
@@ -14,7 +14,7 @@ import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/g
 })
 export class LightboxComponent implements OnDestroy
 {
-	private currentIndex = 0;
+	private currentIndex = null;
 	public displayZoom = false;
 	public zoomStyles = {
 		x: 0,
@@ -25,7 +25,8 @@ export class LightboxComponent implements OnDestroy
 		naturalHeight: 0,
 	};
 	public imageLoading = true;
-	private subscriptions: SubscriptionLike[] = [];
+	private subscriptions: Map<string, SubscriptionLike> = new Map();
+	private preloadedImage: HTMLImageElement;
 	@ViewChild('imageElement', {static: false}) private imageElement;
 
 	constructor(
@@ -33,20 +34,19 @@ export class LightboxComponent implements OnDestroy
 		@Inject(LIGHTBOX_MODAL_DATA) public data: GalleryDataInterface,
 	)
 	{
-		this.currentIndex = Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1)));
-
-		this.loadPhoto();
+		this.loadPhoto(Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1))));
 	}
 
 	ngOnDestroy()
 	{
-		for (let i=0; i<this.subscriptions.length; i++)
-			this.subscriptions[i].unsubscribe();
+		this.subscriptions.forEach((subscription)=>{
+			subscription.unsubscribe();
+		});
 	}
 
-	get photo():GalleryImageInterface
+	get photo():GalleryImageInterface|false
 	{
-		return this.data.photos[this.currentIndex];
+		return (this.currentIndex===null ? false : this.data.photos[this.currentIndex]);
 	}
 
 	get config():GalleryConfigInterface
@@ -57,6 +57,19 @@ export class LightboxComponent implements OnDestroy
 	get imageCounter():string
 	{
 		return this.config.imageCounterText.replace(/IMAGE\_INDEX/, ''+(this.currentIndex+1)).replace(/IMAGE\_COUNT/, ''+(this.data.photos.length));
+	}
+
+	private addSubscription(key: string, subscription: SubscriptionLike):void
+	{
+		if (this.subscriptions.has(key))
+		{
+			this.subscriptions.get(key).unsubscribe();
+			this.subscriptions.delete(key);
+		}
+
+		this.subscriptions.set(key, subscription);
+
+		return;
 	}
 
 	private getNextIndex(index: number = this.currentIndex):number|false
@@ -93,8 +106,7 @@ export class LightboxComponent implements OnDestroy
 			event.preventDefault();
 
 		const index = this.getNextIndex();
-		this.currentIndex = (index!==false ? index : (this.data.photos.length-1));
-		this.loadPhoto();
+		this.loadPhoto((index!==false ? index : (this.data.photos.length-1)));
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
@@ -103,8 +115,7 @@ export class LightboxComponent implements OnDestroy
 			event.preventDefault();
 
 		const index = this.getPrevIndex();
-		this.currentIndex = (index!==false ? index : 0);
-		this.loadPhoto();
+		this.loadPhoto((index!==false ? index : 0));
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
@@ -136,14 +147,15 @@ export class LightboxComponent implements OnDestroy
 		return;
 	}
 
-	private loadPhoto():void
+	private loadPhoto(index: number):void
 	{
 		this.imageLoading = true;
 
-		const subscription = this.preloadPhoto(this.data.photos[this.currentIndex]).subscribe(() => {
-			subscription.unsubscribe();
+		console.time('async');
+		this.addSubscription('animatePhoto', this.animatePhoto(index).subscribe(()=>{
+			console.timeEnd('async');
 			this.imageLoading = false;
-			setTimeout(() => {
+			setTimeout(()=>{
 				this.setImageDetails(this.imageElement.nativeElement);
 			}, 10);
 
@@ -158,17 +170,65 @@ export class LightboxComponent implements OnDestroy
 			}
 		}, error => {
 			this.imageLoading = false;
-			console.error('Image could not be loaded.');
-		});
+			console.error('Image could not be loaded.', error);
+		}));
 
 		return;
 	}
 
+	private animatePhoto(index: number):Observable<any>
+	{
+		if (this.config.enableAnimations===false)
+		{
+			this.currentIndex = index;
+			return this.preloadPhoto(this.data.photos[this.currentIndex]);
+		}
+		else
+		{
+			return new Observable((observer)=>{
+				if (this.imageElement)
+					this.imageElement.nativeElement.style.opacity = 0;
+				this.addSubscription('animatePhotoZoomIn', combineLatest(
+					this.preloadPhoto(this.data.photos[index]),
+					timer(400),
+				).subscribe(()=>{
+					if (this.imageElement)
+					{
+						this.imageElement.nativeElement.parentElement.style.width = this.imageElement.nativeElement.parentElement.clientWidth+'px';
+						this.imageElement.nativeElement.parentElement.style.height = this.imageElement.nativeElement.parentElement.clientHeight+'px';
+					}
+					const naturalWidth = this.preloadedImage.naturalWidth;
+					const naturalHeight = this.preloadedImage.naturalHeight;
+					const ratio = Math.max(naturalWidth/(window.innerWidth*0.95), naturalHeight/(window.innerHeight*0.85), 1);
+					this.currentIndex = index;
+					this.addSubscription('animatePhotoSet', timer(1).subscribe(()=>{
+						if (this.imageElement)
+						{
+							this.imageElement.nativeElement.style.width = 0;
+							this.imageElement.nativeElement.style.height = 0;
+						}
+						this.imageElement.nativeElement.parentElement.style.width = naturalWidth/ratio+'px';
+						this.imageElement.nativeElement.parentElement.style.height = naturalHeight/ratio+'px';
+						this.addSubscription('animatePhotoZoomOut', timer(250).subscribe(()=>{
+							this.imageElement.nativeElement.parentElement.style.width = '';
+							this.imageElement.nativeElement.parentElement.style.height = '';
+							this.imageElement.nativeElement.style.width = 'auto';
+							this.imageElement.nativeElement.style.height = 'auto';
+							this.imageElement.nativeElement.style.opacity = 1;
+							observer.next();
+							observer.complete();
+						}));
+					}));
+				})
+			)});
+		}
+	}
+
 	private preloadPhoto(photo: GalleryImageInterface):Observable<Event>
 	{
-		const image = new Image();
-		const observable = fromEvent(image, 'load');
-		image.src = photo.source;
+		this.preloadedImage = new Image();
+		const observable = fromEvent(this.preloadedImage, 'load');
+		this.preloadedImage.src = photo.source;
 
 		return observable;
 	}
