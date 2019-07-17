@@ -118,10 +118,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/cdk@^8.0.2":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-8.0.2.tgz#599b7fd06caed8cbea41f8f7874ddcea5dfc99ce"
-  integrity sha512-Tv9M0vuTp7Ogk7mRiEpzBG9x5289FXe+WH0VKqN4zTzF/taTgGEuJBLDcFrwQMW0mFpGP7acVOiopgH+nClytg==
+"@angular/cdk@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-8.1.1.tgz#11b11bbab7316b3fa1f9eb380211bfde0a335cc7"
+  integrity sha512-5hBmhrHf9+WjGVIT8gbhT0Nh37BAjgI2TGRkt1o4qX8cG+1B6gU2MxM+CDJ7PhxSJi9lW93lq2AMuWwnRSllyg==
   dependencies:
     tslib "^1.7.1"
   optionalDependencies:
@@ -201,10 +201,10 @@
   resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-8.1.1.tgz#5940b764fa395b75acd50777721c0aa2914e58c9"
   integrity sha512-72ILJBDGhmXUsufxjDT1dzt0oOV7EHWUePgk4xv2s9/gg/xeB0XEDv+AH4LNcYKrbUWyZj7/z7wPzJe+K5PfKQ==
 
-"@angular/material@^8.0.2":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-8.0.2.tgz#c648e0f52d94b37e3dddfd879223202aa0d11587"
-  integrity sha512-Q6YxX7zLsfI1kv0dSJSENSyCuwq7GdHjHzOGeogGfjQRvX3N/ty/z8YfwhQFzZ3XtIysbhuGcpAUWazgWeIKgw==
+"@angular/material@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-8.1.1.tgz#87e105fb657fa6e139ddcbd6b9c373936604f6d7"
+  integrity sha512-45aaxKuLTrthzhAhG2+OY86wafuRBteZcRjDG7rKZ3Cc3KteUp5QwAi+QbhHzs4O3WXLWTAmuLYJelRqRqqw7g==
   dependencies:
     tslib "^1.7.1"
 
@@ -403,10 +403,15 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/node@*", "@types/node@^12.6.2", "@types/node@~12.6.2":
+"@types/node@*", "@types/node@^12.6.2":
   version "12.6.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.2.tgz#a5ccec6abb6060d5f20d256fb03ed743e9774999"
   integrity sha512-gojym4tX0FWeV2gsW4Xmzo5wxGjXGm550oVUII7f7G5o4BV6c7DBdiG1RRQd+y1bvqRyYtPfMK85UM95vsapqQ==
+
+"@types/node@~12.6.6":
+  version "12.6.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.6.tgz#831587377c35bb28fa33b6fe5f849a26a3f4a412"
+  integrity sha512-SMgj3x28MkJyHdWaMv/g/ca3LYDi5gR7O8mX0VKazvFOnmlDXctSEdd/8jfSqozjKFK1R9If1QZWkafX7yQTpA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -4750,7 +4755,7 @@ neo-async@^2.5.0, neo-async@^2.6.0:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
   integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
 
-ng-packagr@^5.1.0:
+ng-packagr@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/ng-packagr/-/ng-packagr-5.3.0.tgz#92434ca05ecbd1e01fe961a66c8a9a66b095f6fa"
   integrity sha512-i+964lzZC7VVzatDCLDZndiXTog1XGozY7K1Bs78+uBF8O1YHNQP9wB9C5fR4uEaSKVhCWEBYekoS69flCugMA==
@@ -7046,10 +7051,10 @@ ts-node@~8.3.0:
     source-map-support "^0.5.6"
     yn "^3.0.0"
 
-tsickle@^0.35.0:
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.35.0.tgz#59235df45937c0ec5d072c616c26d2d97fba54b9"
-  integrity sha512-irsZLX4293YUl9TuwNC5Fy020eLSc4bC3LfKnxnx1oq5wmZD9zSP8qvNNTiwRmf2/rxH+58JINcTARDjuvn+oQ==
+tsickle@^0.36.0:
+  version "0.36.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.36.0.tgz#d6f47cdd14d009f3fea4e8516cd46c1393f3aa02"
+  integrity sha512-lrEMU5e+efx5DXtrRSGsxgkCOVRw4WeVaOkQ2pMIxCZDY5rISagVyP4yi7t6M396POFSbMHgQMT/vz0HmfxWVA==
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
