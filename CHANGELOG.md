@@ -1,3 +1,7 @@
+## 0.0.20 (2019-07-19)
+- Update npm dependencies
+- Add cdk into peerDependencies
+
 ## 0.0.19 (2019-07-17)
 - Update cdk dependencies
 
