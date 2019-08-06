@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 import { GalleryConfigInterface } from 'ngx-cdk-lightbox/app/Interfaces/gallery.interface';
-//import { LightboxService } from '../Services/lightbox.service';
-import { LightboxService } from 'ngx-cdk-lightbox';
+import { LightboxService } from '../Services/lightbox.service';
+//import { LightboxService } from 'ngx-cdk-lightbox';
 
 @Component({
 	selector: 'lightbox-root',
@@ -34,6 +34,23 @@ export class DemoComponent
 			{source: 'assets/images/image3.jpg', description: 'test 2', copyright: 'unknown'},
 			{source: 'assets/images/image4.jpg', description: 'test 3', copyright: 'unknown'},
 			{source: 'assets/images/image5.jpg', copyright: 'unknown'},
+		], config);
+
+		return;
+	}
+
+	public openMixedLightbox(config?: GalleryConfigInterface):void
+	{
+		this.lightboxService.open([
+			{mp4Source: 'assets/videos/720p.mp4', description: 'test', copyright: 'unknown'},
+			{mp4Source: {
+				240: 'assets/videos/240p.mp4',
+				480: 'assets/videos/480p.mp4',
+				720: 'assets/videos/720p.mp4',
+			}, description: 'test', copyright: 'unknown'},
+			{source: 'https://image.shutterstock.com/z/stock-photo-two-beach-chairs-on-tropical-vacation-at-sea-1411290431.jpg', copyright: 'https://www.shutterstock.com'},
+			{source: 'https://image.shutterstock.com/z/stock-photo-soft-waves-with-foam-of-ocean-on-the-sandy-beach-background-1383401564.jpg', description: 'beach', copyright: 'https://www.shutterstock.com'},
+			{source: 'https://gallery.yopriceville.com/var/albums/Backgrounds/Background_Sea_Beach.jpg?m=1432232957', description: 'One huge image O.o', copyright: 'https://gallery.yopriceville.com/Backgrounds/Background_Sea_Beach'},
 		], config);
 
 		return;

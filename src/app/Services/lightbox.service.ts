@@ -2,14 +2,14 @@ import { Injectable, Injector } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
-import { GalleryImageInterface, GalleryConfigInterface, closeIconSvg, arrowRightSvg, arrowLeftSvg } from './../Interfaces/gallery.interface';
+import { GalleryConfigInterface, closeIconSvg, arrowRightSvg, arrowLeftSvg, GalleryDisplayObjectType } from './../Interfaces/gallery.interface';
 import { LightboxComponent } from './../Components/lightbox.component';
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from './../Ref/lightboxOverlay.ref';
 
 @Injectable()
 export class LightboxService
 {
-	private photos: GalleryImageInterface[] = [];
+	private displayObjects: GalleryDisplayObjectType[] = [];
 	private defaultConfig: GalleryConfigInterface = {
 		enableZoom: false,
 		zoomSize: 'originalSize',
@@ -34,12 +34,12 @@ export class LightboxService
 	{
 	}
 
-	public open(photos: GalleryImageInterface[], config: GalleryConfigInterface = {}):void
+	public open(displayObjects: GalleryDisplayObjectType[], config: GalleryConfigInterface = {}):void
 	{
-		this.photos = photos;
+		this.displayObjects = displayObjects;
 		config = {...this.defaultConfig, ...config};
 
-		if (this.photos.length<1)
+		if (this.displayObjects.length<1)
 			return;
 
 		const overlayRef = this.createOverlayRef();
@@ -77,7 +77,7 @@ export class LightboxService
 		const injectionTokens = new WeakMap();
 
 		injectionTokens.set(LightboxOverlayRef, modalRef);
-		injectionTokens.set(LIGHTBOX_MODAL_DATA, {photos: this.photos, config: config});
+		injectionTokens.set(LIGHTBOX_MODAL_DATA, {displayObjects: this.displayObjects, config: config});
 
 		return new PortalInjector(this.injector, injectionTokens);
 	}

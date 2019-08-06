@@ -173,6 +173,31 @@
 
 		}
 
+		&__video-wrapper {
+			background: $white;
+		}
+
+		&__video-container {
+			max-width: 95vw;
+			width: 900px;
+			position: relative;
+
+			&:before {
+				content: "";
+				padding-top: (9/16*100%);
+				display: block;
+			}
+
+		}
+
+		&__video {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+		}
+
 	}
 
 }

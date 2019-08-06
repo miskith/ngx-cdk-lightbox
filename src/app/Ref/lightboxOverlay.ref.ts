@@ -1,11 +1,11 @@
 import { InjectionToken } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 
-import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
+import { GalleryDisplayObjectType, GalleryConfigInterface } from './../Interfaces/gallery.interface';
 
 export interface GalleryDataInterface
 {
-	photos: GalleryImageInterface[];
+	displayObjects: GalleryDisplayObjectType[];
 	config: GalleryConfigInterface;
 }
 

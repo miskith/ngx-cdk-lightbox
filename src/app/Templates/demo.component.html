@@ -30,7 +30,7 @@
 			</mat-card-content>
 		</mat-card>
 	</mat-tab>
-	<mat-tab label="Demo">
+	<mat-tab label="Photogallery Demo">
 		<mat-card>
 			<mat-card-title>
 				Gallery with default configuration
@@ -96,6 +96,21 @@
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config5)">
+					Open gallery
+				</button>
+			</mat-card-actions>
+		</mat-card>
+	</mat-tab>
+	<mat-tab label="Mixed Gallery Demo">
+		<mat-card>
+			<mat-card-title>
+				Gallery with photos and videos
+			</mat-card-title>
+			<mat-card-content>
+				<pre><code [highlight]="config1 | json"></code></pre>
+			</mat-card-content>
+			<mat-card-actions>
+				<button mat-raised-button color="accent" (click)="openMixedLightbox(config1)">
 					Open gallery
 				</button>
 			</mat-card-actions>

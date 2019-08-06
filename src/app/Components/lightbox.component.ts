@@ -2,7 +2,7 @@ import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/
 import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
-import { GalleryImageInterface, GalleryConfigInterface } from './../Interfaces/gallery.interface';
+import { GalleryDisplayObjectType, GalleryConfigInterface } from './../Interfaces/gallery.interface';
 
 
 @Component({
@@ -34,7 +34,7 @@ export class LightboxComponent implements OnDestroy
 		@Inject(LIGHTBOX_MODAL_DATA) public data: GalleryDataInterface,
 	)
 	{
-		this.loadPhoto(Math.max(0, Math.min(this.config.startingIndex, (this.data.photos.length-1))));
+		this.loadDisplayObject(Math.max(0, Math.min(this.config.startingIndex, (this.data.displayObjects.length-1))));
 	}
 
 	ngOnDestroy()
@@ -44,9 +44,9 @@ export class LightboxComponent implements OnDestroy
 		});
 	}
 
-	get photo():GalleryImageInterface|false
+	get displayObject():GalleryDisplayObjectType|false
 	{
-		return (this.currentIndex===null ? false : this.data.photos[this.currentIndex]);
+		return (this.currentIndex===null ? false : this.data.displayObjects[this.currentIndex]);
 	}
 
 	get config():GalleryConfigInterface
@@ -56,7 +56,7 @@ export class LightboxComponent implements OnDestroy
 
 	get imageCounter():string
 	{
-		return this.config.imageCounterText.replace(/IMAGE\_INDEX/, ''+(this.currentIndex+1)).replace(/IMAGE\_COUNT/, ''+(this.data.photos.length));
+		return this.config.imageCounterText.replace(/IMAGE\_INDEX/, ''+(this.currentIndex+1)).replace(/IMAGE\_COUNT/, ''+(this.data.displayObjects.length));
 	}
 
 	private addSubscription(key: string, subscription: SubscriptionLike):void
@@ -75,7 +75,7 @@ export class LightboxComponent implements OnDestroy
 	private getNextIndex(index: number = this.currentIndex):number|false
 	{
 		const nextIndex = (index+1);
-		if (nextIndex>this.data.photos.length-1)
+		if (nextIndex>this.data.displayObjects.length-1)
 		{
 			if (this.config.loopGallery===true)
 				return 0;
@@ -92,7 +92,7 @@ export class LightboxComponent implements OnDestroy
 		if (prevIndex<0)
 		{
 			if (this.config.loopGallery===true)
-				return (this.data.photos.length-1);
+				return (this.data.displayObjects.length-1);
 			else
 				return false;
 		}
@@ -101,21 +101,21 @@ export class LightboxComponent implements OnDestroy
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	public nextPhoto(event?: KeyboardEvent|MouseEvent) {
+	public nextDisplayObject(event?: KeyboardEvent|MouseEvent) {
 		if (event)
 			event.preventDefault();
 
 		const index = this.getNextIndex();
-		this.loadPhoto((index!==false ? index : (this.data.photos.length-1)));
+		this.loadDisplayObject((index!==false ? index : (this.data.displayObjects.length-1)));
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	public prevPhoto(event?: KeyboardEvent|MouseEvent) {
+	public prevDisplayObject(event?: KeyboardEvent|MouseEvent) {
 		if (event)
 			event.preventDefault();
 
 		const index = this.getPrevIndex();
-		this.loadPhoto((index!==false ? index : 0));
+		this.loadDisplayObject((index!==false ? index : 0));
 	}
 
 	@HostListener('document:keyup.escape', ['$event'])
@@ -147,24 +147,25 @@ export class LightboxComponent implements OnDestroy
 		return;
 	}
 
-	private loadPhoto(index: number):void
+	private loadDisplayObject(index: number):void
 	{
 		this.imageLoading = true;
 
 		this.addSubscription('animatePhoto', this.animatePhoto(index).subscribe(()=>{
 			this.imageLoading = false;
 			setTimeout(()=>{
-				this.setImageDetails(this.imageElement.nativeElement);
+				if (this.imageElement)
+					this.setImageDetails(this.imageElement.nativeElement);
 			}, 10);
 
 			if (this.config.enableImagePreloading===true)
 			{
 				const nextIndex = this.getNextIndex();
 				if (nextIndex!==false)
-					this.preloadPhoto(this.data.photos[nextIndex]);
+					this.preloadDisplayObject(this.data.displayObjects[nextIndex]);
 				const prevIndex = this.getPrevIndex();
 				if (prevIndex!==false)
-					this.preloadPhoto(this.data.photos[prevIndex]);
+					this.preloadDisplayObject(this.data.displayObjects[prevIndex]);
 			}
 		}, error => {
 			this.imageLoading = false;
@@ -176,10 +177,10 @@ export class LightboxComponent implements OnDestroy
 
 	private animatePhoto(index: number):Observable<any>
 	{
-		if (this.config.enableAnimations===false)
+		if (this.config.enableAnimations===false || !('source' in this.data.displayObjects[index]))
 		{
 			this.currentIndex = index;
-			return this.preloadPhoto(this.data.photos[this.currentIndex]);
+			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex]);
 		}
 		else
 		{
@@ -187,7 +188,7 @@ export class LightboxComponent implements OnDestroy
 				if (this.imageElement)
 					this.imageElement.nativeElement.style.opacity = 0;
 				this.addSubscription('animatePhotoZoomIn', combineLatest(
-					this.preloadPhoto(this.data.photos[index]),
+					this.preloadDisplayObject(this.data.displayObjects[index]),
 					timer(400),
 				).subscribe(()=>{
 					if (this.imageElement)
@@ -222,11 +223,18 @@ export class LightboxComponent implements OnDestroy
 		}
 	}
 
-	private preloadPhoto(photo: GalleryImageInterface):Observable<Event>
+	private preloadDisplayObject(displayObject: GalleryDisplayObjectType):Observable<Event|void>
 	{
-		this.preloadedImage = new Image();
-		const observable = fromEvent(this.preloadedImage, 'load');
-		this.preloadedImage.src = photo.source;
+		let observable;
+
+		if ('source' in displayObject)
+		{
+			this.preloadedImage = new Image();
+			observable = fromEvent(this.preloadedImage, 'load');
+			this.preloadedImage.src = displayObject.source;
+		}
+		else
+			observable = Observable.create((observer) => {observer.next(); observer.complete()});
 
 		return observable;
 	}
@@ -259,11 +267,16 @@ export class LightboxComponent implements OnDestroy
 			return;
 
 		if (event.layerX/this.zoomStyles.width<0.5)
-			this.prevPhoto();
+			this.prevDisplayObject();
 		else
-			this.nextPhoto();
+			this.nextDisplayObject();
 
 		return;
+	}
+
+	public checkIsString(value: any):boolean
+	{
+		return !!((typeof value)==='string');
 	}
 
 	get zoomTransformation():string

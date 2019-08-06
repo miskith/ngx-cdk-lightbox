@@ -1,6 +1,16 @@
+export type GalleryDisplayObjectType = GalleryImageInterface|GalleryVideoInterface;
+
 export interface GalleryImageInterface
 {
 	source: string;
+	description?: string;
+	copyright?: string;
+}
+
+type videoResolutionsType = 240|360|480|720|1080|2160|4320;
+export interface GalleryVideoInterface
+{
+	mp4Source: string|Partial<Record<videoResolutionsType, string>>;
 	description?: string;
 	copyright?: string;
 }
