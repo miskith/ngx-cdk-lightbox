@@ -255,6 +255,9 @@ export class LightboxComponent implements OnDestroy
 
 	public imageClick(event: MouseEvent):void
 	{
+		if (this.config.enableImageClick===false)
+			return;
+
 		if (event.layerX/this.zoomStyles.width<0.5)
 			this.prevPhoto();
 		else
