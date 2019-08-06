@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { GalleryConfigInterface } from 'ngx-cdk-lightbox/app/Interfaces/gallery.interface';
+//import { LightboxService } from '../Services/lightbox.service';
 import { LightboxService } from 'ngx-cdk-lightbox';
 
 @Component({
@@ -11,11 +13,17 @@ import { LightboxService } from 'ngx-cdk-lightbox';
 })
 export class DemoComponent
 {
+	public config1: GalleryConfigInterface = {};
+	public config2: GalleryConfigInterface = {enableZoom: true};
+	public config3: GalleryConfigInterface = {startingIndex: 2, enableAnimations: false};
+	public config4: GalleryConfigInterface = {enableArrows: false, enableCloseIcon: false, enableImageClick: false, enableImagePreloading: false};
+	public config5: GalleryConfigInterface = {enableZoom: true, zoomSize: 3, imageCounterText: 'IMAGE_INDEX fotografie z IMAGE_COUNT'};
+
 	constructor(private lightboxService: LightboxService)
 	{
 	}
 
-	public openLightbox():void
+	public openLightbox(config?: GalleryConfigInterface):void
 	{
 		this.lightboxService.open([
 			{source: 'https://image.shutterstock.com/z/stock-photo-two-beach-chairs-on-tropical-vacation-at-sea-1411290431.jpg', copyright: 'https://www.shutterstock.com'},
@@ -26,9 +34,7 @@ export class DemoComponent
 			{source: 'assets/images/image3.jpg', description: 'test 2', copyright: 'unknown'},
 			{source: 'assets/images/image4.jpg', description: 'test 3', copyright: 'unknown'},
 			{source: 'assets/images/image5.jpg', copyright: 'unknown'},
-		], {
-			enableZoom: true,
-		});
+		], config);
 
 		return;
 	}
