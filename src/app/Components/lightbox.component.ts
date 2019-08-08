@@ -1,4 +1,4 @@
-import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
@@ -27,7 +27,8 @@ export class LightboxComponent implements OnDestroy
 	public imageLoading = true;
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
-	@ViewChild('imageElement', {static: false}) private imageElement;
+	@ViewChild('videoElement', {static: false}) private videoElement: ElementRef;
+	@ViewChild('imageElement', {static: false}) private imageElement: ElementRef;
 
 	constructor(
 		private modalRef: LightboxOverlayRef,
@@ -174,6 +175,8 @@ export class LightboxComponent implements OnDestroy
 			setTimeout(()=>{
 				if (this.imageElement)
 					this.setImageDetails(this.imageElement.nativeElement);
+				if (this.videoElement)
+					this.videoElement.nativeElement.load();
 			}, 10);
 
 			if (this.config.enableImagePreloading===true)

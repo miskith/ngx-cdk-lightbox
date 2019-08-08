@@ -8,9 +8,9 @@ import { HighlightModule } from 'ngx-highlightjs';
 import typescript from 'highlight.js/lib/languages/typescript';
 import shell from 'highlight.js/lib/languages/shell';
 
-//import { LightboxService, LightboxModule } from 'ngx-cdk-lightbox';
-import { LightboxService } from '../Services/lightbox.service';
-import { LightboxModule } from '../Modules/lightbox.module';
+import { LightboxService, LightboxModule } from 'ngx-cdk-lightbox';
+//import { LightboxService } from '../Services/lightbox.service';
+//import { LightboxModule } from '../Modules/lightbox.module';
 import { DemoComponent } from '../Components/demo.component';
 
 export function hljsLanguages() {

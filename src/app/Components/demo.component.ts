@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 import { GalleryConfigInterface } from 'ngx-cdk-lightbox/app/Interfaces/gallery.interface';
-import { LightboxService } from '../Services/lightbox.service';
-//import { LightboxService } from 'ngx-cdk-lightbox';
+//import { LightboxService } from '../Services/lightbox.service';
+import { LightboxService } from 'ngx-cdk-lightbox';
 
 @Component({
 	selector: 'lightbox-root',

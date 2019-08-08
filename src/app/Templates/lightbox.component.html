@@ -22,7 +22,7 @@
 			<ng-container *ngSwitchCase="'video'">
 				<div class="ngx-cdk-lightbox__video-wrapper">
 					<div class="ngx-cdk-lightbox__video-container">
-						<video controls class="ngx-cdk-lightbox__video">
+						<video controls class="ngx-cdk-lightbox__video" #videoElement>
 							<ng-container [ngSwitch]="checkIsString(video.mp4Source)">
 								<source [src]="video.mp4Source" type="video/mp4" *ngSwitchCase="true" />
 								<ng-container *ngSwitchCase="false">
