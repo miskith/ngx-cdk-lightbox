@@ -1,7 +1,7 @@
 {
 	"name": "ngx-cdk-lightbox",
 	"description": "Custom implementation of CDK to display image gallery in lightbox.",
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"author": "miskith",
 	"license": "MIT",
 	"bugs": {
@@ -41,8 +41,6 @@
 		"@angular/platform-browser": "~8.2.0",
 		"@angular/platform-browser-dynamic": "~8.2.0",
 		"@angular/router": "~8.2.0",
-		"highlight.js": "^9.15.9",
-		"ngx-highlightjs": "^3.0.3",
 		"rxjs": "~6.5.2",
 		"tslib": "^1.10.0",
 		"zone.js": "~0.9.1"
@@ -69,6 +67,8 @@
 		"ts-node": "~8.3.0",
 		"tsickle": "^0.36.0",
 		"tslint": "~5.18.0",
-		"typescript": "~3.5.3"
+		"typescript": "~3.5.3",
+		"ngx-highlightjs": "^3.0.3",
+		"highlight.js": "^9.15.9"
 	}
 }

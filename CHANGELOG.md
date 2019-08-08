@@ -1,3 +1,6 @@
+## 0.0.22 (2019-08-08)
+- Add support for HTML5 videos
+
 ## 0.0.21 (2019-08-05)
 - Update npm dependencies
 

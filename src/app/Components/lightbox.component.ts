@@ -27,8 +27,8 @@ export class LightboxComponent implements OnDestroy
 	public imageLoading = true;
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
-	@ViewChild('videoElement', {static: false}) private videoElement: ElementRef;
-	@ViewChild('imageElement', {static: false}) private imageElement: ElementRef;
+	@ViewChild('videoElement', {static: false}) private videoElement;
+	@ViewChild('imageElement', {static: false}) private imageElement;
 
 	constructor(
 		private modalRef: LightboxOverlayRef,
