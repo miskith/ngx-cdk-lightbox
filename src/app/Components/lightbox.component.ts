@@ -2,7 +2,7 @@ import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/
 import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
-import { GalleryDisplayObjectType, GalleryConfigInterface } from './../Interfaces/gallery.interface';
+import { GalleryDisplayObjectType, GalleryConfigInterface, GalleryImageInterface, GalleryVideoInterface } from './../Interfaces/gallery.interface';
 
 
 @Component({
@@ -47,6 +47,24 @@ export class LightboxComponent implements OnDestroy
 	get displayObject():GalleryDisplayObjectType|false
 	{
 		return (this.currentIndex===null ? false : this.data.displayObjects[this.currentIndex]);
+	}
+
+	get displayObjectType():'photo'|'video'|null
+	{
+		if (this.displayObject===false)
+			return null;
+
+		return (('source' in this.displayObject) ? 'photo' : 'video');
+	}
+
+	get photo():GalleryImageInterface|null
+	{
+		return (this.displayObjectType==='photo' ? <GalleryImageInterface>this.displayObject : null);
+	}
+
+	get video():GalleryVideoInterface|null
+	{
+		return (this.displayObjectType==='video' ? <GalleryVideoInterface>this.displayObject : null);
 	}
 
 	get config():GalleryConfigInterface
