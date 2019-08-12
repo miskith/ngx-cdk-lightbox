@@ -1,3 +1,6 @@
+## 0.0.23 (2019-08-12)
+- Cleanup dependencies
+
 ## 0.0.22 (2019-08-08)
 - Add support for HTML5 videos
 
