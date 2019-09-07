@@ -25,6 +25,8 @@ export class LightboxService
 		enableImagePreloading: true,
 		startingIndex: 0,
 		enableAnimations: true,
+		ariaLabelNext: 'Next',
+		ariaLabelPrev: 'Previous',
 	};
 
 	constructor(

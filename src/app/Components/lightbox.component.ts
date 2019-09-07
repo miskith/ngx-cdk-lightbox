@@ -1,4 +1,4 @@
-import { Component, Inject, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../Ref/lightboxOverlay.ref';
@@ -24,6 +24,7 @@ export class LightboxComponent implements OnDestroy
 		height: 0,
 		naturalHeight: 0,
 	};
+	public readonly config: GalleryConfigInterface = this.data.config;
 	public imageLoading = true;
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
@@ -45,32 +46,19 @@ export class LightboxComponent implements OnDestroy
 		});
 	}
 
-	get displayObject():GalleryDisplayObjectType|false
+	get displayObject():GalleryDisplayObjectType
 	{
-		return (this.currentIndex===null ? false : this.data.displayObjects[this.currentIndex]);
+		return (this.currentIndex===null ? null : this.data.displayObjects[this.currentIndex]);
 	}
 
-	get displayObjectType():'photo'|'video'|null
+	get image():GalleryImageInterface|null
 	{
-		if (this.displayObject===false)
-			return null;
-
-		return (('source' in this.displayObject) ? 'photo' : 'video');
-	}
-
-	get photo():GalleryImageInterface|null
-	{
-		return (this.displayObjectType==='photo' ? <GalleryImageInterface>this.displayObject : null);
+		return (this.displayObject && this.displayObject.type==='image' ? <GalleryImageInterface>this.displayObject : null);
 	}
 
 	get video():GalleryVideoInterface|null
 	{
-		return (this.displayObjectType==='video' ? <GalleryVideoInterface>this.displayObject : null);
-	}
-
-	get config():GalleryConfigInterface
-	{
-		return this.data.config;
+		return (this.displayObject && this.displayObject.type==='video' ? <GalleryVideoInterface>this.displayObject : null);
 	}
 
 	get imageCounter():string
@@ -137,8 +125,8 @@ export class LightboxComponent implements OnDestroy
 		this.loadDisplayObject((index!==false ? index : 0));
 	}
 
-	@HostListener('document:keyup.escape', ['$event'])
-	public closeModal(event?: KeyboardEvent)
+	@HostListener('document:keyup.escape')
+	public closeModal()
 	{
 		this.modalRef.close();
 	}
@@ -170,13 +158,20 @@ export class LightboxComponent implements OnDestroy
 	{
 		this.imageLoading = true;
 
-		this.addSubscription('animatePhoto', this.animatePhoto(index).subscribe(()=>{
+		this.addSubscription('animateImage', this.animateImage(index).subscribe(()=>{
 			this.imageLoading = false;
 			setTimeout(()=>{
 				if (this.imageElement)
 					this.setImageDetails(this.imageElement.nativeElement);
 				if (this.videoElement)
+				{
+					const videoElementContainer = this.videoElement.nativeElement.parentElement;
+					if (this.video && this.video.resolution)
+						videoElementContainer.style.paddingTop = Math.round(this.video.resolution.height/this.video.resolution.width*10000)/100+'%';
+					else
+						videoElementContainer.style.paddingTop = '';
 					this.videoElement.nativeElement.load();
+				}
 			}, 10);
 
 			if (this.config.enableImagePreloading===true)
@@ -196,7 +191,7 @@ export class LightboxComponent implements OnDestroy
 		return;
 	}
 
-	private animatePhoto(index: number):Observable<any>
+	private animateImage(index: number):Observable<any>
 	{
 		if (this.config.enableAnimations===false || !('source' in this.data.displayObjects[index]))
 		{
@@ -208,7 +203,7 @@ export class LightboxComponent implements OnDestroy
 			return new Observable((observer)=>{
 				if (this.imageElement)
 					this.imageElement.nativeElement.style.opacity = 0;
-				this.addSubscription('animatePhotoZoomIn', combineLatest(
+				this.addSubscription('animateImageZoomIn', combineLatest(
 					this.preloadDisplayObject(this.data.displayObjects[index]),
 					timer(400),
 				).subscribe(()=>{
@@ -221,7 +216,7 @@ export class LightboxComponent implements OnDestroy
 					const naturalHeight = this.preloadedImage.naturalHeight;
 					const ratio = Math.max(naturalWidth/(window.innerWidth*0.95), naturalHeight/(window.innerHeight*0.85), 1);
 					this.currentIndex = index;
-					this.addSubscription('animatePhotoSet', timer(1).subscribe(()=>{
+					this.addSubscription('animateImageSet', timer(1).subscribe(()=>{
 						if (this.imageElement)
 						{
 							this.imageElement.nativeElement.style.width = 0;
@@ -229,7 +224,7 @@ export class LightboxComponent implements OnDestroy
 						}
 						this.imageElement.nativeElement.parentElement.style.width = naturalWidth/ratio+'px';
 						this.imageElement.nativeElement.parentElement.style.height = naturalHeight/ratio+'px';
-						this.addSubscription('animatePhotoZoomOut', timer(250).subscribe(()=>{
+						this.addSubscription('animateImageZoomOut', timer(250).subscribe(()=>{
 							this.imageElement.nativeElement.parentElement.style.width = '';
 							this.imageElement.nativeElement.parentElement.style.height = '';
 							this.imageElement.nativeElement.style.width = 'auto';

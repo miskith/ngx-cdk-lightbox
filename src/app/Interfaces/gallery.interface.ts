@@ -2,6 +2,7 @@ export type GalleryDisplayObjectType = GalleryImageInterface|GalleryVideoInterfa
 
 export interface GalleryImageInterface
 {
+	type: 'image';
 	source: string;
 	description?: string;
 	copyright?: string;
@@ -10,9 +11,14 @@ export interface GalleryImageInterface
 type videoResolutionsType = 240|360|480|720|1080|2160|4320;
 export interface GalleryVideoInterface
 {
+	type: 'video';
 	mp4Source: string|Partial<Record<videoResolutionsType, string>>;
 	description?: string;
 	copyright?: string;
+	resolution?: {
+		width: number;
+		height: number;
+	};
 }
 
 export interface GalleryConfigInterface
@@ -31,6 +37,8 @@ export interface GalleryConfigInterface
 	enableImagePreloading?: boolean;
 	startingIndex?: number;
 	enableAnimations?: boolean;
+	ariaLabelNext?: string;
+	ariaLabelPrev?: string;
 }
 
 export const closeIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';

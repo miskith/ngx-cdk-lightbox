@@ -175,19 +175,13 @@
 
 		&__video-wrapper {
 			background: $white;
+			max-width: 95vw;
+			width: 900px;
 		}
 
 		&__video-container {
-			max-width: 95vw;
-			width: 900px;
 			position: relative;
-
-			&:before {
-				content: "";
-				padding-top: (9/16*100%);
-				display: block;
-			}
-
+			padding-top: (9/16*100%);
 		}
 
 		&__video {

@@ -1,3 +1,12 @@
+## 0.1.0 (2019-08-12)
+### Breaking changes:
+- You have to now set type of item to 'image' or 'video'
+### Other changes:
+- Cleanup
+- Update npm dependencies
+- Add aria-labels
+- Add posibility to set ratio (width & height) for videos
+
 ## 0.0.23 (2019-08-12)
 - Cleanup dependencies
 

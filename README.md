@@ -50,6 +50,7 @@ type GalleryDisplayObjectType = GalleryImageInterface|GalleryVideoInterface;
 ```typescript
 interface GalleryImageInterface
 {
+	type: 'image';
 	source: string;
 	description?: string;
 	copyright?: string;
@@ -63,9 +64,14 @@ type videoResolutionsType = 240|360|480|720|1080|2160|4320;
 ```typescript
 export interface GalleryVideoInterface
 {
+	type: 'video',
 	mp4Source: string|Partial<Record<videoResolutionsType, string>>;
 	description?: string;
 	copyright?: string;
+	resolution?: {
+		width: number;
+		height: number;
+	};
 }
 ```
 
@@ -92,6 +98,7 @@ interface GalleryConfigInterface
 #### GalleryImageInterface
 |  key |  value |
 | ------------ | ------------ |
+|  type |  'image' |
 |  source |  path to image |
 |  description |  optional - description of image |
 |  copyright |  optional - copyright info |
@@ -99,9 +106,11 @@ interface GalleryConfigInterface
 #### GalleryVideoInterface
 |  key |  value |
 | ------------ | ------------ |
+|  type |  'video' |
 |  mp4Source |  path to video source/sources |
 |  description |  optional - description of video |
 |  copyright |  optional - copyright info |
+|  resolution |  width and height of video |
 
 
 #### GalleryConfigInterface
@@ -109,8 +118,8 @@ interface GalleryConfigInterface
 | ------------ | ------------ | ------------ | ------------ |
 | enableZoom | boolean | false | display zoom on mouse hover over image |
 | zoomSize | number, 'originalSize' | 'originalSize' | zoom size, number for zoom multiplication, originalSize for original image size |
-| enableImageClick | boolean | true | enable click on image to navigate to next or previous photo |
-| loopGallery | boolean | true | loop gallery after last photo or before first photo |
+| enableImageClick | boolean | true | enable click on image to navigate to next or previous image |
+| loopGallery | boolean | true | loop gallery after last image or before first image |
 | enableImageCounter | boolean | true | display current image counter |
 | imageCounterText | string | 'IMAGE_INDEX photo of IMAGE_COUNT' | format for image counter |
 | enableCloseIcon | boolean | true | display close icon |
@@ -121,6 +130,8 @@ interface GalleryConfigInterface
 | enableImagePreloading | boolean | enable/disable image preloading |
 | startingIndex | number | 0 | index of starting image |
 | enableAnimations | boolean | true | enable/disable animations |
+| ariaLabelNext | string | 'Next' | Aria label for next button |
+| ariaLabelPrev | string | 'Previous' | Aria label for previous button |
 
 
 ## Usage example
