@@ -2,6 +2,9 @@
 
 Custom implementation of CDK to display image gallery in lightbox.
 
+## Demo
+https://www.davidmyska.com/ngx-cdk-lightbox/
+
 ## Installation
 
 ### 1. Install npm package
@@ -163,7 +166,7 @@ export class SomeComponent
 
 ## ToDo
 
-- Demo
+- Support for iframe
 
 ## Donate
 
