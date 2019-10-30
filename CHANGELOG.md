@@ -1,3 +1,8 @@
+## 1.0.0 (2019-10-30)
+- Added demo
+- Updated npm dependencies
+- Added iframe support to ToDo list
+
 ## 0.1.0 (2019-08-12)
 ### Breaking changes:
 - You have to now set type of item to 'image' or 'video'
