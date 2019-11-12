@@ -3,6 +3,41 @@
 	"version": 1,
 	"newProjectRoot": "projects",
 	"projects": {
+		"ngx-cdk-lightbox": {
+			"projectType": "library",
+			"root": "projects/ngx-cdk-lightbox",
+			"sourceRoot": "projects/ngx-cdk-lightbox/src",
+			"prefix": "lib",
+			"architect": {
+				"build": {
+					"builder": "@angular-devkit/build-ng-packagr:build",
+					"options": {
+						"tsConfig": "projects/ngx-cdk-lightbox/tsconfig.lib.json",
+						"project": "projects/ngx-cdk-lightbox/ng-package.json"
+					}
+				},
+				"test": {
+					"builder": "@angular-devkit/build-angular:karma",
+					"options": {
+						"main": "projects/ngx-cdk-lightbox/src/test.ts",
+						"tsConfig": "projects/ngx-cdk-lightbox/tsconfig.spec.json",
+						"karmaConfig": "projects/ngx-cdk-lightbox/karma.conf.js"
+					}
+				},
+				"lint": {
+					"builder": "@angular-devkit/build-angular:tslint",
+					"options": {
+						"tsConfig": [
+							"projects/ngx-cdk-lightbox/tsconfig.lib.json",
+							"projects/ngx-cdk-lightbox/tsconfig.spec.json"
+						],
+						"exclude": [
+							"**/node_modules/**"
+						]
+					}
+				}
+			}
+		},
 		"demo": {
 			"projectType": "application",
 			"schematics": {
@@ -10,25 +45,25 @@
 					"style": "scss"
 				}
 			},
-			"root": "",
-			"sourceRoot": "src",
-			"prefix": "lightbox",
+			"root": "projects/demo",
+			"sourceRoot": "projects/demo/src",
+			"prefix": "app",
 			"architect": {
 				"build": {
 					"builder": "@angular-devkit/build-angular:browser",
 					"options": {
-						"outputPath": "dist",
-						"index": "src/index.html",
-						"main": "src/main.ts",
-						"polyfills": "src/polyfills.ts",
-						"tsConfig": "tsconfig.app.json",
+						"outputPath": "dist/demo",
+						"index": "projects/demo/src/index.html",
+						"main": "projects/demo/src/main.ts",
+						"polyfills": "projects/demo/src/polyfills.ts",
+						"tsConfig": "projects/demo/tsconfig.app.json",
 						"aot": false,
 						"assets": [
-							"src/favicon.ico",
-							"src/assets"
+							"projects/demo/src/favicon.ico",
+							"projects/demo/src/assets"
 						],
 						"styles": [
-							"src/styles.scss"
+							"projects/demo/src/styles.scss"
 						],
 						"scripts": []
 					},
@@ -36,8 +71,8 @@
 						"production": {
 							"fileReplacements": [
 								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.prod.ts"
+									"replace": "projects/demo/src/environments/environment.ts",
+									"with": "projects/demo/src/environments/environment.prod.ts"
 								}
 							],
 							"optimization": true,
@@ -54,6 +89,11 @@
 									"type": "initial",
 									"maximumWarning": "2mb",
 									"maximumError": "5mb"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "6kb",
+									"maximumError": "10kb"
 								}
 							]
 						}
@@ -79,16 +119,16 @@
 				"test": {
 					"builder": "@angular-devkit/build-angular:karma",
 					"options": {
-						"main": "src/test.ts",
-						"polyfills": "src/polyfills.ts",
-						"tsConfig": "tsconfig.spec.json",
-						"karmaConfig": "karma.conf.js",
+						"main": "projects/demo/src/test.ts",
+						"polyfills": "projects/demo/src/polyfills.ts",
+						"tsConfig": "projects/demo/tsconfig.spec.json",
+						"karmaConfig": "projects/demo/karma.conf.js",
 						"assets": [
-							"src/favicon.ico",
-							"src/assets"
+							"projects/demo/src/favicon.ico",
+							"projects/demo/src/assets"
 						],
 						"styles": [
-							"src/styles.scss"
+							"projects/demo/src/styles.scss"
 						],
 						"scripts": []
 					}
@@ -97,56 +137,8 @@
 					"builder": "@angular-devkit/build-angular:tslint",
 					"options": {
 						"tsConfig": [
-							"tsconfig.app.json",
-							"tsconfig.spec.json",
-							"e2e/tsconfig.json"
-						],
-						"exclude": [
-							"**/node_modules/**"
-						]
-					}
-				},
-				"e2e": {
-					"builder": "@angular-devkit/build-angular:protractor",
-					"options": {
-						"protractorConfig": "e2e/protractor.conf.js",
-						"devServerTarget": "demo:serve"
-					},
-					"configurations": {
-						"production": {
-							"devServerTarget": "demo:serve:production"
-						}
-					}
-				}
-			}
-		},
-		"ngx-cdk-lightbox": {
-			"projectType": "library",
-			"root": "",
-			"sourceRoot": "src",
-			"prefix": "lib",
-			"architect": {
-				"build": {
-					"builder": "@angular-devkit/build-ng-packagr:build",
-					"options": {
-						"tsConfig": "tsconfig.lib.json",
-						"project": "ng-package.json"
-					}
-				},
-				"test": {
-					"builder": "@angular-devkit/build-angular:karma",
-					"options": {
-						"main": "src/test.ts",
-						"tsConfig": "tsconfig.spec.json",
-						"karmaConfig": "karma.conf.js"
-					}
-				},
-				"lint": {
-					"builder": "@angular-devkit/build-angular:tslint",
-					"options": {
-						"tsConfig": [
-							"tsconfig.lib.json",
-							"tsconfig.spec.json"
+							"projects/demo/tsconfig.app.json",
+							"projects/demo/tsconfig.spec.json"
 						],
 						"exclude": [
 							"**/node_modules/**"
@@ -154,7 +146,6 @@
 					}
 				}
 			}
-		}
-	},
-	"defaultProject": "demo"
+		}},
+	"defaultProject": "ngx-cdk-lightbox"
 }

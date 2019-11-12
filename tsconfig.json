@@ -19,17 +19,11 @@
 			"dom"
 		],
 		"paths": {
-			"core-js/es7/reflect": [
-				"./node_modules/core-js/proposals/reflect-metadata"
-			],
-			"core-js/es6/*": [
-				"./node_modules/core-js/es/*"
-			],
 			"ngx-cdk-lightbox": [
-				"dist-lib"
+				"dist/ngx-cdk-lightbox"
 			],
 			"ngx-cdk-lightbox/*": [
-				"dist-lib/*"
+				"dist/ngx-cdk-lightbox/*"
 			]
 		}
 	},

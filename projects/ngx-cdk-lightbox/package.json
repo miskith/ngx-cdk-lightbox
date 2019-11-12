@@ -1,0 +1,27 @@
+{
+	"name": "ngx-cdk-lightbox",
+	"description": "Custom implementation of CDK to display image gallery in lightbox.",
+	"version": "1.1.0",
+	"author": "miskith",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/miskith/ngx-cdk-lightbox/issues"
+	},
+	"homepage": "https://github.com/miskith/ngx-cdk-lightbox#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/miskith/ngx-cdk-lightbox.git"
+	},
+	"keywords": [
+		"lightbox",
+		"directives",
+		"angular",
+		"cdk"
+	],
+	"peerDependencies": {
+		"@angular/common": "^8.2.13",
+		"@angular/core": "^8.2.13",
+		"@angular/cdk": "^8.2.3",
+		"@angular/material": "^8.2.3"
+	}
+}
