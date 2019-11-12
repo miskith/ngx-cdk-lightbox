@@ -15,10 +15,10 @@
 		</mat-card>
 		<mat-card>
 			<mat-card-title>
-				Add imports & provider to your module
+				Import NgxCdkLightboxModule to your module
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="'import { LightboxModule, LightboxService } from \'ngx-cdk-lightbox\';'"></code></pre>
+				<pre><code [highlight]="'import { NgxCdkLightboxModule } from \'ngx-cdk-lightbox\';'"></code></pre>
 			</mat-card-content>
 		</mat-card>
 		<mat-card>
@@ -26,7 +26,7 @@
 				Import library to your module
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="'@NgModule({\n	imports: [\n		...\n		LightboxModule,\n	],\n	providers: [\n		...\n		LightboxService,\n	],\n})\nexport class SomeModule { }'"></code></pre>
+				<pre><code [highlight]="'@NgModule({\n	imports: [\n		...\n		NgxCdkLightboxModule,\n	],\n})\nexport class SomeModule { }'"></code></pre>
 			</mat-card-content>
 		</mat-card>
 	</mat-tab>
