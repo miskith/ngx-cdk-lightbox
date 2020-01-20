@@ -4,18 +4,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
-import { HighlightModule } from 'ngx-highlightjs';
-import typescript from 'highlight.js/lib/languages/typescript';
-import shell from 'highlight.js/lib/languages/shell';
+import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 
 import { NgxCdkLightboxModule } from './../../../ngx-cdk-lightbox/src/public-api';
 import { AppComponent } from './app.component';
 
 export function hljsLanguages() {
-	return [
-		{name: 'typescript', func: typescript},
-		{name: 'shell', func: shell},
-	];
+	return {
+		typescript: () => import('highlight.js/lib/languages/typescript'),
+		shell: () => import('highlight.js/lib/languages/shell'),
+	};
 }
 
 @NgModule({
@@ -29,11 +27,13 @@ export function hljsLanguages() {
 		MatTabsModule,
 		MatCardModule,
 		BrowserAnimationsModule,
-		HighlightModule.forRoot({
-			languages: hljsLanguages,
-		}),
+		HighlightModule,
 	],
-	providers: [],
+	providers: [
+		{provide: HIGHLIGHT_OPTIONS, useValue: {
+			languages: hljsLanguages()
+		}}
+	],
 	bootstrap: [
 		AppComponent,
 	],
