@@ -1,3 +1,8 @@
+## 1.1.1 (2020-01-20)
+- Small cleanup
+- Update npm dependencies
+- Preparation for bigger cleanup
+
 ## 1.1.0 (2019-11-12)
 ### Breaking changes:
 - Renamed LightboxModule to NgxCdkLightboxModule
