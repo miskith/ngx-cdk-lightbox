@@ -1,5 +1,5 @@
-import { Component, Inject, HostListener, OnDestroy, ViewChild } from '@angular/core';
-import { SubscriptionLike, Observable, fromEvent, timer, combineLatest } from 'rxjs';
+import { Component, Inject, HostListener, OnDestroy, ViewChild/*, ChangeDetectionStrategy*/ } from '@angular/core';
+import { SubscriptionLike, Observable, fromEvent, timer, combineLatest, BehaviorSubject } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../ref/lightboxOverlay.ref';
 import { GalleryDisplayObjectType, GalleryConfigInterface, GalleryImageInterface, GalleryVideoInterface } from './../interfaces/gallery.interface';
@@ -11,6 +11,7 @@ import { GalleryDisplayObjectType, GalleryConfigInterface, GalleryImageInterface
 	styleUrls: [
 		'../styles/lightbox.component.scss',
 	],
+	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NgxCdkLightboxComponent implements OnDestroy
 {
@@ -25,15 +26,16 @@ export class NgxCdkLightboxComponent implements OnDestroy
 		naturalHeight: 0,
 	};
 	public readonly config: GalleryConfigInterface = this.data.config;
-	public imageLoading = true;
+	private readonly loadingStateBehaviour = new BehaviorSubject(false);
+	public readonly loadingState$ = this.loadingStateBehaviour.asObservable();
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
 	@ViewChild('videoElement', {static: false}) private videoElement;
 	@ViewChild('imageElement', {static: false}) private imageElement;
 
 	constructor(
-		private modalRef: LightboxOverlayRef,
-		@Inject(LIGHTBOX_MODAL_DATA) public data: GalleryDataInterface,
+		private readonly modalRef: LightboxOverlayRef,
+		@Inject(LIGHTBOX_MODAL_DATA) public readonly data: GalleryDataInterface,
 	)
 	{
 		this.loadDisplayObject(Math.max(0, Math.min(this.config.startingIndex, (this.data.displayObjects.length-1))));
@@ -53,12 +55,12 @@ export class NgxCdkLightboxComponent implements OnDestroy
 
 	get image():GalleryImageInterface|null
 	{
-		return (this.displayObject && this.displayObject.type==='image' ? <GalleryImageInterface>this.displayObject : null);
+		return (this.displayObject && this.displayObject.type==='image' ? this.displayObject : null);
 	}
 
 	get video():GalleryVideoInterface|null
 	{
-		return (this.displayObject && this.displayObject.type==='video' ? <GalleryVideoInterface>this.displayObject : null);
+		return (this.displayObject && this.displayObject.type==='video' ? this.displayObject : null);
 	}
 
 	get imageCounter():string
@@ -156,10 +158,10 @@ export class NgxCdkLightboxComponent implements OnDestroy
 
 	private loadDisplayObject(index: number):void
 	{
-		this.imageLoading = true;
+		this.loadingStateBehaviour.next(true);
 
 		this.addSubscription('animateImage', this.animateImage(index).subscribe(()=>{
-			this.imageLoading = false;
+			this.loadingStateBehaviour.next(false);
 			setTimeout(()=>{
 				if (this.imageElement)
 					this.setImageDetails(this.imageElement.nativeElement);
@@ -184,7 +186,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 					this.preloadDisplayObject(this.data.displayObjects[prevIndex]);
 			}
 		}, error => {
-			this.imageLoading = false;
+			this.loadingStateBehaviour.next(false);
 			console.error('Image could not be loaded.', error);
 		}));
 
@@ -200,13 +202,13 @@ export class NgxCdkLightboxComponent implements OnDestroy
 		}
 		else
 		{
-			return new Observable((observer)=>{
+			return new Observable((observer) => {
 				if (this.imageElement)
 					this.imageElement.nativeElement.style.opacity = 0;
-				this.addSubscription('animateImageZoomIn', combineLatest(
+				this.addSubscription('animateImageZoomIn', combineLatest([
 					this.preloadDisplayObject(this.data.displayObjects[index]),
 					timer(400),
-				).subscribe(()=>{
+				]).subscribe(()=>{
 					if (this.imageElement)
 					{
 						this.imageElement.nativeElement.parentElement.style.width = this.imageElement.nativeElement.parentElement.clientWidth+'px';
@@ -216,7 +218,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 					const naturalHeight = this.preloadedImage.naturalHeight;
 					const ratio = Math.max(naturalWidth/(window.innerWidth*0.95), naturalHeight/(window.innerHeight*0.85), 1);
 					this.currentIndex = index;
-					this.addSubscription('animateImageSet', timer(1).subscribe(()=>{
+					timer(1).subscribe(()=>{
 						if (this.imageElement)
 						{
 							this.imageElement.nativeElement.style.width = 0;
@@ -233,9 +235,9 @@ export class NgxCdkLightboxComponent implements OnDestroy
 							observer.next();
 							observer.complete();
 						}));
-					}));
+					});
 				})
-			)});
+			);});
 		}
 	}
 
@@ -250,14 +252,14 @@ export class NgxCdkLightboxComponent implements OnDestroy
 			this.preloadedImage.src = displayObject.source;
 		}
 		else
-			observable = Observable.create((observer) => {observer.next(); observer.complete()});
+			observable = new Observable((observer) => {observer.next(); observer.complete();});
 
 		return observable;
 	}
 
 	public imageMouseIn(event: MouseEvent):void
 	{
-		this.setImageDetails(<HTMLImageElement>event.target);
+		this.setImageDetails(event.target as HTMLImageElement);
 		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
 
 		return;
