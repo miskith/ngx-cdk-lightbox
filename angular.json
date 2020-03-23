@@ -146,6 +146,10 @@
 					}
 				}
 			}
-		}},
-	"defaultProject": "ngx-cdk-lightbox"
+		}
+	},
+	"defaultProject": "ngx-cdk-lightbox",
+	"cli": {
+		"analytics": false
+	}
 }

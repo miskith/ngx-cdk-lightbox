@@ -260,14 +260,14 @@ export class NgxCdkLightboxComponent implements OnDestroy
 	public imageMouseIn(event: MouseEvent):void
 	{
 		this.setImageDetails(event.target as HTMLImageElement);
-		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
+		this.zoomStyles = {...this.zoomStyles, ...{x: (event as any).layerX, y: (event as any).layerY}};
 
 		return;
 	}
 
 	public imageMouseMove(event: MouseEvent):void
 	{
-		this.zoomStyles = {...this.zoomStyles, ...{x: event.layerX, y: event.layerY}};
+		this.zoomStyles = {...this.zoomStyles, ...{x: (event as any).layerX, y: (event as any).layerY}};
 
 		return;
 	}
@@ -284,7 +284,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 		if (this.config.enableImageClick===false)
 			return;
 
-		if (event.layerX/this.zoomStyles.width<0.5)
+		if ((event as any).layerX/this.zoomStyles.width<0.5)
 			this.prevDisplayObject();
 		else
 			this.nextDisplayObject();
