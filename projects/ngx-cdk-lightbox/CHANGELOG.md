@@ -1,6 +1,8 @@
-## 1.2.0 (2020-03-23)
-- Update to Angular 9
+## 1.2.1 (2020-03-23)
 - Update dependencies
+
+## 1.2.0 (2020-02-11)
+- Update to Angular 9
 
 ## 1.1.1 (2020-01-20)
 - Small cleanup

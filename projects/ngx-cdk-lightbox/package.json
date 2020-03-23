@@ -1,7 +1,7 @@
 {
 	"name": "ngx-cdk-lightbox",
 	"description": "Custom implementation of CDK to display image gallery in lightbox.",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"author": "miskith",
 	"license": "MIT",
 	"bugs": {
