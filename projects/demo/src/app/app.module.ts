@@ -31,7 +31,7 @@ export function hljsLanguages() {
 	],
 	providers: [
 		{provide: HIGHLIGHT_OPTIONS, useValue: {
-			languages: hljsLanguages()
+			languages: hljsLanguages(),
 		}}
 	],
 	bootstrap: [

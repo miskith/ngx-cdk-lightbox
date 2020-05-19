@@ -11,6 +11,8 @@ import { GalleryDisplayObjectType, GalleryConfigInterface, GalleryImageInterface
 	styleUrls: [
 		'../styles/lightbox.component.scss',
 	],
+	animations: [
+	],
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NgxCdkLightboxComponent implements OnDestroy

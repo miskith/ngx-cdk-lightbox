@@ -3,7 +3,7 @@ import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
 import { GalleryConfigInterface, closeIconSvg, arrowRightSvg, arrowLeftSvg, GalleryDisplayObjectType } from './../interfaces/gallery.interface';
-import { NgxCdkLightboxComponent } from './ngx-cdk-lightbox.component';
+import { NgxCdkLightboxComponent } from '../components/ngx-cdk-lightbox.component';
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from '../ref/lightboxOverlay.ref';
 
 @Injectable()
