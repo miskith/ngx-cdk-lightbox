@@ -4,9 +4,39 @@
 		"codelyzer"
 	],
 	"rules": {
+		"align": {
+			"options": [
+				"parameters",
+				"statements"
+			]
+		},
 		"array-type": false,
 		"arrow-parens": false,
+		"arrow-return-shorthand": true,
+		"eofline": true,
+		"import-spacing": true,
+		"semicolon": {
+			"options": [
+				"always"
+			]
+		},
+		"space-before-function-paren": {
+			"options": {
+				"anonymous": "never",
+				"asyncArrow": "always",
+				"constructor": "never",
+				"method": "never",
+				"named": "never"
+			}
+		},
 		"typedef-whitespace": false,
+		"variable-name": {
+			"options": [
+				"ban-keywords",
+				"check-format",
+				"allow-pascal-case"
+			]
+		},
 		"whitespace": false,
 		"curly": false,
 		"deprecation": {

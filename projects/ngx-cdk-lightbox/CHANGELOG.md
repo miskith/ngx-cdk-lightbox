@@ -1,5 +1,5 @@
-## x (x)
-- Update dependencies
+## 1.3.0 (2020-06-29)
+- Update Angular to v10 & other dependencies
 
 ## 1.2.1 (2020-03-23)
 - Update dependencies
