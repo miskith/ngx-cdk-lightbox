@@ -9,13 +9,6 @@ import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { NgxCdkLightboxModule } from './../../../ngx-cdk-lightbox/src/public-api';
 import { AppComponent } from './app.component';
 
-export function hljsLanguages() {
-	return {
-		typescript: () => import('highlight.js/lib/languages/typescript'),
-		shell: () => import('highlight.js/lib/languages/shell'),
-	};
-}
-
 @NgModule({
 	declarations: [
 		AppComponent,
@@ -31,7 +24,11 @@ export function hljsLanguages() {
 	],
 	providers: [
 		{provide: HIGHLIGHT_OPTIONS, useValue: {
-			languages: hljsLanguages(),
+			coreLibraryLoader: () => import('highlight.js/lib/core'),
+			languages: {
+				typescript: () => import('highlight.js/lib/languages/typescript'),
+				shell: () => import('highlight.js/lib/languages/shell'),
+			},
 		}}
 	],
 	bootstrap: [
