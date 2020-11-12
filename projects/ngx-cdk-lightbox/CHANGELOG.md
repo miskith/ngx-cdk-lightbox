@@ -1,3 +1,6 @@
+## 1.4.0 (2020-11-12)
+- Update Angular to v11 & demo dependencies
+
 ## 1.3.0 (2020-06-29)
 - Update Angular to v10 & other dependencies
 
