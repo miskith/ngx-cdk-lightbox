@@ -1,7 +1,7 @@
 {
 	"name": "ngx-cdk-lightbox",
 	"description": "Custom implementation of CDK to display image gallery in lightbox.",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"author": "miskith",
 	"license": "MIT",
 	"bugs": {
@@ -19,12 +19,12 @@
 		"cdk"
 	],
 	"peerDependencies": {
-		"@angular/common": "^11.0.0",
-		"@angular/core": "^11.0.0",
-		"@angular/cdk": "^11.0.0",
-		"@angular/material": "^11.0.0"
+		"@angular/common": "^12.0.0",
+		"@angular/core": "^12.0.0",
+		"@angular/cdk": "^12.0.0",
+		"@angular/material": "^12.0.0"
 	},
 	"dependencies": {
-		"tslib": "^2.0.0"
+		"tslib": "^2.3.0"
 	}
 }

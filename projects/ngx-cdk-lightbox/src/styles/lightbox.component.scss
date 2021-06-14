@@ -1,9 +1,10 @@
-@import '~@angular/material/theming';
-@import './variables';
+@use '~@angular/cdk' as cdk;
+@use '~@angular/material' as mat;
+@use './variables' as *;
 
 ::ng-deep {
-	@include mat-core();
-	@include cdk-overlay();
+	@include mat.core();
+	@include cdk.overlay();
 
 	.mat-dialog-container {
 		padding: 0;
