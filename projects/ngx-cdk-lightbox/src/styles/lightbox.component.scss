@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '~@angular/cdk' as cdk;
 @use '~@angular/material' as mat;
 @use './variables' as *;
@@ -182,7 +183,7 @@
 
 		&__video-container {
 			position: relative;
-			padding-top: (9/16*100%);
+			padding-top: (math.div(9, 16)*100%);
 		}
 
 		&__video {
