@@ -1,3 +1,6 @@
+## 1.5.1 (2021-07-15)
+- Update dependencies
+
 ## 1.5.0 (2021-06-14)
 - Update Angular to v12 & demo dependencies
 
