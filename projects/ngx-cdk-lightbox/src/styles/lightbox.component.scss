@@ -1,7 +1,7 @@
 @use 'sass:math';
 @use '~@angular/cdk' as cdk;
 @use '~@angular/material' as mat;
-@use './variables' as *;
+@use './variables';
 
 ::ng-deep {
 	@include mat.core();
@@ -26,7 +26,7 @@
 			width: 28px;
 			height: 28px;
 			cursor: pointer;
-			background: $white;
+			background: variables.$white;
 			border-radius: 50%;
 			transition: background-color .25s ease-out;
 			padding: 0;
@@ -35,11 +35,11 @@
 			box-sizing: border-box;
 
 			&:hover {
-				background: darken($white, 7);
+				background: darken(variables.$white, 7);
 			}
 
 			&:active {
-				background: darken($white, 14);
+				background: darken(variables.$white, 14);
 			}
 
 		}
@@ -51,7 +51,7 @@
 		}
 
 		&__image-wrapper {
-			background: $white;
+			background: variables.$white;
 			position: relative;
 			transition: width .25s ease-out, height .25s ease-out;
 		}
@@ -81,7 +81,7 @@
 
 		&__image-caption {
 			padding: 6px 12px 8px;
-			background: $white;
+			background: variables.$white;
 			border-radius: 0 0 3px 3px;
 
 			&:after {
@@ -126,7 +126,7 @@
 			pointer-events: all;
 			cursor: pointer;
 			position: absolute;
-			background: $white;
+			background: variables.$white;
 			border-radius: 50%;
 			padding: 2px;
 			width: 28px;
@@ -137,11 +137,11 @@
 			opacity: 0;
 
 			&:hover {
-				background: darken($white, 7);
+				background: darken(variables.$white, 7);
 			}
 
 			&:active {
-				background: darken($white, 14);
+				background: darken(variables.$white, 14);
 			}
 
 			&.is-left {
@@ -170,13 +170,13 @@
 			z-index: 5;
 
 			circle {
-				stroke: $blue;
+				stroke: variables.$blue;
 			}
 
 		}
 
 		&__video-wrapper {
-			background: $white;
+			background: variables.$white;
 			max-width: 95vw;
 			width: 900px;
 		}

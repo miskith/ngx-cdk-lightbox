@@ -1,3 +1,7 @@
+## 13.0.0 (2021-11-04)
+- Change Angular supported version to v13
+- Update dependencies
+
 ## 1.5.1 (2021-07-15)
 - Update dependencies
 
