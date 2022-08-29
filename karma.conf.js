@@ -35,9 +35,24 @@ module.exports = function (config) {
 		reporters: ['progress', 'kjhtml', 'junit'],
 		port: 9876,
 		colors: true,
+		logLevel: config.LOG_INFO,
 		autoWatch: true,
 		browsers: ['ChromeHeadless'],
 		singleRun: false,
 		restartOnFileChange: true,
+		customLaunchers: {
+			ChromeHeadless: {
+				base: 'Chrome',
+				flags: [
+					'--headless',
+					'--disable-gpu',
+					'--disable-translate',
+					'--disable-extensions',
+					'--disable-web-security',
+					'--no-sandbox',
+					'--remote-debugging-port=9222',
+				],
+			},
+		},
 	});
 };
