@@ -1,6 +1,6 @@
 @use 'sass:math';
-@use '~@angular/cdk' as cdk;
-@use '~@angular/material' as mat;
+@use '../../../../node_modules/@angular/cdk' as cdk;
+@use '../../../../node_modules/@angular/material' as mat;
 @use './variables';
 
 ::ng-deep {
@@ -12,7 +12,6 @@
 	}
 
 	.ngx-cdk-lightbox {
-
 		&__container {
 			max-width: 100%;
 			max-height: 100%;
@@ -28,7 +27,7 @@
 			cursor: pointer;
 			background: variables.$white;
 			border-radius: 50%;
-			transition: background-color .25s ease-out;
+			transition: background-color 0.25s ease-out;
 			padding: 0;
 			border: 0;
 			padding: 2px;
@@ -41,7 +40,6 @@
 			&:active {
 				background: darken(variables.$white, 14);
 			}
-
 		}
 
 		&__image-container {
@@ -53,14 +51,14 @@
 		&__image-wrapper {
 			background: variables.$white;
 			position: relative;
-			transition: width .25s ease-out, height .25s ease-out;
+			transition: width 0.25s ease-out, height 0.25s ease-out;
 		}
 
 		&__image {
 			display: block;
 			max-width: 100%;
 			max-height: 85vh;
-			transition: opacity .4s ease-out;
+			transition: opacity 0.4s ease-out;
 			opacity: 1;
 
 			&.is-animating {
@@ -72,7 +70,6 @@
 			&.is-zoom {
 				cursor: crosshair;
 			}
-
 		}
 
 		&__backdrop {
@@ -85,11 +82,10 @@
 			border-radius: 0 0 3px 3px;
 
 			&:after {
-				content: "";
+				content: '';
 				display: table;
 				clear: both;
 			}
-
 		}
 
 		&__zoom {
@@ -132,7 +128,7 @@
 			width: 28px;
 			height: 28px;
 			border: 0;
-			transition: background-color .25s ease-out, opacity .25s ease-out;
+			transition: background-color 0.25s ease-out, opacity 0.25s ease-out;
 			box-sizing: border-box;
 			opacity: 0;
 
@@ -155,10 +151,10 @@
 			.ngx-cdk-lightbox__container:hover & {
 				opacity: 1;
 			}
-
 		}
 
-		&__copyright, &__caption {
+		&__copyright,
+		&__caption {
 			margin: 2px 0 0;
 		}
 
@@ -172,7 +168,6 @@
 			circle {
 				stroke: variables.$blue;
 			}
-
 		}
 
 		&__video-wrapper {
@@ -183,7 +178,7 @@
 
 		&__video-container {
 			position: relative;
-			padding-top: (math.div(9, 16)*100%);
+			padding-top: (math.div(9, 16) * 100%);
 		}
 
 		&__video {
@@ -193,7 +188,5 @@
 			left: 0;
 			top: 0;
 		}
-
 	}
-
 }

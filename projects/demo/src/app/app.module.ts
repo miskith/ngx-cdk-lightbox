@@ -6,13 +6,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 
-import { NgxCdkLightboxModule } from './../../../ngx-cdk-lightbox/src/public-api';
+import { NgxCdkLightboxModule } from '../../../ngx-cdk-lightbox/src/public-api';
 import { AppComponent } from './app.component';
 
 @NgModule({
-	declarations: [
-		AppComponent,
-	],
+	declarations: [AppComponent],
 	imports: [
 		BrowserModule,
 		NgxCdkLightboxModule,
@@ -23,17 +21,17 @@ import { AppComponent } from './app.component';
 		HighlightModule,
 	],
 	providers: [
-		{provide: HIGHLIGHT_OPTIONS, useValue: {
-			coreLibraryLoader: () => import('highlight.js/lib/core'),
-			languages: {
-				typescript: () => import('highlight.js/lib/languages/typescript'),
-				shell: () => import('highlight.js/lib/languages/shell'),
+		{
+			provide: HIGHLIGHT_OPTIONS,
+			useValue: {
+				coreLibraryLoader: () => import('highlight.js/lib/core'),
+				languages: {
+					typescript: () => import('highlight.js/lib/languages/typescript'),
+					shell: () => import('highlight.js/lib/languages/shell'),
+				},
 			},
-		}}
+		},
 	],
-	bootstrap: [
-		AppComponent,
-	],
+	bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

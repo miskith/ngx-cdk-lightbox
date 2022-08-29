@@ -3,6 +3,7 @@
 Custom implementation of CDK to display image gallery in lightbox.
 
 ## Demo
+
 https://www.davidmyska.com/ngx-cdk-lightbox/
 
 ## Installation
@@ -10,10 +11,13 @@ https://www.davidmyska.com/ngx-cdk-lightbox/
 ### 1. Install npm package
 
 **npm**
+
 ```shell
 npm install ngx-cdk-lightbox --save
 ```
+
 **yarn**
+
 ```shell
 yarn add ngx-cdk-lightbox
 ```
@@ -28,12 +32,9 @@ import { NgxCdkLightboxModule } from 'ngx-cdk-lightbox';
 
 ```typescript
 @NgModule({
-	imports: [
-		...
-		NgxCdkLightboxModule,
-	],
+	imports: [...NgxCdkLightboxModule],
 })
-export class SomeModule { }
+export class SomeModule {}
 ```
 
 ## Usage
@@ -43,12 +44,11 @@ this.lightboxService.open(GalleryDisplayObjectType[], GalleryConfigInterface);
 ```
 
 ```typescript
-type GalleryDisplayObjectType = GalleryImageInterface|GalleryVideoInterface;
+type GalleryDisplayObjectType = GalleryImageInterface | GalleryVideoInterface;
 ```
 
 ```typescript
-interface GalleryImageInterface
-{
+interface GalleryImageInterface {
 	type: 'image';
 	source: string;
 	description?: string;
@@ -57,14 +57,13 @@ interface GalleryImageInterface
 ```
 
 ```typescript
-type videoResolutionsType = 240|360|480|720|1080|2160|4320;
+type videoResolutionsType = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
 ```
 
 ```typescript
-export interface GalleryVideoInterface
-{
-	type: 'video',
-	mp4Source: string|Partial<Record<videoResolutionsType, string>>;
+export interface GalleryVideoInterface {
+	type: 'video';
+	mp4Source: string | Partial<Record<videoResolutionsType, string>>;
 	description?: string;
 	copyright?: string;
 	resolution?: {
@@ -75,10 +74,9 @@ export interface GalleryVideoInterface
 ```
 
 ```typescript
-interface GalleryConfigInterface
-{
+interface GalleryConfigInterface {
 	enableZoom?: boolean;
-	zoomSize?: number|'originalSize';
+	zoomSize?: number | 'originalSize';
 	enableImageClick?: boolean;
 	loopGallery?: boolean;
 	enableImageCounter?: boolean;
@@ -95,43 +93,44 @@ interface GalleryConfigInterface
 ```
 
 #### GalleryImageInterface
-|  key |  value |
-| ------------ | ------------ |
-|  type |  'image' |
-|  source |  path to image |
-|  description |  optional - description of image |
-|  copyright |  optional - copyright info |
+
+| key         | value                           |
+| ----------- | ------------------------------- |
+| type        | 'image'                         |
+| source      | path to image                   |
+| description | optional - description of image |
+| copyright   | optional - copyright info       |
 
 #### GalleryVideoInterface
-|  key |  value |
-| ------------ | ------------ |
-|  type |  'video' |
-|  mp4Source |  path to video source/sources |
-|  description |  optional - description of video |
-|  copyright |  optional - copyright info |
-|  resolution |  width and height of video |
 
+| key         | value                           |
+| ----------- | ------------------------------- |
+| type        | 'video'                         |
+| mp4Source   | path to video source/sources    |
+| description | optional - description of video |
+| copyright   | optional - copyright info       |
+| resolution  | width and height of video       |
 
 #### GalleryConfigInterface
-|  key | type | default | value |
-| ------------ | ------------ | ------------ | ------------ |
-| enableZoom | boolean | false | display zoom on mouse hover over image |
-| zoomSize | number, 'originalSize' | 'originalSize' | zoom size, number for zoom multiplication, originalSize for original image size |
-| enableImageClick | boolean | true | enable click on image to navigate to next or previous image |
-| loopGallery | boolean | true | loop gallery after last image or before first image |
-| enableImageCounter | boolean | true | display current image counter |
-| imageCounterText | string | 'IMAGE_INDEX photo of IMAGE_COUNT' | format for image counter |
-| enableCloseIcon | boolean | true | display close icon |
-| closeIcon | string | https://material.io/tools/icons/?icon=close&style=baseline | HTML string containing close icon |
-| enableArrows | boolean | true | display next/prev icons |
-| arrowRight | string | https://material.io/tools/icons/?icon=keyboard_arrow_right&style=baseline | HTML string containing right arrow |
-| arrowLeft | string | https://material.io/tools/icons/?icon=keyboard_arrow_left&style=baseline | HTML string containing left arrow |
-| enableImagePreloading | boolean | enable/disable image preloading |
-| startingIndex | number | 0 | index of starting image |
-| enableAnimations | boolean | true | enable/disable animations |
-| ariaLabelNext | string | 'Next' | Aria label for next button |
-| ariaLabelPrev | string | 'Previous' | Aria label for previous button |
 
+| key                   | type                   | default                                                                   | value                                                                           |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| enableZoom            | boolean                | false                                                                     | display zoom on mouse hover over image                                          |
+| zoomSize              | number, 'originalSize' | 'originalSize'                                                            | zoom size, number for zoom multiplication, originalSize for original image size |
+| enableImageClick      | boolean                | true                                                                      | enable click on image to navigate to next or previous image                     |
+| loopGallery           | boolean                | true                                                                      | loop gallery after last image or before first image                             |
+| enableImageCounter    | boolean                | true                                                                      | display current image counter                                                   |
+| imageCounterText      | string                 | 'IMAGE_INDEX photo of IMAGE_COUNT'                                        | format for image counter                                                        |
+| enableCloseIcon       | boolean                | true                                                                      | display close icon                                                              |
+| closeIcon             | string                 | https://material.io/tools/icons/?icon=close&style=baseline                | HTML string containing close icon                                               |
+| enableArrows          | boolean                | true                                                                      | display next/prev icons                                                         |
+| arrowRight            | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_right&style=baseline | HTML string containing right arrow                                              |
+| arrowLeft             | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_left&style=baseline  | HTML string containing left arrow                                               |
+| enableImagePreloading | boolean                | enable/disable image preloading                                           |
+| startingIndex         | number                 | 0                                                                         | index of starting image                                                         |
+| enableAnimations      | boolean                | true                                                                      | enable/disable animations                                                       |
+| ariaLabelNext         | string                 | 'Next'                                                                    | Aria label for next button                                                      |
+| ariaLabelPrev         | string                 | 'Previous'                                                                | Aria label for previous button                                                  |
 
 ## Usage example
 
@@ -141,24 +140,18 @@ interface GalleryConfigInterface
 })
 export class SomeComponent
 {
-	constructor(private lightboxService: NgxCdkLightboxService)
-	{
-	}
+	constructor(private readonly lightboxService: NgxCdkLightboxService) {}
 
-	public openLightbox():void
-	{
+	public openLightbox(): void {
 		this.lightboxService.open([
 			{source: 'assets/images/image1.jpg', copyright: 'unknown'},
 			{source: 'assets/images/image5.jpg', copyright: 'unknown'},
 		], {
 			enableAnimations: false,
 		});
-
-		return;
 	}
 }
 ```
-
 
 ## ToDo
 
