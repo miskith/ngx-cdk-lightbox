@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 
-import { GalleryConfigInterface, NgxCdkLightboxService } from '../../../ngx-cdk-lightbox/src/public-api';
+import {
+	GalleryConfigInterface,
+	NgxCdkLightboxService,
+} from '../../../ngx-cdk-lightbox/src/public-api';
 
 @Component({
 	selector: 'app-root',
