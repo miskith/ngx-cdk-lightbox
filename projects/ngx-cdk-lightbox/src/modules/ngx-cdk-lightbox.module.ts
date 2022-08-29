@@ -24,9 +24,6 @@ import { SafeHtmlPipe } from '../pipes/SafeHtml.pipe';
 		NgxCdkLightboxComponent,
 		OverlayModule,
 	],
-	entryComponents: [
-		NgxCdkLightboxComponent,
-	],
 })
 export class NgxCdkLightboxModule {
 }

@@ -130,7 +130,6 @@
 			}
 		}
 	},
-	"defaultProject": "ngx-cdk-lightbox",
 	"cli": {
 		"analytics": false
 	}
