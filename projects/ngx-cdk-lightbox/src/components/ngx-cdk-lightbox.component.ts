@@ -1,4 +1,4 @@
-import { Component, Inject, HostListener, OnDestroy, ViewChild/*, ChangeDetectionStrategy*/ } from '@angular/core';
+import { Component, Inject, HostListener, OnDestroy, ViewChild,/*, ChangeDetectionStrategy*/ ElementRef} from '@angular/core';
 import { SubscriptionLike, Observable, fromEvent, timer, combineLatest, BehaviorSubject } from 'rxjs';
 
 import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA, GalleryDataInterface } from './../ref/lightboxOverlay.ref';
@@ -17,7 +17,7 @@ import { GalleryDisplayObjectType, GalleryConfigInterface, GalleryImageInterface
 })
 export class NgxCdkLightboxComponent implements OnDestroy
 {
-	private currentIndex = null;
+	private currentIndex: number = null;
 	public displayZoom = false;
 	public zoomStyles = {
 		x: 0,
@@ -32,8 +32,8 @@ export class NgxCdkLightboxComponent implements OnDestroy
 	public readonly loadingState$ = this.loadingStateBehaviour.asObservable();
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
-	@ViewChild('videoElement', {static: false}) private videoElement;
-	@ViewChild('imageElement', {static: false}) private imageElement;
+	@ViewChild('videoElement', {static: false}) private videoElement: ElementRef<HTMLVideoElement>;
+	@ViewChild('imageElement', {static: false}) private imageElement: ElementRef<HTMLImageElement>;
 
 	constructor(
 		private readonly modalRef: LightboxOverlayRef,
@@ -43,7 +43,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 		this.loadDisplayObject(Math.max(0, Math.min(this.config.startingIndex, (this.data.displayObjects.length-1))));
 	}
 
-	ngOnDestroy()
+	ngOnDestroy(): void
 	{
 		this.subscriptions.forEach((subscription)=>{
 			subscription.unsubscribe();
@@ -112,7 +112,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	public nextDisplayObject(event?: KeyboardEvent|MouseEvent) {
+	public nextDisplayObject(event?: KeyboardEvent|MouseEvent): void {
 		if (event)
 			event.preventDefault();
 
@@ -121,7 +121,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	public prevDisplayObject(event?: KeyboardEvent|MouseEvent) {
+	public prevDisplayObject(event?: KeyboardEvent|MouseEvent): void {
 		if (event)
 			event.preventDefault();
 
@@ -130,7 +130,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 	}
 
 	@HostListener('document:keyup.escape')
-	public closeModal()
+	public closeModal(): void
 	{
 		this.modalRef.close();
 	}
@@ -206,7 +206,7 @@ export class NgxCdkLightboxComponent implements OnDestroy
 		{
 			return new Observable((observer) => {
 				if (this.imageElement)
-					this.imageElement.nativeElement.style.opacity = 0;
+					this.imageElement.nativeElement.style.opacity = '0';
 				this.addSubscription('animateImageZoomIn', combineLatest([
 					this.preloadDisplayObject(this.data.displayObjects[index]),
 					timer(400),
@@ -223,8 +223,8 @@ export class NgxCdkLightboxComponent implements OnDestroy
 					timer(1).subscribe(()=>{
 						if (this.imageElement)
 						{
-							this.imageElement.nativeElement.style.width = 0;
-							this.imageElement.nativeElement.style.height = 0;
+							this.imageElement.nativeElement.style.width = '0px';
+							this.imageElement.nativeElement.style.height = '0px';
 						}
 						this.imageElement.nativeElement.parentElement.style.width = naturalWidth/ratio+'px';
 						this.imageElement.nativeElement.parentElement.style.height = naturalHeight/ratio+'px';
@@ -233,19 +233,19 @@ export class NgxCdkLightboxComponent implements OnDestroy
 							this.imageElement.nativeElement.parentElement.style.height = '';
 							this.imageElement.nativeElement.style.width = 'auto';
 							this.imageElement.nativeElement.style.height = 'auto';
-							this.imageElement.nativeElement.style.opacity = 1;
+							this.imageElement.nativeElement.style.opacity = '1';
 							observer.next();
 							observer.complete();
 						}));
 					});
-				})
+				}),
 			);});
 		}
 	}
 
 	private preloadDisplayObject(displayObject: GalleryDisplayObjectType):Observable<Event|void>
 	{
-		let observable;
+		let observable: Observable<Event|void>;
 
 		if ('source' in displayObject)
 		{
