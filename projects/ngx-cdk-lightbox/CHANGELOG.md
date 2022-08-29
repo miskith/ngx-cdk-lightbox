@@ -1,3 +1,7 @@
+## 14.0.0 (2022-08-29)
+- Change Angular supported version to v14
+- Update dependencies
+
 ## 13.0.0 (2021-11-04)
 - Change Angular supported version to v13
 - Update dependencies
