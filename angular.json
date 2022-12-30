@@ -40,7 +40,9 @@
 						"tsConfig": "projects/ngx-cdk-lightbox/tsconfig.spec.json",
 						"karmaConfig": "projects/ngx-cdk-lightbox/karma.conf.js",
 						"stylePreprocessorOptions": {
-							"includePaths": ["projects/ngx-cdk-lightbox/styles"]
+							"includePaths": [
+								"projects/ngx-cdk-lightbox/styles"
+							]
 						}
 					}
 				},
@@ -162,5 +164,13 @@
 	},
 	"cli": {
 		"analytics": false
+	},
+	"schematics": {
+		"@angular-eslint/schematics:application": {
+			"setParserOptionsProject": true
+		},
+		"@angular-eslint/schematics:library": {
+			"setParserOptionsProject": true
+		}
 	}
 }
