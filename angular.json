@@ -77,7 +77,6 @@
 						"main": "projects/demo/src/main.ts",
 						"polyfills": "projects/demo/src/polyfills.ts",
 						"tsConfig": "projects/demo/tsconfig.app.json",
-						"aot": false,
 						"assets": [
 							"projects/demo/src/favicon.ico",
 							"projects/demo/src/assets"
@@ -85,30 +84,10 @@
 						"styles": [
 							"projects/demo/src/styles.scss"
 						],
-						"scripts": [],
-						"vendorChunk": true,
-						"extractLicenses": false,
-						"buildOptimizer": false,
-						"sourceMap": true,
-						"optimization": false,
-						"namedChunks": true
+						"scripts": []
 					},
 					"configurations": {
 						"production": {
-							"fileReplacements": [
-								{
-									"replace": "projects/demo/src/environments/environment.ts",
-									"with": "projects/demo/src/environments/environment.prod.ts"
-								}
-							],
-							"optimization": true,
-							"outputHashing": "all",
-							"sourceMap": false,
-							"namedChunks": false,
-							"aot": true,
-							"extractLicenses": true,
-							"vendorChunk": false,
-							"buildOptimizer": true,
 							"budgets": [
 								{
 									"type": "initial",
@@ -117,13 +96,22 @@
 								},
 								{
 									"type": "anyComponentStyle",
-									"maximumWarning": "6kb",
-									"maximumError": "20kb"
+									"maximumWarning": "100kb",
+									"maximumError": "200kb"
 								}
-							]
+							],
+							"outputHashing": "all"
+						},
+						"development": {
+							"buildOptimizer": false,
+							"optimization": false,
+							"vendorChunk": true,
+							"extractLicenses": false,
+							"sourceMap": true,
+							"namedChunks": true
 						}
 					},
-					"defaultConfiguration": ""
+					"defaultConfiguration": "production"
 				},
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",

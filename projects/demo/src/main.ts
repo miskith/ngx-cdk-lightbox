@@ -1,13 +1,22 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { importProvidersFrom } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { AppComponent } from './app/app.component';
 
-if (environment.production) {
-	enableProdMode();
-}
-
-platformBrowserDynamic()
-	.bootstrapModule(AppModule)
-	.catch((err) => console.error(err));
+bootstrapApplication(AppComponent, {
+	providers: [
+		importProvidersFrom([BrowserAnimationsModule]),
+		{
+			provide: HIGHLIGHT_OPTIONS,
+			useValue: {
+				coreLibraryLoader: () => import('highlight.js/lib/core'),
+				languages: {
+					typescript: () => import('highlight.js/lib/languages/typescript'),
+					shell: () => import('highlight.js/lib/languages/shell'),
+				},
+			},
+		},
+	],
+}).catch((err) => console.error(err));

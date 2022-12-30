@@ -1,14 +1,30 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
+import { HighlightModule } from 'ngx-highlightjs';
 
 import {
 	GalleryConfigInterface,
 	NgxCdkLightboxService,
+	NgxCdkLightboxModule,
 } from '../../../ngx-cdk-lightbox/src/public-api';
 
 @Component({
+	standalone: true,
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [
+		CommonModule,
+		NgxCdkLightboxModule,
+		MatButtonModule,
+		MatTabsModule,
+		MatCardModule,
+		HighlightModule,
+	],
 })
 export class AppComponent {
 	public config1: GalleryConfigInterface = {};
