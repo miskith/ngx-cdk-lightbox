@@ -2,6 +2,8 @@
 
 - Change Angular supported version to v15
 - Update dependencies
+- Updated demo settings
+- Demo app as standalone
 
 ## 14.0.0 (2022-08-29)
 
