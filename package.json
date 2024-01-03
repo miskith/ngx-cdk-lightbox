@@ -26,7 +26,6 @@
 		"test": "ng test --code-coverage",
 		"lint": "ng lint",
 		"format": "prettier --config .prettierrc --write projects/**/*.{ts,json,md,scss}",
-		"format:quick": "pretty-quick",
 		"prepare": "husky install"
 	},
 	"private": true,
@@ -74,7 +73,6 @@
 		"ng-packagr": "^16.0.1",
 		"prettier": "^2.8.8",
 		"pretty": "^2.0.0",
-		"pretty-quick": "^3.1.3",
 		"puppeteer": "^20.1.2",
 		"typescript": "~5.0.4"
 	}
