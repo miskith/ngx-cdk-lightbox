@@ -36,7 +36,10 @@ export class NgxCdkLightboxService {
 		ariaLabelPrev: 'Previous',
 	};
 
-	constructor(private readonly overlay: Overlay, private readonly injector: Injector) {}
+	constructor(
+		private readonly overlay: Overlay,
+		private readonly injector: Injector,
+	) {}
 
 	public open(
 		displayObjects: GalleryDisplayObjectType[],

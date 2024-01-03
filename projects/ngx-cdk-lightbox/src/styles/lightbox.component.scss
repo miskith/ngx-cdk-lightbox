@@ -51,7 +51,9 @@
 		&__image-wrapper {
 			background: variables.$white;
 			position: relative;
-			transition: width 0.25s ease-out, height 0.25s ease-out;
+			transition:
+				width 0.25s ease-out,
+				height 0.25s ease-out;
 		}
 
 		&__image {
@@ -128,7 +130,9 @@
 			width: 28px;
 			height: 28px;
 			border: 0;
-			transition: background-color 0.25s ease-out, opacity 0.25s ease-out;
+			transition:
+				background-color 0.25s ease-out,
+				opacity 0.25s ease-out;
 			box-sizing: border-box;
 			opacity: 0;
 
