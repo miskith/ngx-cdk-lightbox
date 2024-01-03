@@ -70,7 +70,7 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-devkit/build-angular:browser",
+					"builder": "@angular-devkit/build-angular:browser-esbuild",
 					"options": {
 						"outputPath": "dist/demo",
 						"index": "projects/demo/src/index.html",
@@ -105,7 +105,6 @@
 						"development": {
 							"buildOptimizer": false,
 							"optimization": false,
-							"vendorChunk": true,
 							"extractLicenses": false,
 							"sourceMap": true,
 							"namedChunks": true
@@ -116,18 +115,18 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"options": {
-						"browserTarget": "demo:build"
+						"buildTarget": "demo:build"
 					},
 					"configurations": {
 						"production": {
-							"browserTarget": "demo:build:production"
+							"buildTarget": "demo:build:production"
 						}
 					}
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
 					"options": {
-						"browserTarget": "demo:build"
+						"buildTarget": "demo:build"
 					}
 				},
 				"test": {

@@ -1,5 +1,6 @@
 ## 17.0.0 (2024-01-03)
 - Drop pretty-quick dependency
+- Change Angular supported version to v17
 
 ## 16.0.0 (2023-05-11)
 - Change Angular supported version to v16
