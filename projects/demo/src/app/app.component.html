@@ -8,9 +8,9 @@
 				Install dependencies
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="'npm install ngx-cdk-lightbox --save'"></code></pre>
+				<pre><code highlight="npm install ngx-cdk-lightbox --save" language="bash"></code></pre>
 				or
-				<pre><code [highlight]="'yarn add ngx-cdk-lightbox'"></code></pre>
+				<pre><code highlight="yarn add ngx-cdk-lightbox" language="bash"></code></pre>
 			</mat-card-content>
 		</mat-card>
 		<mat-card>
@@ -18,7 +18,7 @@
 				Import NgxCdkLightboxModule to your module
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="'import { NgxCdkLightboxModule } from \'ngx-cdk-lightbox\';'"></code></pre>
+				<pre><code highlight="import { NgxCdkLightboxModule } from 'ngx-cdk-lightbox';" language="typescript"></code></pre>
 			</mat-card-content>
 		</mat-card>
 		<mat-card>
@@ -26,7 +26,7 @@
 				Import library to your module
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="'@NgModule({\n	imports: [\n		...\n		NgxCdkLightboxModule,\n	],\n})\nexport class SomeModule { }'"></code></pre>
+				<pre><code [highlight]="'@NgModule({\n	imports: [\n		...\n		NgxCdkLightboxModule,\n	],\n})\nexport class SomeModule { }'" language="typescript"></code></pre>
 			</mat-card-content>
 		</mat-card>
 	</mat-tab>
@@ -36,7 +36,7 @@
 				Gallery with default configuration
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="config1 | json"></code></pre>
+				<pre><code [highlight]="config1 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config1)">
@@ -50,7 +50,7 @@
 				Gallery with enabled zoom functionality
 			</mat-card-title>
 			<mat-card-content>
-					<pre><code [highlight]="config2 | json"></code></pre>
+					<pre><code [highlight]="config2 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config2)">
@@ -64,7 +64,7 @@
 				Gallery starting at different index, no animations
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="config3 | json">asd</code></pre>
+				<pre><code [highlight]="config3 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config3)">
@@ -78,7 +78,7 @@
 				Hide arrows, hide close icon, disable click on image, disable image preloading
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="config4 | json">asd</code></pre>
+				<pre><code [highlight]="config4 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config4)">
@@ -92,7 +92,7 @@
 				Set zoom to x3, change image counter text
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="config5 | json">asd</code></pre>
+				<pre><code [highlight]="config5 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openLightbox(config5)">
@@ -107,7 +107,7 @@
 				Gallery with images and videos
 			</mat-card-title>
 			<mat-card-content>
-				<pre><code [highlight]="config1 | json"></code></pre>
+				<pre><code [highlight]="config1 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
 				<button mat-raised-button color="accent" (click)="openMixedLightbox(config1)">

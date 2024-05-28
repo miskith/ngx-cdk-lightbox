@@ -14,7 +14,8 @@ bootstrapApplication(AppComponent, {
 				coreLibraryLoader: () => import('highlight.js/lib/core'),
 				languages: {
 					typescript: () => import('highlight.js/lib/languages/typescript'),
-					shell: () => import('highlight.js/lib/languages/shell'),
+					bash: () => import('highlight.js/lib/languages/bash'),
+					json: () => import('highlight.js/lib/languages/json'),
 				},
 			},
 		},
