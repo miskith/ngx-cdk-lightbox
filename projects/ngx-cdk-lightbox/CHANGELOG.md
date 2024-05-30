@@ -3,6 +3,10 @@
 - Change Angular supported version to v18
 - Update dependencies
 
+## 18.0.1 (2024-05-30)
+
+- Update dependencies
+
 ## 17.0.0 (2024-01-03)
 
 - Drop pretty-quick dependency
