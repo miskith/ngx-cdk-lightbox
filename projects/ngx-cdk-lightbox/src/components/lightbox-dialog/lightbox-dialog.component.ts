@@ -2,23 +2,17 @@ import {
 	Component,
 	Inject,
 	HostListener,
-	OnDestroy,
 	ViewChild,
 	ElementRef,
 	inject,
 	OnInit,
+	DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-	SubscriptionLike,
-	Observable,
-	fromEvent,
-	timer,
-	combineLatest,
-	BehaviorSubject,
-} from 'rxjs';
+import { Observable, fromEvent, timer, combineLatest, BehaviorSubject, finalize } from 'rxjs';
 
 import { GalleryDataInterface } from '../../ref/lightboxOverlay.ref';
 import {
@@ -36,7 +30,7 @@ import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 	imports: [CommonModule, SafeHtmlPipe, MatProgressSpinnerModule],
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightboxDialogComponent implements OnInit, OnDestroy {
+export class LightboxDialogComponent implements OnInit {
 	displayZoom = false;
 	zoomStyles = {
 		x: 0,
@@ -47,29 +41,25 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		naturalHeight: 0,
 	};
 
-	@Inject(DIALOG_DATA) public readonly data: GalleryDataInterface =
+	@Inject(DIALOG_DATA) readonly data: GalleryDataInterface =
 		inject<GalleryDataInterface>(DIALOG_DATA);
 
 	readonly config: GalleryConfigInterface = this.data.config;
 	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private currentIndex: number | null = null;
-	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement | null = null;
 
 	@ViewChild('videoElement', { static: false }) private videoElement!: ElementRef<HTMLVideoElement>;
 	@ViewChild('imageElement', { static: false }) private imageElement!: ElementRef<HTMLImageElement>;
 
 	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
+	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
 
 	ngOnInit(): void {
 		this.loadDisplayObject(
 			Math.max(0, Math.min(this.config.startingIndex, this.data.displayObjects.length - 1)),
 		);
-	}
-
-	ngOnDestroy(): void {
-		this.subscriptions.forEach((subscription) => subscription.unsubscribe());
 	}
 
 	get displayObject(): GalleryDisplayObjectType | null {
@@ -88,13 +78,6 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		return this.config.imageCounterText
 			.replace(/IMAGE\_INDEX/, '' + (this.currentIndex! + 1))
 			.replace(/IMAGE\_COUNT/, '' + this.data.displayObjects.length);
-	}
-
-	private addSubscription(key: string, subscription: SubscriptionLike): void {
-		this.subscriptions.get(key)?.unsubscribe();
-		this.subscriptions.delete(key);
-
-		this.subscriptions.set(key, subscription);
 	}
 
 	private getNextIndex(): number | false {
@@ -124,7 +107,7 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	public nextDisplayObject(event?: KeyboardEvent | MouseEvent): void {
+	nextDisplayObject(event?: KeyboardEvent | MouseEvent): void {
 		if (event) {
 			event.preventDefault();
 		}
@@ -134,7 +117,7 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	public prevDisplayObject(event?: KeyboardEvent | MouseEvent): void {
+	prevDisplayObject(event?: KeyboardEvent | MouseEvent): void {
 		if (event) {
 			event.preventDefault();
 		}
@@ -144,7 +127,7 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 	}
 
 	@HostListener('document:keyup.escape')
-	public closeModal(): void {
+	closeModal(): void {
 		this.modalRef.close();
 	}
 
@@ -177,11 +160,13 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 	private loadDisplayObject(index: number): void {
 		this.isLoading$.next(true);
 
-		this.addSubscription(
-			'animateImage',
-			this.animateImage(index).subscribe(
-				() => {
-					this.isLoading$.next(false);
+		this.animateImage(index)
+			.pipe(
+				takeUntilDestroyed(this.destroyRef),
+				finalize(() => this.isLoading$.next(false)),
+			)
+			.subscribe({
+				next: () => {
 					setTimeout(() => {
 						if (this.imageElement) {
 							this.setImageDetails(this.imageElement.nativeElement);
@@ -208,12 +193,10 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 							this.preloadDisplayObject(this.data.displayObjects[prevIndex]!);
 					}
 				},
-				(error) => {
-					this.isLoading$.next(false);
+				error: (error) => {
 					console.error('Image could not be loaded.', error);
 				},
-			),
-		);
+			});
 	}
 
 	private animateImage(index: number): Observable<any> {
@@ -226,12 +209,9 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 					this.imageElement.nativeElement.style.opacity = '0';
 				}
 
-				this.addSubscription(
-					'animateImageZoomIn',
-					combineLatest([
-						this.preloadDisplayObject(this.data.displayObjects[index]!),
-						timer(400),
-					]).subscribe(() => {
+				combineLatest([this.preloadDisplayObject(this.data.displayObjects[index]!), timer(400)])
+					.pipe(takeUntilDestroyed(this.destroyRef))
+					.subscribe(() => {
 						if (this.imageElement) {
 							this.imageElement.nativeElement.parentElement!.style.width = `${this.imageElement.nativeElement.parentElement!.clientWidth}px`;
 							this.imageElement.nativeElement.parentElement!.style.height = `${this.imageElement.nativeElement.parentElement!.clientHeight}px`;
@@ -251,9 +231,10 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 							}
 							this.imageElement.nativeElement.parentElement!.style.width = `${naturalWidth / ratio}px`;
 							this.imageElement.nativeElement.parentElement!.style.height = `${naturalHeight / ratio}px`;
-							this.addSubscription(
-								'animateImageZoomOut',
-								timer(250).subscribe(() => {
+
+							timer(250)
+								.pipe(takeUntilDestroyed(this.destroyRef))
+								.subscribe(() => {
 									this.imageElement.nativeElement.parentElement!.style.width = '';
 									this.imageElement.nativeElement.parentElement!.style.height = '';
 									this.imageElement.nativeElement.style.width = 'auto';
@@ -261,11 +242,9 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 									this.imageElement.nativeElement.style.opacity = '1';
 									observer.next();
 									observer.complete();
-								}),
-							);
+								});
 						});
-					}),
-				);
+					});
 			});
 		}
 	}
@@ -287,7 +266,7 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		return observable;
 	}
 
-	public imageMouseIn(event: MouseEvent): void {
+	imageMouseIn(event: MouseEvent): void {
 		this.setImageDetails(event.target as HTMLImageElement);
 		this.zoomStyles = {
 			...this.zoomStyles,
@@ -295,18 +274,18 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		};
 	}
 
-	public imageMouseMove(event: MouseEvent): void {
+	imageMouseMove(event: MouseEvent): void {
 		this.zoomStyles = {
 			...this.zoomStyles,
 			...{ x: (event as any).layerX, y: (event as any).layerY },
 		};
 	}
 
-	public imageMouseOut(): void {
+	imageMouseOut(): void {
 		this.displayZoom = false;
 	}
 
-	public imageClick(event: MouseEvent): void {
+	imageClick(event: MouseEvent): void {
 		if (this.config.enableImageClick === false) {
 			return;
 		}
@@ -318,7 +297,7 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	public checkIsString(value: any): boolean {
+	checkIsString(value: any): boolean {
 		return !!(typeof value === 'string');
 	}
 
