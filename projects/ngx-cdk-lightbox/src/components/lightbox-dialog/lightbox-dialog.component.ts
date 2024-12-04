@@ -11,7 +11,17 @@ import {
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Observable, fromEvent, timer, combineLatest, BehaviorSubject, finalize } from 'rxjs';
+import {
+	Observable,
+	fromEvent,
+	timer,
+	BehaviorSubject,
+	shareReplay,
+	of,
+	map,
+	tap,
+	switchMap,
+} from 'rxjs';
 
 import { GalleryDataInterface } from '../../ref/lightboxOverlay.ref';
 import {
@@ -48,7 +58,10 @@ export class LightboxDialogComponent implements OnInit {
 	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private currentIndex: number | null = null;
-	private preloadedImage: HTMLImageElement | null = null;
+	private readonly preloadedImages: Map<string, Observable<HTMLImageElement>> = new Map<
+		string,
+		Observable<HTMLImageElement>
+	>();
 
 	@ViewChild('videoElement', { static: false }) private videoElement!: ElementRef<HTMLVideoElement>;
 	@ViewChild('imageElement', { static: false }) private imageElement!: ElementRef<HTMLImageElement>;
@@ -163,7 +176,7 @@ export class LightboxDialogComponent implements OnInit {
 		this.animateImage(index)
 			.pipe(
 				takeUntilDestroyed(this.destroyRef),
-				finalize(() => this.isLoading$.next(false)),
+				tap(() => this.isLoading$.next(false)),
 			)
 			.subscribe({
 				next: () => {
@@ -186,11 +199,13 @@ export class LightboxDialogComponent implements OnInit {
 
 					if (this.config.enableImagePreloading === true) {
 						const nextIndex = this.getNextIndex();
-						if (nextIndex !== false)
-							this.preloadDisplayObject(this.data.displayObjects[nextIndex]!);
+						if (nextIndex !== false) {
+							this.preloadDisplayObject(this.data.displayObjects[nextIndex]!).subscribe();
+						}
 						const prevIndex = this.getPrevIndex();
-						if (prevIndex !== false)
-							this.preloadDisplayObject(this.data.displayObjects[prevIndex]!);
+						if (prevIndex !== false) {
+							this.preloadDisplayObject(this.data.displayObjects[prevIndex]!).subscribe();
+						}
 					}
 				},
 				error: (error) => {
@@ -199,71 +214,86 @@ export class LightboxDialogComponent implements OnInit {
 			});
 	}
 
-	private animateImage(index: number): Observable<any> {
+	private animateImage(index: number): Observable<unknown> {
 		if (this.config.enableAnimations === false || !('source' in this.data.displayObjects[index]!)) {
 			this.currentIndex = index;
 			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex]!);
 		} else {
-			return new Observable((observer) => {
-				if (this.imageElement) {
-					this.imageElement.nativeElement.style.opacity = '0';
-				}
+			if (this.imageElement) {
+				this.imageElement.nativeElement.style.opacity = '0';
+			}
 
-				combineLatest([this.preloadDisplayObject(this.data.displayObjects[index]!), timer(400)])
-					.pipe(takeUntilDestroyed(this.destroyRef))
-					.subscribe(() => {
-						if (this.imageElement) {
-							this.imageElement.nativeElement.parentElement!.style.width = `${this.imageElement.nativeElement.parentElement!.clientWidth}px`;
-							this.imageElement.nativeElement.parentElement!.style.height = `${this.imageElement.nativeElement.parentElement!.clientHeight}px`;
-						}
-						const naturalWidth = this.preloadedImage!.naturalWidth;
-						const naturalHeight = this.preloadedImage!.naturalHeight;
-						const ratio = Math.max(
-							naturalWidth / (window.innerWidth * 0.95),
-							naturalHeight / (window.innerHeight * 0.85),
-							1,
-						);
-						this.currentIndex = index;
-						timer(1).subscribe(() => {
+			return this.preloadDisplayObject(this.data.displayObjects[index]!).pipe(
+				switchMap((image: HTMLImageElement | void) => {
+					if (this.imageElement) {
+						this.imageElement.nativeElement.parentElement!.style.width = `${this.imageElement.nativeElement.parentElement!.clientWidth}px`;
+						this.imageElement.nativeElement.parentElement!.style.height = `${this.imageElement.nativeElement.parentElement!.clientHeight}px`;
+					}
+					const naturalWidth = image!.naturalWidth;
+					const naturalHeight = image!.naturalHeight;
+					const ratio = Math.max(
+						naturalWidth / (window.innerWidth * 0.95),
+						naturalHeight / (window.innerHeight * 0.85),
+						1,
+					);
+					this.currentIndex = index;
+
+					return timer(1).pipe(
+						tap(() => {
 							if (this.imageElement) {
 								this.imageElement.nativeElement.style.width = '0px';
 								this.imageElement.nativeElement.style.height = '0px';
 							}
 							this.imageElement.nativeElement.parentElement!.style.width = `${naturalWidth / ratio}px`;
 							this.imageElement.nativeElement.parentElement!.style.height = `${naturalHeight / ratio}px`;
-
-							timer(250)
-								.pipe(takeUntilDestroyed(this.destroyRef))
-								.subscribe(() => {
+						}),
+						switchMap(() =>
+							timer(250).pipe(
+								tap(() => {
 									this.imageElement.nativeElement.parentElement!.style.width = '';
 									this.imageElement.nativeElement.parentElement!.style.height = '';
 									this.imageElement.nativeElement.style.width = 'auto';
 									this.imageElement.nativeElement.style.height = 'auto';
 									this.imageElement.nativeElement.style.opacity = '1';
-									observer.next();
-									observer.complete();
-								});
-						});
-					});
-			});
+								}),
+							),
+						),
+					);
+				}),
+				takeUntilDestroyed(this.destroyRef),
+			);
 		}
 	}
 
-	private preloadDisplayObject(displayObject: GalleryDisplayObjectType): Observable<Event | void> {
-		let observable: Observable<Event | void>;
+	private preloadDisplayObject(
+		displayObject: GalleryDisplayObjectType,
+	): Observable<HTMLImageElement | void> {
+		if (this.isGalleryImage(displayObject)) {
+			if (!this.preloadedImages.has(displayObject.source)) {
+				const image = new Image();
+				this.preloadedImages.set(
+					displayObject.source,
+					fromEvent(image, 'load').pipe(
+						map(() => image),
+						shareReplay({
+							bufferSize: 1,
+							refCount: true,
+						}),
+					),
+				);
+				image.src = displayObject.source;
+			}
 
-		if ('source' in displayObject) {
-			this.preloadedImage = new Image();
-			observable = fromEvent(this.preloadedImage, 'load');
-			this.preloadedImage.src = displayObject.source;
+			return this.preloadedImages.get(displayObject.source)!;
 		} else {
-			observable = new Observable((observer) => {
-				observer.next();
-				observer.complete();
-			});
+			return of(void 0);
 		}
+	}
 
-		return observable;
+	private isGalleryImage(
+		galleryDisplayObject: GalleryDisplayObjectType,
+	): galleryDisplayObject is GalleryImageInterface {
+		return galleryDisplayObject.type === 'image';
 	}
 
 	imageMouseIn(event: MouseEvent): void {
