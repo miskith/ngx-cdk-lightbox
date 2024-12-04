@@ -1,3 +1,5 @@
+import { TemplateRef } from '@angular/core';
+
 export type GalleryDisplayObjectType = GalleryImageInterface | GalleryVideoInterface;
 
 export interface GalleryImageInterface {
@@ -31,6 +33,7 @@ export interface GalleryConfigInterface {
 	enableArrows?: boolean;
 	arrowRight?: string;
 	arrowLeft?: string;
+	loaderTemplate?: TemplateRef<unknown>;
 	enableImagePreloading?: boolean;
 	startingIndex?: number;
 	enableAnimations?: boolean;
