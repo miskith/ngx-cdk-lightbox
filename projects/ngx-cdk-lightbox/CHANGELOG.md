@@ -1,3 +1,10 @@
+## 19.0.0 (2024-12-04)
+
+- Huge refactoring, cleanup, simplification & modernization
+- Use of css custom properties
+- Change Angular supported version to v19
+- Update dependencies
+
 ## 18.0.0 (2024-05-28)
 
 - Change Angular supported version to v18

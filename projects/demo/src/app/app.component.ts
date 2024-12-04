@@ -11,7 +11,6 @@ import {
 } from '../../../ngx-cdk-lightbox/src/public-api';
 
 @Component({
-	standalone: true,
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,

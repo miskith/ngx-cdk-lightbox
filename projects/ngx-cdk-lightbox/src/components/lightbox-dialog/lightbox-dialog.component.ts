@@ -32,7 +32,6 @@ import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 	selector: 'lib-lightbox-dialog',
 	templateUrl: 'lightbox-dialog.component.html',
 	styleUrl: 'lightbox-dialog.component.scss',
-	standalone: true,
 	imports: [CommonModule, SafeHtmlPipe, MatProgressSpinnerModule],
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
