@@ -39,8 +39,8 @@ export class NgxCdkLightboxService {
 
 	public open(
 		displayObjects: GalleryDisplayObjectType[],
-		config: GalleryConfigInterface = {},
-	): DialogRef<void, LightboxDialogComponent> {
+		config: Partial<GalleryConfigInterface> = {},
+	): DialogRef<void, LightboxDialogComponent> | null {
 		if (displayObjects.length < 1) {
 			return null;
 		}
@@ -51,7 +51,7 @@ export class NgxCdkLightboxService {
 			.centerHorizontally()
 			.centerVertically();
 
-		let dialogRef: DialogRef<void, LightboxDialogComponent> = null;
+		let dialogRef: DialogRef<void, LightboxDialogComponent>;
 		dialogRef = this.dialog.open(LightboxDialogComponent, {
 			maxWidth: '95vw',
 			maxHeight: '95vh',

@@ -5,36 +5,33 @@
 			<button type="button" (click)="prevDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml" role="button" [attr.aria-label]="config.ariaLabelPrev"></button>
 			<button type="button" (click)="nextDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml" role="button" [attr.aria-label]="config.ariaLabelNext"></button>
 		</div>
-		<ng-container [ngSwitch]="displayObject.type">
-			<ng-container *ngSwitchCase="'image'">
-				<figure class="ngx-cdk-lightbox__image-container">
-					<div class="ngx-cdk-lightbox__image-wrapper">
-						<img [src]="image.source" class="ngx-cdk-lightbox__image" [alt]="image.description" title="" [ngClass]="{'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
-						<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true && (isLoading$ | async) === false" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
-							<img [src]="image.source" class="ngx-cdk-lightbox__zoom-image" [alt]="image.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
-						</div>
-					</div>
-					<figcaption *ngIf="image.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
-						<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: image, config: config}"></ng-container>
-					</figcaption>
-				</figure>
-			</ng-container>
-			<ng-container *ngSwitchCase="'video'">
-				<div class="ngx-cdk-lightbox__video-wrapper">
-					<video controls class="ngx-cdk-lightbox__video" #videoElement>
-						<ng-container [ngSwitch]="checkIsString(video.mp4Source)">
-							<source [src]="video.mp4Source" type="video/mp4" *ngSwitchCase="true" />
-							<ng-container *ngSwitchCase="false">
-								<source *ngFor="let source of video.mp4Source | keyvalue" [src]="source.value" type="video/mp4" [attr.size]="source.key" />
-							</ng-container>
-						</ng-container>
-					</video>
-					<div *ngIf="video.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
-						<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: video, config: config}"></ng-container>
+		@if (displayObject.type === 'image') {
+			<figure class="ngx-cdk-lightbox__image-container">
+				<div class="ngx-cdk-lightbox__image-wrapper">
+					<img [src]="image!.source" class="ngx-cdk-lightbox__image" [alt]="image!.description" title="" [ngClass]="{'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
+					<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true && (isLoading$ | async) === false" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
+						<img [src]="image!.source" class="ngx-cdk-lightbox__zoom-image" [alt]="image!.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
 					</div>
 				</div>
-			</ng-container>
-		</ng-container>
+				<figcaption *ngIf="image!.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
+					<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: image, config: config}"></ng-container>
+				</figcaption>
+			</figure>
+		} @else if (displayObject.type === 'video') {
+			<div class="ngx-cdk-lightbox__video-wrapper">
+				<video controls class="ngx-cdk-lightbox__video" #videoElement>
+					<ng-container [ngSwitch]="checkIsString(video!.mp4Source)">
+						<source [src]="video!.mp4Source" type="video/mp4" *ngSwitchCase="true" />
+						<ng-container *ngSwitchCase="false">
+							<source *ngFor="let source of video!.mp4Source | keyvalue" [src]="source.value" type="video/mp4" [attr.size]="source.key" />
+						</ng-container>
+					</ng-container>
+				</video>
+				<div *ngIf="video!.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
+					<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: video, config: config}"></ng-container>
+				</div>
+			</div>
+		}
 	</div>
 	<div class="ngx-cdk-lightbox__loading-container" *ngIf="isLoading$ | async">
 		<mat-spinner class="ngx-cdk-lightbox__loading" [diameter]="35"></mat-spinner>

@@ -22,23 +22,23 @@ export interface GalleryVideoInterface {
 }
 
 export interface GalleryConfigInterface {
-	enableZoom?: boolean;
-	zoomSize?: number | 'originalSize';
-	enableImageClick?: boolean;
-	loopGallery?: boolean;
-	enableImageCounter?: boolean;
-	imageCounterText?: string;
-	enableCloseIcon?: boolean;
-	closeIcon?: string;
-	enableArrows?: boolean;
-	arrowRight?: string;
-	arrowLeft?: string;
+	enableZoom: boolean;
+	zoomSize: number | 'originalSize';
+	enableImageClick: boolean;
+	loopGallery: boolean;
+	enableImageCounter: boolean;
+	imageCounterText: string;
+	enableCloseIcon: boolean;
+	closeIcon: string;
+	enableArrows: boolean;
+	arrowRight: string;
+	arrowLeft: string;
 	loaderTemplate?: TemplateRef<unknown>;
-	enableImagePreloading?: boolean;
-	startingIndex?: number;
-	enableAnimations?: boolean;
-	ariaLabelNext?: string;
-	ariaLabelPrev?: string;
+	enableImagePreloading: boolean;
+	startingIndex: number;
+	enableAnimations: boolean;
+	ariaLabelNext: string;
+	ariaLabelPrev: string;
 }
 
 export const closeIconSvg =

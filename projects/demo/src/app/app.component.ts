@@ -17,16 +17,16 @@ import {
 	imports: [CommonModule, MatButtonModule, MatTabsModule, MatCardModule, HighlightModule],
 })
 export class AppComponent {
-	readonly config1: GalleryConfigInterface = {};
-	readonly config2: GalleryConfigInterface = { enableZoom: true };
-	readonly config3: GalleryConfigInterface = { startingIndex: 2, enableAnimations: false };
-	readonly config4: GalleryConfigInterface = {
+	readonly config1: Partial<GalleryConfigInterface> = {};
+	readonly config2: Partial<GalleryConfigInterface> = { enableZoom: true };
+	readonly config3: Partial<GalleryConfigInterface> = { startingIndex: 2, enableAnimations: false };
+	readonly config4: Partial<GalleryConfigInterface> = {
 		enableArrows: false,
 		enableCloseIcon: false,
 		enableImageClick: false,
 		enableImagePreloading: false,
 	};
-	readonly config5: GalleryConfigInterface = {
+	readonly config5: Partial<GalleryConfigInterface> = {
 		enableZoom: true,
 		zoomSize: 3,
 		imageCounterText: 'IMAGE_INDEX fotografie z IMAGE_COUNT',
@@ -44,7 +44,7 @@ export class AppComponent {
 	private readonly lightboxService: NgxCdkLightboxService =
 		inject<NgxCdkLightboxService>(NgxCdkLightboxService);
 
-	public openLightbox(config?: GalleryConfigInterface): void {
+	public openLightbox(config?: Partial<GalleryConfigInterface>): void {
 		this.lightboxService.open(
 			[
 				{
@@ -92,7 +92,7 @@ export class AppComponent {
 		);
 	}
 
-	public openMixedLightbox(config?: GalleryConfigInterface): void {
+	public openMixedLightbox(config?: Partial<GalleryConfigInterface>): void {
 		this.lightboxService.open(
 			[
 				{
