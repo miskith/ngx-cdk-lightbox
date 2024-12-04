@@ -11,7 +11,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Observable, fromEvent, timer, combineLatest, BehaviorSubject, finalize } from 'rxjs';
 
 import { GalleryDataInterface } from '../../ref/lightboxOverlay.ref';
@@ -22,12 +21,13 @@ import {
 	GalleryVideoInterface,
 } from '../../interfaces/gallery.interface';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
+import { LoaderComponent } from '../loader/loader.component';
 
 @Component({
 	selector: 'lib-lightbox-dialog',
 	templateUrl: 'lightbox-dialog.component.html',
 	styleUrl: 'lightbox-dialog.component.scss',
-	imports: [CommonModule, SafeHtmlPipe, MatProgressSpinnerModule],
+	imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightboxDialogComponent implements OnInit {

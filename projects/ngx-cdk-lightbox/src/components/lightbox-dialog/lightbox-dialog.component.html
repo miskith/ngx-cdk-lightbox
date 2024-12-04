@@ -84,9 +84,7 @@
 		</div>
 	}
 	@if (isLoading$ | async) {
-		<div class="lightbox-dialog__loading-container">
-			<mat-spinner class="lightbox-dialog__loading" [diameter]="35"></mat-spinner>
-		</div>
+		<lib-loader [loaderTemplate]="config.loaderTemplate"></lib-loader>
 	}
 </div>
 

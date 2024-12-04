@@ -1,0 +1,42 @@
+::ng-deep {
+	:root {
+		--ngx-cdk-loader-color: #3e73ff;
+		--ngx-cdk-loader-size: 30px;
+		--ngx-cdk-loader-thickness: 4px;
+	}
+}
+
+:host {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 5;
+
+	circle {
+		stroke: var(--ngx-cdk-loader-color);
+	}
+}
+
+.loader {
+	width: var(--ngx-cdk-loader-size);
+	padding: var(--ngx-cdk-loader-thickness);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: var(--ngx-cdk-loader-color);
+	mask:
+		conic-gradient(#0000 10%, #000),
+		linear-gradient(#000 0 0) content-box;
+	mask-composite: subtract;
+	animation: loader-spin 1s infinite linear;
+}
+
+@keyframes loader-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}

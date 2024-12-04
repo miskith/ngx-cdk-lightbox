@@ -1,7 +1,6 @@
 ::ng-deep {
 	:root {
 		--ngx-cdk-background: #fff;
-		--ngx-cdk-loader-color: #3e73ff;
 	}
 }
 
@@ -150,18 +149,6 @@
 	&__copyright,
 	&__caption {
 		margin: 2px 0 0;
-	}
-
-	&__loading-container {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 5;
-
-		circle {
-			stroke: var(--ngx-cdk-loader-color);
-		}
 	}
 
 	&__video-wrapper {

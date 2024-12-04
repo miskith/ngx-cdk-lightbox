@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { HighlightModule } from 'ngx-highlightjs';
 
 import {
@@ -14,12 +15,29 @@ import {
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [CommonModule, MatButtonModule, MatTabsModule, MatCardModule, HighlightModule],
+	imports: [
+		CommonModule,
+		MatButtonModule,
+		MatTabsModule,
+		MatCardModule,
+		HighlightModule,
+		MatProgressSpinner,
+	],
 })
 export class AppComponent {
+	@ViewChild('matLoaderTemplate', { static: false })
+	readonly matLoaderTemplate!: TemplateRef<unknown>;
+
 	readonly config1: Partial<GalleryConfigInterface> = {};
 	readonly config2: Partial<GalleryConfigInterface> = { enableZoom: true };
-	readonly config3: Partial<GalleryConfigInterface> = { startingIndex: 2, enableAnimations: false };
+	readonly config3: Partial<GalleryConfigInterface> = {
+		startingIndex: 2,
+		enableAnimations: false,
+		loaderTemplate: '...',
+	} as unknown as Partial<GalleryConfigInterface>;
+	get config3Usable(): Partial<GalleryConfigInterface> {
+		return { ...this.config3, loaderTemplate: this.matLoaderTemplate };
+	}
 	readonly config4: Partial<GalleryConfigInterface> = {
 		enableArrows: false,
 		enableCloseIcon: false,

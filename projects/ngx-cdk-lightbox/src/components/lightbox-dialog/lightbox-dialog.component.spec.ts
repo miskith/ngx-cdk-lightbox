@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Observable } from 'rxjs';
 
 import { LightboxDialogComponent } from './lightbox-dialog.component';
+import { LoaderComponent } from '../loader/loader.component';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 
 describe('LightboxDialogComponent', () => {
@@ -30,7 +30,7 @@ describe('LightboxDialogComponent', () => {
 				],
 			},
 			remove: {
-				imports: [CommonModule, SafeHtmlPipe, MatProgressSpinnerModule],
+				imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
 			},
 		}).overrideTemplate(LightboxDialogComponent, '<div></div>');
 

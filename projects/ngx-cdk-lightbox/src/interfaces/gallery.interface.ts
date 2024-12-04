@@ -33,7 +33,7 @@ export interface GalleryConfigInterface {
 	enableArrows: boolean;
 	arrowRight: string;
 	arrowLeft: string;
-	loaderTemplate?: TemplateRef<unknown>;
+	loaderTemplate: TemplateRef<unknown> | null;
 	enableImagePreloading: boolean;
 	startingIndex: number;
 	enableAnimations: boolean;

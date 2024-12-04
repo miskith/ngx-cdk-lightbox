@@ -27,6 +27,7 @@ export class NgxCdkLightboxService {
 		enableArrows: true,
 		arrowRight: arrowRightSvg,
 		arrowLeft: arrowLeftSvg,
+		loaderTemplate: null,
 		enableImagePreloading: true,
 		startingIndex: 0,
 		enableAnimations: true,

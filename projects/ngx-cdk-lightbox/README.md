@@ -86,6 +86,7 @@ interface GalleryConfigInterface {
 	enableArrows?: boolean;
 	arrowRight?: string;
 	arrowLeft?: string;
+	loaderTemplate?: TemplateRef<unknown>;
 	enableImagePreloading?: boolean;
 	startingIndex?: number;
 	enableAnimations?: boolean;
@@ -126,6 +127,7 @@ interface GalleryConfigInterface {
 | enableArrows          | boolean                | true                                                                      | display next/prev icons                                                         |
 | arrowRight            | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_right&style=baseline | HTML string containing right arrow                                              |
 | arrowLeft             | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_left&style=baseline  | HTML string containing left arrow                                               |
+| loaderTemplate        | TemplateRef            | null                                                                      | Set custom loader by providing template reference                               |
 | enableImagePreloading | boolean                | enable/disable image preloading                                           |
 | startingIndex         | number                 | 0                                                                         | index of starting image                                                         |
 | enableAnimations      | boolean                | true                                                                      | enable/disable animations                                                       |

@@ -55,16 +55,19 @@
 
 		<mat-card>
 			<mat-card-title>
-				Gallery starting at different index, no animations
+				Gallery starting at different index, no animations, custom loader template
 			</mat-card-title>
 			<mat-card-content>
 				<pre><code [highlight]="config3 | json" language="json"></code></pre>
 			</mat-card-content>
 			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config3)">
+				<button mat-raised-button color="accent" (click)="openLightbox(config3Usable)">
 					Open gallery
 				</button>
 			</mat-card-actions>
+			<ng-template #matLoaderTemplate>
+				<mat-spinner [diameter]="35"></mat-spinner>
+			</ng-template>
 		</mat-card>
 
 		<mat-card>
