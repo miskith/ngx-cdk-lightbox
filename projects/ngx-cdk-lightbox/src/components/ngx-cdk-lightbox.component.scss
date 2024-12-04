@@ -1,14 +1,14 @@
 @use '../../../../node_modules/@angular/cdk' as cdk;
 @use '../../../../node_modules/@angular/material' as mat;
 
-:root {
-	--ngx-cdk-background: #fff;
-	--ngx-cdk-loader-color: #3e73ff;
-}
-
 ::ng-deep {
 	@include mat.core();
 	@include cdk.overlay();
+
+	:root {
+		--ngx-cdk-background: #fff;
+		--ngx-cdk-loader-color: #3e73ff;
+	}
 
 	.mat-dialog-container {
 		padding: 0;
@@ -183,17 +183,10 @@
 			width: 900px;
 		}
 
-		&__video-container {
-			position: relative;
-			aspect-ratio: 16 / 9;
-		}
-
 		&__video {
-			position: absolute;
 			width: 100%;
-			height: 100%;
-			left: 0;
-			top: 0;
+			display: block;
+			aspect-ratio: 16 / 9;
 		}
 	}
 }

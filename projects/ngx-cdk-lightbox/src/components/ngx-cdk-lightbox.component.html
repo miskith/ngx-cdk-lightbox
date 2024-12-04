@@ -21,16 +21,14 @@
 			</ng-container>
 			<ng-container *ngSwitchCase="'video'">
 				<div class="ngx-cdk-lightbox__video-wrapper">
-					<div class="ngx-cdk-lightbox__video-container">
-						<video controls class="ngx-cdk-lightbox__video" #videoElement>
-							<ng-container [ngSwitch]="checkIsString(video.mp4Source)">
-								<source [src]="video.mp4Source" type="video/mp4" *ngSwitchCase="true" />
-								<ng-container *ngSwitchCase="false">
-									<source *ngFor="let source of video.mp4Source | keyvalue" [src]="source.value" type="video/mp4" [attr.size]="source.key" />
-								</ng-container>
+					<video controls class="ngx-cdk-lightbox__video" #videoElement>
+						<ng-container [ngSwitch]="checkIsString(video.mp4Source)">
+							<source [src]="video.mp4Source" type="video/mp4" *ngSwitchCase="true" />
+							<ng-container *ngSwitchCase="false">
+								<source *ngFor="let source of video.mp4Source | keyvalue" [src]="source.value" type="video/mp4" [attr.size]="source.key" />
 							</ng-container>
-						</video>
-					</div>
+						</ng-container>
+					</video>
 					<div *ngIf="video.description || config.enableImageCounter===true" class="ngx-cdk-lightbox__image-caption">
 						<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: video, config: config}"></ng-container>
 					</div>

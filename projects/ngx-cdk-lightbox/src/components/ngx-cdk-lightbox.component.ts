@@ -183,14 +183,11 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 						}
 
 						if (this.videoElement) {
-							const videoElementContainer = this.videoElement.nativeElement.parentElement;
+							const videoElementContainer = this.videoElement.nativeElement;
 							if (this.video && this.video.resolution) {
-								videoElementContainer.style.paddingTop =
-									Math.round((this.video.resolution.height / this.video.resolution.width) * 10000) /
-										100 +
-									'%';
+								videoElementContainer.style.aspectRatio = `${ this.video.resolution.width }/${ this.video.resolution.height }`;
 							} else {
-								videoElementContainer.style.paddingTop = '';
+								videoElementContainer.style.aspectRatio = '';
 							}
 
 							this.videoElement.nativeElement.load();
