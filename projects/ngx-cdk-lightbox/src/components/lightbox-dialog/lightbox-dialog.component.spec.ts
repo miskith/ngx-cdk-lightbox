@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Observable } from 'rxjs';
+import { first, Observable } from 'rxjs';
 
 import { LightboxDialogComponent } from './lightbox-dialog.component';
 import { LoaderComponent } from '../loader/loader.component';
@@ -43,14 +43,20 @@ describe('LightboxDialogComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should return null for displayObject when currentIndex is null', () => {
-		component['currentIndex'] = null;
-		expect(component.displayObject).toBeNull();
+	it('should return null for displayObject when currentIndex is null', (done: jest.DoneCallback) => {
+		(component as any).currentIndex$.next(null);
+		component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
+			expect(currentDisplayObject).toBeNull();
+			done();
+		});
 	});
 
-	it('should return the current display object when currentIndex is set', () => {
-		component['currentIndex'] = 0;
-		expect(component.displayObject).toEqual(mockData.displayObjects[0]);
+	it('should return the current display object when currentIndex is set', (done: jest.DoneCallback) => {
+		(component as any).currentIndex$.next(0);
+		component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
+			expect(currentDisplayObject).toEqual(mockData.displayObjects[0]);
+			done();
+		});
 	});
 
 	it('should close the modal when closeModal is called', () => {
@@ -100,7 +106,7 @@ describe('LightboxDialogComponent', () => {
 		expect(transform).toContain('translate');
 	});
 
-	it('should preload a display object with an image source', (done) => {
+	it('should preload a display object with an image source', (done: jest.DoneCallback) => {
 		const mockDisplayObject = { type: 'image', source: 'test.jpg' };
 		const loadSpy = jest.spyOn(component as any, 'preloadDisplayObject').mockImplementation(() => {
 			return new Observable((observer) => {
