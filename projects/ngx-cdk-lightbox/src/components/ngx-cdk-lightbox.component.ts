@@ -29,9 +29,8 @@ import {
 
 @Component({
 	selector: 'lib-ngx-cdk-lightbox',
-	templateUrl: '../template/lightbox.component.html',
-	styleUrls: ['../styles/lightbox.component.scss'],
-	animations: [],
+	templateUrl: 'ngx-cdk-lightbox.component.html',
+	styleUrl: 'ngx-cdk-lightbox.component.scss',
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NgxCdkLightboxComponent implements OnDestroy {

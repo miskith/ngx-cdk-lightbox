@@ -1,7 +1,10 @@
-@use 'sass:math';
 @use '../../../../node_modules/@angular/cdk' as cdk;
 @use '../../../../node_modules/@angular/material' as mat;
-@use './variables';
+
+:root {
+	--ngx-cdk-background: #fff;
+	--ngx-cdk-loader-color: #3e73ff;
+}
 
 ::ng-deep {
 	@include mat.core();
@@ -25,7 +28,7 @@
 			width: 28px;
 			height: 28px;
 			cursor: pointer;
-			background: variables.$white;
+			background: var(--ngx-cdk-background);
 			border-radius: 50%;
 			transition: background-color 0.25s ease-out;
 			padding: 0;
@@ -34,11 +37,11 @@
 			box-sizing: border-box;
 
 			&:hover {
-				background: darken(variables.$white, 7);
+				background: color-mix(in srgb, #000 7%, var(--ngx-cdk-background));
 			}
 
 			&:active {
-				background: darken(variables.$white, 14);
+				background: color-mix(in srgb, #000 14%, var(--ngx-cdk-background));
 			}
 		}
 
@@ -49,7 +52,7 @@
 		}
 
 		&__image-wrapper {
-			background: variables.$white;
+			background: var(--ngx-cdk-background);
 			position: relative;
 			transition:
 				width 0.25s ease-out,
@@ -80,7 +83,7 @@
 
 		&__image-caption {
 			padding: 6px 12px 8px;
-			background: variables.$white;
+			background: var(--ngx-cdk-background);
 			border-radius: 0 0 3px 3px;
 
 			&:after {
@@ -124,7 +127,7 @@
 			pointer-events: all;
 			cursor: pointer;
 			position: absolute;
-			background: variables.$white;
+			background: var(--ngx-cdk-background);
 			border-radius: 50%;
 			padding: 2px;
 			width: 28px;
@@ -137,11 +140,11 @@
 			opacity: 0;
 
 			&:hover {
-				background: darken(variables.$white, 7);
+				background: color-mix(in srgb, #000 7%, var(--ngx-cdk-background));
 			}
 
 			&:active {
-				background: darken(variables.$white, 14);
+				background: color-mix(in srgb, #000 14%, var(--ngx-cdk-background));
 			}
 
 			&.is-left {
@@ -170,19 +173,19 @@
 			z-index: 5;
 
 			circle {
-				stroke: variables.$blue;
+				stroke: var(--ngx-cdk-loader-color);
 			}
 		}
 
 		&__video-wrapper {
-			background: variables.$white;
+			background: var(--ngx-cdk-background);
 			max-width: 95vw;
 			width: 900px;
 		}
 
 		&__video-container {
 			position: relative;
-			padding-top: (math.div(9, 16) * 100%);
+			aspect-ratio: 16 / 9;
 		}
 
 		&__video {
