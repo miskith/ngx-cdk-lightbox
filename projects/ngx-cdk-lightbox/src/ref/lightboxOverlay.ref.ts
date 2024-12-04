@@ -1,6 +1,6 @@
-import { GalleryDisplayObjectType, GalleryConfigInterface } from '../interfaces/gallery.interface';
+import { TGalleryDisplayObject, IGalleryConfig } from '../interfaces/gallery.interface';
 
-export interface GalleryDataInterface {
-	displayObjects: GalleryDisplayObjectType[];
-	config: GalleryConfigInterface;
+export interface IGalleryData {
+	displayObjects: TGalleryDisplayObject[];
+	config: IGalleryConfig;
 }

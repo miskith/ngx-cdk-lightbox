@@ -3,11 +3,11 @@ import { Overlay } from '@angular/cdk/overlay';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 
 import {
-	GalleryConfigInterface,
+	IGalleryConfig,
 	closeIconSvg,
 	arrowRightSvg,
 	arrowLeftSvg,
-	GalleryDisplayObjectType,
+	TGalleryDisplayObject,
 } from '../../interfaces/gallery.interface';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
@@ -15,7 +15,7 @@ import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightb
 	providedIn: 'root',
 })
 export class NgxCdkLightboxService {
-	private defaultConfig: GalleryConfigInterface = {
+	private defaultConfig: IGalleryConfig = {
 		enableZoom: false,
 		zoomSize: 'originalSize',
 		enableImageClick: true,
@@ -39,8 +39,8 @@ export class NgxCdkLightboxService {
 	private readonly dialog: Dialog = inject<Dialog>(Dialog);
 
 	public open(
-		displayObjects: GalleryDisplayObjectType[],
-		config: Partial<GalleryConfigInterface> = {},
+		displayObjects: TGalleryDisplayObject[],
+		config: Partial<IGalleryConfig> = {},
 	): DialogRef<void, LightboxDialogComponent> | null {
 		if (displayObjects.length < 1) {
 			return null;

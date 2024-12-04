@@ -23,12 +23,12 @@ import {
 	switchMap,
 } from 'rxjs';
 
-import { GalleryDataInterface } from '../../ref/lightboxOverlay.ref';
+import { IGalleryData } from '../../ref/lightboxOverlay.ref';
 import {
-	GalleryDisplayObjectType,
-	GalleryConfigInterface,
-	GalleryImageInterface,
-	GalleryVideoInterface,
+	TGalleryDisplayObject,
+	IGalleryConfig,
+	IGalleryImage,
+	IGalleryVideo,
 } from '../../interfaces/gallery.interface';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 import { LoaderComponent } from '../loader/loader.component';
@@ -51,10 +51,9 @@ export class LightboxDialogComponent implements OnInit {
 		naturalHeight: 0,
 	};
 
-	@Inject(DIALOG_DATA) readonly data: GalleryDataInterface =
-		inject<GalleryDataInterface>(DIALOG_DATA);
+	@Inject(DIALOG_DATA) readonly data: IGalleryData = inject<IGalleryData>(DIALOG_DATA);
 
-	readonly config: GalleryConfigInterface = this.data.config;
+	readonly config: IGalleryConfig = this.data.config;
 	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 	private currentIndex: number | null = null;
@@ -75,15 +74,15 @@ export class LightboxDialogComponent implements OnInit {
 		);
 	}
 
-	get displayObject(): GalleryDisplayObjectType | null {
+	get displayObject(): TGalleryDisplayObject | null {
 		return this.currentIndex === null ? null : this.data.displayObjects[this.currentIndex]!;
 	}
 
-	get image(): GalleryImageInterface | null {
+	get image(): IGalleryImage | null {
 		return this.displayObject && this.displayObject.type === 'image' ? this.displayObject : null;
 	}
 
-	get video(): GalleryVideoInterface | null {
+	get video(): IGalleryVideo | null {
 		return this.displayObject && this.displayObject.type === 'video' ? this.displayObject : null;
 	}
 
@@ -266,7 +265,7 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private preloadDisplayObject(
-		displayObject: GalleryDisplayObjectType,
+		displayObject: TGalleryDisplayObject,
 	): Observable<HTMLImageElement | void> {
 		if (this.isGalleryImage(displayObject)) {
 			if (!this.preloadedImages.has(displayObject.source)) {
@@ -291,8 +290,8 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private isGalleryImage(
-		galleryDisplayObject: GalleryDisplayObjectType,
-	): galleryDisplayObject is GalleryImageInterface {
+		galleryDisplayObject: TGalleryDisplayObject,
+	): galleryDisplayObject is IGalleryImage {
 		return galleryDisplayObject.type === 'image';
 	}
 

@@ -40,15 +40,15 @@ export class SomeModule {}
 ## Usage
 
 ```typescript
-this.lightboxService.open(GalleryDisplayObjectType[], GalleryConfigInterface);
+this.lightboxService.open(TGalleryDisplayObject[], IGalleryConfig);
 ```
 
 ```typescript
-type GalleryDisplayObjectType = GalleryImageInterface | GalleryVideoInterface;
+type TGalleryDisplayObject = IGalleryImage | IGalleryVideo;
 ```
 
 ```typescript
-interface GalleryImageInterface {
+interface IGalleryImage {
 	type: 'image';
 	source: string;
 	description?: string;
@@ -57,13 +57,13 @@ interface GalleryImageInterface {
 ```
 
 ```typescript
-type videoResolutionsType = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
+type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
 ```
 
 ```typescript
-export interface GalleryVideoInterface {
+export interface IGalleryVideo {
 	type: 'video';
-	mp4Source: string | Partial<Record<videoResolutionsType, string>>;
+	mp4Source: string | Partial<Record<TVideoResolutions, string>>;
 	description?: string;
 	copyright?: string;
 	resolution?: {
@@ -74,7 +74,7 @@ export interface GalleryVideoInterface {
 ```
 
 ```typescript
-interface GalleryConfigInterface {
+interface IGalleryConfig {
 	enableZoom?: boolean;
 	zoomSize?: number | 'originalSize';
 	enableImageClick?: boolean;
@@ -93,7 +93,7 @@ interface GalleryConfigInterface {
 }
 ```
 
-#### GalleryImageInterface
+#### IGalleryImage
 
 | key         | value                           |
 | ----------- | ------------------------------- |
@@ -102,7 +102,7 @@ interface GalleryConfigInterface {
 | description | optional - description of image |
 | copyright   | optional - copyright info       |
 
-#### GalleryVideoInterface
+#### IGalleryVideo
 
 | key         | value                           |
 | ----------- | ------------------------------- |
@@ -112,7 +112,7 @@ interface GalleryConfigInterface {
 | copyright   | optional - copyright info       |
 | resolution  | width and height of video       |
 
-#### GalleryConfigInterface
+#### IGalleryConfig
 
 | key                   | type                   | default                                                                   | value                                                                           |
 | --------------------- | ---------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |

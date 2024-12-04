@@ -1,18 +1,18 @@
 import { TemplateRef } from '@angular/core';
 
-export type GalleryDisplayObjectType = GalleryImageInterface | GalleryVideoInterface;
+export type TGalleryDisplayObject = IGalleryImage | IGalleryVideo;
 
-export interface GalleryImageInterface {
+export interface IGalleryImage {
 	type: 'image';
 	source: string;
 	description?: string;
 	copyright?: string;
 }
 
-type videoResolutionsType = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
-export interface GalleryVideoInterface {
+type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
+export interface IGalleryVideo {
 	type: 'video';
-	mp4Source: string | Partial<Record<videoResolutionsType, string>>;
+	mp4Source: string | Partial<Record<TVideoResolutions, string>>;
 	description?: string;
 	copyright?: string;
 	resolution?: {
@@ -21,7 +21,7 @@ export interface GalleryVideoInterface {
 	};
 }
 
-export interface GalleryConfigInterface {
+export interface IGalleryConfig {
 	enableZoom: boolean;
 	zoomSize: number | 'originalSize';
 	enableImageClick: boolean;

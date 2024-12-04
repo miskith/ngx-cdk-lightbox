@@ -6,10 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { HighlightModule } from 'ngx-highlightjs';
 
-import {
-	GalleryConfigInterface,
-	NgxCdkLightboxService,
-} from '../../../ngx-cdk-lightbox/src/public-api';
+import { IGalleryConfig, NgxCdkLightboxService } from '../../../ngx-cdk-lightbox/src/public-api';
 
 @Component({
 	selector: 'app-root',
@@ -28,23 +25,23 @@ export class AppComponent {
 	@ViewChild('matLoaderTemplate', { static: false })
 	readonly matLoaderTemplate!: TemplateRef<unknown>;
 
-	readonly config1: Partial<GalleryConfigInterface> = {};
-	readonly config2: Partial<GalleryConfigInterface> = { enableZoom: true };
-	readonly config3: Partial<GalleryConfigInterface> = {
+	readonly config1: Partial<IGalleryConfig> = {};
+	readonly config2: Partial<IGalleryConfig> = { enableZoom: true };
+	readonly config3: Partial<IGalleryConfig> = {
 		startingIndex: 2,
 		enableAnimations: false,
 		loaderTemplate: '...',
-	} as unknown as Partial<GalleryConfigInterface>;
-	get config3Usable(): Partial<GalleryConfigInterface> {
+	} as unknown as Partial<IGalleryConfig>;
+	get config3Usable(): Partial<IGalleryConfig> {
 		return { ...this.config3, loaderTemplate: this.matLoaderTemplate };
 	}
-	readonly config4: Partial<GalleryConfigInterface> = {
+	readonly config4: Partial<IGalleryConfig> = {
 		enableArrows: false,
 		enableCloseIcon: false,
 		enableImageClick: false,
 		enableImagePreloading: false,
 	};
-	readonly config5: Partial<GalleryConfigInterface> = {
+	readonly config5: Partial<IGalleryConfig> = {
 		enableZoom: true,
 		zoomSize: 3,
 		imageCounterText: 'IMAGE_INDEX fotografie z IMAGE_COUNT',
@@ -62,7 +59,7 @@ export class AppComponent {
 	private readonly lightboxService: NgxCdkLightboxService =
 		inject<NgxCdkLightboxService>(NgxCdkLightboxService);
 
-	public openLightbox(config?: Partial<GalleryConfigInterface>): void {
+	public openLightbox(config?: Partial<IGalleryConfig>): void {
 		this.lightboxService.open(
 			[
 				{
@@ -110,7 +107,7 @@ export class AppComponent {
 		);
 	}
 
-	public openMixedLightbox(config?: Partial<GalleryConfigInterface>): void {
+	public openMixedLightbox(config?: Partial<IGalleryConfig>): void {
 		this.lightboxService.open(
 			[
 				{
