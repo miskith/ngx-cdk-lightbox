@@ -1,48 +1,82 @@
-<div class="ngx-cdk-lightbox__container">
+<div class="lightbox-dialog__container">
 	@if (displayObject && ((isLoading$ | async) === false || config.enableAnimations===true)) {
 		<div>
-			@if (config.enableCloseIcon===true) {
-				<button type="button" class="ngx-cdk-lightbox__close-button" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
+			@if (config.enableCloseIcon === true) {
+				<button type="button"
+						class="lightbox-dialog__close-button"
+						[innerHTML]="config.closeIcon | safeHtml"
+						(click)="closeModal()">
+				</button>
 			}
-			@if (config.enableArrows===true && (isLoading$ | async) === false) {
-				<div class="ngx-cdk-lightbox__arrows-container">
-					<button type="button" (click)="prevDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml" role="button" [attr.aria-label]="config.ariaLabelPrev"></button>
-					<button type="button" (click)="nextDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml" role="button" [attr.aria-label]="config.ariaLabelNext"></button>
+
+			@if (config.enableArrows === true && (isLoading$ | async) === false) {
+				<div class="lightbox-dialog__arrows-container">
+					<button type="button"
+							(click)="prevDisplayObject($event)"
+							class="lightbox-dialog__arrow is-left"
+							[innerHTML]="config.arrowLeft | safeHtml"
+							role="button"
+							[attr.aria-label]="config.ariaLabelPrev">
+					</button>
+
+					<button type="button"
+							(click)="nextDisplayObject($event)"
+							class="lightbox-dialog__arrow is-right"
+							[innerHTML]="config.arrowRight | safeHtml"
+							role="button"
+							[attr.aria-label]="config.ariaLabelNext">
+					</button>
 				</div>
 			}
 			@if (displayObject.type === 'image') {
-				<figure class="ngx-cdk-lightbox__image-container">
-					<div class="ngx-cdk-lightbox__image-wrapper">
-						<img [src]="image!.source" class="ngx-cdk-lightbox__image" [alt]="image!.description" title="" [ngClass]="{'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
-						@if (displayZoom===true && (isLoading$ | async) === false) {
-							<div class="ngx-cdk-lightbox__zoom" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
-								<img [src]="image!.source" class="ngx-cdk-lightbox__zoom-image" [alt]="image!.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
+				<figure class="lightbox-dialog__image-container">
+					<div class="lightbox-dialog__image-wrapper">
+						<img 	[src]="image!.source"
+								class="lightbox-dialog__image"
+								[alt]="image!.description"
+								title=""
+								[ngClass]="{ 'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations === true }"
+								(mouseover)="imageMouseIn($event)"
+								(mousemove)="imageMouseMove($event)"
+								(mouseout)="imageMouseOut()"
+								(click)="imageClick($event)"
+								#imageElement>
+						@if (displayZoom === true && (isLoading$ | async) === false) {
+							<div 	class="lightbox-dialog__zoom"
+									[style.transform]="'translate(' + zoomStyles.x + 'px, ' + zoomStyles.y + 'px)'">
+								<img 	[src]="image!.source"
+										class="lightbox-dialog__zoom-image"
+										[alt]="image!.description"
+										title=""
+										[style.transform]="zoomTransformation"
+										[style.width]="zoomWidth"
+										[style.height]="zoomHeight">
 							</div>
 						}
 					</div>
-					@if (image!.description || config.enableImageCounter===true) {
-						<figcaption class="ngx-cdk-lightbox__image-caption">
-							<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: image, config: config}"></ng-container>
+					@if (image!.description || config.enableImageCounter === true) {
+						<figcaption class="lightbox-dialog__image-caption">
+							<ng-container *ngTemplateOutlet="descriptionTemplate; context: { displayObject: image, config: config }"></ng-container>
 						</figcaption>
 					}
 				</figure>
 			} @else if (displayObject.type === 'video') {
-				<div class="ngx-cdk-lightbox__video-wrapper">
-					<video controls class="ngx-cdk-lightbox__video" #videoElement>
+				<div class="lightbox-dialog__video-wrapper">
+					<video controls class="lightbox-dialog__video" #videoElement>
 						@switch (checkIsString(video!.mp4Source)) {
 							@case (true) {
-								<source [src]="video!.mp4Source" type="video/mp4" />
+								<source [src]="video!.mp4Source" type="video/mp4">
 							}
 							@case (false) {
 								@for (source of video!.mp4Source | keyvalue; track source) {
-									<source [src]="source.value" type="video/mp4" [attr.size]="source.key" />
+									<source [src]="source.value" type="video/mp4" [attr.size]="source.key">
 								}
 							}
 						}
 					</video>
-					@if (video!.description || config.enableImageCounter===true) {
-						<div class="ngx-cdk-lightbox__image-caption">
-							<ng-container *ngTemplateOutlet="descriptionTemplate; context: {displayObject: video, config: config}"></ng-container>
+					@if (video!.description || config.enableImageCounter === true) {
+						<div class="lightbox-dialog__image-caption">
+							<ng-container *ngTemplateOutlet="descriptionTemplate; context: { displayObject: video, config: config }"></ng-container>
 						</div>
 					}
 				</div>
@@ -50,23 +84,23 @@
 		</div>
 	}
 	@if (isLoading$ | async) {
-		<div class="ngx-cdk-lightbox__loading-container">
-			<mat-spinner class="ngx-cdk-lightbox__loading" [diameter]="35"></mat-spinner>
+		<div class="lightbox-dialog__loading-container">
+			<mat-spinner class="lightbox-dialog__loading" [diameter]="35"></mat-spinner>
 		</div>
 	}
 </div>
 
 <ng-template #descriptionTemplate let-displayObject="displayObject" let-config="config">
-	@if (config.enableImageCounter===true) {
-		<div class="ngx-cdk-lightbox__images-counter">
+	@if (config.enableImageCounter === true) {
+		<div class="lightbox-dialog__images-counter">
 			{{ imageCounter }}
 		</div>
 	}
-	<div class="ngx-cdk-lightbox__caption">
+	<div class="lightbox-dialog__caption">
 		{{ displayObject.description }}
 	</div>
 	@if (displayObject.copyright) {
-		<div class="ngx-cdk-lightbox__copyright">
+		<div class="lightbox-dialog__copyright">
 			&copy;&nbsp;{{ displayObject.copyright }}
 		</div>
 	}

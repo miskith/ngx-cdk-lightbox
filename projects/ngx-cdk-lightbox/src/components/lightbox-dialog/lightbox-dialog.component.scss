@@ -5,7 +5,7 @@
 	}
 }
 
-.ngx-cdk-lightbox {
+.lightbox-dialog {
 	&__container {
 		max-width: 100%;
 		max-height: 100%;
@@ -142,7 +142,7 @@
 			right: 6px;
 		}
 
-		.ngx-cdk-lightbox__container:hover & {
+		.lightbox-dialog__container:hover & {
 			opacity: 1;
 		}
 	}
