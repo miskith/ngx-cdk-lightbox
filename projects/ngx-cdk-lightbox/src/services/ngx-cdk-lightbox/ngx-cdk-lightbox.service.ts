@@ -55,8 +55,6 @@ export class NgxCdkLightboxService {
 		dialogRef = this.dialog.open(LightboxDialogComponent, {
 			maxWidth: '95vw',
 			maxHeight: '95vh',
-			panelClass: 'ngx-cdk-lightbox',
-			backdropClass: ['cdk-overlay-dark-backdrop', 'ngx-cdk-lightbox__backdrop'],
 			hasBackdrop: true,
 			scrollStrategy: this.overlay.scrollStrategies.block(),
 			positionStrategy: positionStrategy,
