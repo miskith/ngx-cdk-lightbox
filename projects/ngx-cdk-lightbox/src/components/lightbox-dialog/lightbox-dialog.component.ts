@@ -97,8 +97,8 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		this.subscriptions.set(key, subscription);
 	}
 
-	private getNextIndex(index: number = this.currentIndex!): number | false {
-		const nextIndex = index + 1;
+	private getNextIndex(): number | false {
+		const nextIndex = this.currentIndex! + 1;
 		if (nextIndex > this.data.displayObjects.length - 1) {
 			if (this.config.loopGallery === true) {
 				return 0;
@@ -110,8 +110,8 @@ export class LightboxDialogComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private getPrevIndex(index: number = this.currentIndex!): number | false {
-		const prevIndex = index - 1;
+	private getPrevIndex(): number | false {
+		const prevIndex = this.currentIndex! - 1;
 		if (prevIndex < 0) {
 			if (this.config.loopGallery === true) {
 				return this.data.displayObjects.length - 1;
