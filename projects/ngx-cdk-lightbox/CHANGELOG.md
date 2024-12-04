@@ -1,7 +1,8 @@
-## 19.0.0 (2024-12-04)
+## 19.0.0 (2024-12-05)
 
 - Huge refactoring, cleanup, simplification & modernization
 - Use of css custom properties
+- Drop dependency on Angular Material
 - Change Angular supported version to v19
 - Update dependencies
 
