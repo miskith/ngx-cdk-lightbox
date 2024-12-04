@@ -106,7 +106,7 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"options": {
-						"buildTarget": "demo:build"
+						"buildTarget": "demo:build:development"
 					},
 					"configurations": {
 						"production": {
