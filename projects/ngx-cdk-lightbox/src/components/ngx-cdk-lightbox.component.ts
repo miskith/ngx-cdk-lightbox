@@ -4,8 +4,10 @@ import {
 	HostListener,
 	OnDestroy,
 	ViewChild,
-	/*, ChangeDetectionStrategy*/ ElementRef,
+	ElementRef,
+	inject,
 } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
 	SubscriptionLike,
 	Observable,
@@ -15,11 +17,7 @@ import {
 	BehaviorSubject,
 } from 'rxjs';
 
-import {
-	LightboxOverlayRef,
-	LIGHTBOX_MODAL_DATA,
-	GalleryDataInterface,
-} from '../ref/lightboxOverlay.ref';
+import { GalleryDataInterface } from '../ref/lightboxOverlay.ref';
 import {
 	GalleryDisplayObjectType,
 	GalleryConfigInterface,
@@ -34,9 +32,8 @@ import {
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NgxCdkLightboxComponent implements OnDestroy {
-	private currentIndex: number = null;
-	public displayZoom = false;
-	public zoomStyles = {
+	displayZoom = false;
+	zoomStyles = {
 		x: 0,
 		y: 0,
 		width: 0,
@@ -44,18 +41,19 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 		height: 0,
 		naturalHeight: 0,
 	};
-	public readonly config: GalleryConfigInterface = this.data.config;
-	private readonly loadingStateBehaviour = new BehaviorSubject(false);
-	public readonly loadingState$ = this.loadingStateBehaviour.asObservable();
+	readonly config: GalleryConfigInterface = this.data.config;
+	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+	private currentIndex: number = null;
 	private subscriptions: Map<string, SubscriptionLike> = new Map();
 	private preloadedImage: HTMLImageElement;
+
 	@ViewChild('videoElement', { static: false }) private videoElement: ElementRef<HTMLVideoElement>;
 	@ViewChild('imageElement', { static: false }) private imageElement: ElementRef<HTMLImageElement>;
 
-	constructor(
-		private readonly modalRef: LightboxOverlayRef,
-		@Inject(LIGHTBOX_MODAL_DATA) public readonly data: GalleryDataInterface,
-	) {
+	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
+
+	constructor(@Inject(DIALOG_DATA) public readonly data: GalleryDataInterface) {
 		this.loadDisplayObject(
 			Math.max(0, Math.min(this.config.startingIndex, this.data.displayObjects.length - 1)),
 		);
@@ -170,13 +168,13 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 	}
 
 	private loadDisplayObject(index: number): void {
-		this.loadingStateBehaviour.next(true);
+		this.isLoading$.next(true);
 
 		this.addSubscription(
 			'animateImage',
 			this.animateImage(index).subscribe(
 				() => {
-					this.loadingStateBehaviour.next(false);
+					this.isLoading$.next(false);
 					setTimeout(() => {
 						if (this.imageElement) {
 							this.setImageDetails(this.imageElement.nativeElement);
@@ -185,7 +183,7 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 						if (this.videoElement) {
 							const videoElementContainer = this.videoElement.nativeElement;
 							if (this.video && this.video.resolution) {
-								videoElementContainer.style.aspectRatio = `${ this.video.resolution.width }/${ this.video.resolution.height }`;
+								videoElementContainer.style.aspectRatio = `${this.video.resolution.width}/${this.video.resolution.height}`;
 							} else {
 								videoElementContainer.style.aspectRatio = '';
 							}
@@ -202,7 +200,7 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 					}
 				},
 				(error) => {
-					this.loadingStateBehaviour.next(false);
+					this.isLoading$.next(false);
 					console.error('Image could not be loaded.', error);
 				},
 			),
@@ -215,7 +213,10 @@ export class NgxCdkLightboxComponent implements OnDestroy {
 			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex]);
 		} else {
 			return new Observable((observer) => {
-				if (this.imageElement) this.imageElement.nativeElement.style.opacity = '0';
+				if (this.imageElement) {
+					this.imageElement.nativeElement.style.opacity = '0';
+				}
+
 				this.addSubscription(
 					'animateImageZoomIn',
 					combineLatest([

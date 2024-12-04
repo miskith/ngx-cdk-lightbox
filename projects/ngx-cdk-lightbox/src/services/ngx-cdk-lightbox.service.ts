@@ -1,6 +1,6 @@
-import { Injectable, Injector } from '@angular/core';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
+import { inject, Injectable } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 
 import {
 	GalleryConfigInterface,
@@ -10,13 +10,11 @@ import {
 	GalleryDisplayObjectType,
 } from '../interfaces/gallery.interface';
 import { NgxCdkLightboxComponent } from '../components/ngx-cdk-lightbox.component';
-import { LightboxOverlayRef, LIGHTBOX_MODAL_DATA } from '../ref/lightboxOverlay.ref';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class NgxCdkLightboxService {
-	private displayObjects: GalleryDisplayObjectType[] = [];
 	private defaultConfig: GalleryConfigInterface = {
 		enableZoom: false,
 		zoomSize: 'originalSize',
@@ -36,62 +34,39 @@ export class NgxCdkLightboxService {
 		ariaLabelPrev: 'Previous',
 	};
 
-	constructor(
-		private readonly overlay: Overlay,
-		private readonly injector: Injector,
-	) {}
+	private readonly overlay: Overlay = inject<Overlay>(Overlay);
+	private readonly dialog: Dialog = inject<Dialog>(Dialog);
 
 	public open(
 		displayObjects: GalleryDisplayObjectType[],
 		config: GalleryConfigInterface = {},
-	): void {
-		this.displayObjects = displayObjects;
-		config = { ...this.defaultConfig, ...config };
-
-		if (this.displayObjects.length < 1) {
-			return;
+	): DialogRef<void, NgxCdkLightboxComponent> {
+		if (displayObjects.length < 1) {
+			return null;
 		}
 
-		const overlayRef = this.createOverlayRef();
-		const modalRef = new LightboxOverlayRef(overlayRef);
-		const injector = this.getModalInjector(modalRef, config);
-		const backdropClickSubscription = overlayRef.backdropClick().subscribe(() => {
-			modalRef.close();
-			backdropClickSubscription.unsubscribe();
-		});
-		const lightboxPortal = new ComponentPortal(NgxCdkLightboxComponent, null, injector);
-		overlayRef.attach(lightboxPortal);
-	}
-
-	private createOverlayRef(): OverlayRef {
 		const positionStrategy = this.overlay
 			.position()
 			.global()
 			.centerHorizontally()
 			.centerVertically();
 
-		const overlayRef = this.overlay.create({
+		let dialogRef: DialogRef<void, NgxCdkLightboxComponent> = null;
+		dialogRef = this.dialog.open(NgxCdkLightboxComponent, {
 			maxWidth: '95vw',
 			maxHeight: '95vh',
 			panelClass: 'ngx-cdk-lightbox',
 			backdropClass: ['cdk-overlay-dark-backdrop', 'ngx-cdk-lightbox__backdrop'],
 			hasBackdrop: true,
 			scrollStrategy: this.overlay.scrollStrategies.block(),
-			positionStrategy,
+			positionStrategy: positionStrategy,
+			data: {
+				displayObjects,
+				config: { ...this.defaultConfig, ...config },
+			},
+			templateContext: () => ({ dialogRef }),
 		});
 
-		return overlayRef;
-	}
-
-	private getModalInjector(
-		modalRef: LightboxOverlayRef,
-		config: GalleryConfigInterface,
-	): PortalInjector {
-		const injectionTokens = new WeakMap();
-
-		injectionTokens.set(LightboxOverlayRef, modalRef);
-		injectionTokens.set(LIGHTBOX_MODAL_DATA, { displayObjects: this.displayObjects, config });
-
-		return new PortalInjector(this.injector, injectionTokens);
+		return dialogRef;
 	}
 }

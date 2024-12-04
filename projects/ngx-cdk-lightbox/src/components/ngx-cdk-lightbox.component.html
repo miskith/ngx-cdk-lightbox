@@ -1,7 +1,7 @@
 <div class="ngx-cdk-lightbox__container">
-	<div *ngIf="displayObject && ((loadingState$ | async) === false || config.enableAnimations===true)">
+	<div *ngIf="displayObject && ((isLoading$ | async) === false || config.enableAnimations===true)">
 		<button type="button" *ngIf="config.enableCloseIcon===true" class="ngx-cdk-lightbox__close-button" [innerHTML]="config.closeIcon | safeHtml" (click)="closeModal()"></button>
-		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true && (loadingState$ | async) === false">
+		<div class="ngx-cdk-lightbox__arrows-container" *ngIf="config.enableArrows===true && (isLoading$ | async) === false">
 			<button type="button" (click)="prevDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-left" [innerHTML]="config.arrowLeft | safeHtml" role="button" [attr.aria-label]="config.ariaLabelPrev"></button>
 			<button type="button" (click)="nextDisplayObject($event)" class="ngx-cdk-lightbox__arrow is-right" [innerHTML]="config.arrowRight | safeHtml" role="button" [attr.aria-label]="config.ariaLabelNext"></button>
 		</div>
@@ -10,7 +10,7 @@
 				<figure class="ngx-cdk-lightbox__image-container">
 					<div class="ngx-cdk-lightbox__image-wrapper">
 						<img [src]="image.source" class="ngx-cdk-lightbox__image" [alt]="image.description" title="" [ngClass]="{'is-zoom': displayZoom===true, 'is-animating': config.enableAnimations===true}" (mouseover)="imageMouseIn($event)" (mousemove)="imageMouseMove($event)" (mouseout)="imageMouseOut()" (click)="imageClick($event)" #imageElement />
-						<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true && (loadingState$ | async) === false" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
+						<div class="ngx-cdk-lightbox__zoom" *ngIf="displayZoom===true && (isLoading$ | async) === false" [style.transform]="'translate('+zoomStyles.x+'px, '+zoomStyles.y+'px)'">
 							<img [src]="image.source" class="ngx-cdk-lightbox__zoom-image" [alt]="image.description" title="" [style.transform]="zoomTransformation" [style.width]="zoomWidth" [style.height]="zoomHeight" />
 						</div>
 					</div>
@@ -36,7 +36,7 @@
 			</ng-container>
 		</ng-container>
 	</div>
-	<div class="ngx-cdk-lightbox__loading-container" *ngIf="loadingState$ | async">
+	<div class="ngx-cdk-lightbox__loading-container" *ngIf="isLoading$ | async">
 		<mat-spinner class="ngx-cdk-lightbox__loading" [diameter]="35"></mat-spinner>
 	</div>
 </div>
