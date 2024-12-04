@@ -7,6 +7,7 @@ import {
 	inject,
 	OnInit,
 	DestroyRef,
+	ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -38,7 +39,7 @@ import { LoaderComponent } from '../loader/loader.component';
 	templateUrl: 'lightbox-dialog.component.html',
 	styleUrl: 'lightbox-dialog.component.scss',
 	imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
-	// changeDetection: ChangeDetectionStrategy.OnPush,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightboxDialogComponent implements OnInit {
 	displayZoom = false;
@@ -53,20 +54,35 @@ export class LightboxDialogComponent implements OnInit {
 
 	@Inject(DIALOG_DATA) readonly data: IGalleryData = inject<IGalleryData>(DIALOG_DATA);
 
-	readonly config: IGalleryConfig = this.data.config;
-	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-	private currentIndex: number | null = null;
+	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
+	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
+	private readonly currentIndex$: BehaviorSubject<number | null> = new BehaviorSubject<
+		number | null
+	>(null);
 	private readonly preloadedImages: Map<string, Observable<HTMLImageElement>> = new Map<
 		string,
 		Observable<HTMLImageElement>
 	>();
 
+	readonly config: IGalleryConfig = this.data.config;
+	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+	readonly currentDisplayObject$: Observable<TGalleryDisplayObject | null> =
+		this.currentIndex$.pipe(
+			map((index: number | null) => (index !== null ? this.data.displayObjects[index]! : null)),
+		);
+	readonly currentImage$: Observable<IGalleryImage | null> = this.currentDisplayObject$.pipe(
+		map((displayObject: TGalleryDisplayObject | null) =>
+			displayObject && this.isGalleryImage(displayObject) ? displayObject : null,
+		),
+	);
+	readonly currentVideo$: Observable<IGalleryVideo | null> = this.currentDisplayObject$.pipe(
+		map((displayObject: TGalleryDisplayObject | null) =>
+			displayObject && this.isGalleryVideo(displayObject) ? displayObject : null,
+		),
+	);
+
 	@ViewChild('videoElement', { static: false }) private videoElement!: ElementRef<HTMLVideoElement>;
 	@ViewChild('imageElement', { static: false }) private imageElement!: ElementRef<HTMLImageElement>;
-
-	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
-	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
 
 	ngOnInit(): void {
 		this.loadDisplayObject(
@@ -74,26 +90,14 @@ export class LightboxDialogComponent implements OnInit {
 		);
 	}
 
-	get displayObject(): TGalleryDisplayObject | null {
-		return this.currentIndex === null ? null : this.data.displayObjects[this.currentIndex]!;
-	}
-
-	get image(): IGalleryImage | null {
-		return this.displayObject && this.displayObject.type === 'image' ? this.displayObject : null;
-	}
-
-	get video(): IGalleryVideo | null {
-		return this.displayObject && this.displayObject.type === 'video' ? this.displayObject : null;
-	}
-
 	get imageCounter(): string {
 		return this.config.imageCounterText
-			.replace(/IMAGE\_INDEX/, '' + (this.currentIndex! + 1))
+			.replace(/IMAGE\_INDEX/, '' + (this.currentIndex$.value! + 1))
 			.replace(/IMAGE\_COUNT/, '' + this.data.displayObjects.length);
 	}
 
 	private getNextIndex(): number | false {
-		const nextIndex = this.currentIndex! + 1;
+		const nextIndex = this.currentIndex$.value! + 1;
 		if (nextIndex > this.data.displayObjects.length - 1) {
 			if (this.config.loopGallery === true) {
 				return 0;
@@ -106,7 +110,7 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private getPrevIndex(): number | false {
-		const prevIndex = this.currentIndex! - 1;
+		const prevIndex = this.currentIndex$.value! - 1;
 		if (prevIndex < 0) {
 			if (this.config.loopGallery === true) {
 				return this.data.displayObjects.length - 1;
@@ -186,8 +190,9 @@ export class LightboxDialogComponent implements OnInit {
 
 						if (this.videoElement) {
 							const videoElementContainer = this.videoElement.nativeElement;
-							if (this.video && this.video.resolution) {
-								videoElementContainer.style.aspectRatio = `${this.video.resolution.width}/${this.video.resolution.height}`;
+							const video = this.data.displayObjects[this.currentIndex$.value!] as IGalleryVideo;
+							if (video.resolution) {
+								videoElementContainer.style.aspectRatio = `${video.resolution.width}/${video.resolution.height}`;
 							} else {
 								videoElementContainer.style.aspectRatio = '';
 							}
@@ -215,8 +220,8 @@ export class LightboxDialogComponent implements OnInit {
 
 	private animateImage(index: number): Observable<unknown> {
 		if (this.config.enableAnimations === false || !('source' in this.data.displayObjects[index]!)) {
-			this.currentIndex = index;
-			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex]!);
+			this.currentIndex$.next(index);
+			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex$.value!]!);
 		} else {
 			if (this.imageElement) {
 				this.imageElement.nativeElement.style.opacity = '0';
@@ -235,7 +240,7 @@ export class LightboxDialogComponent implements OnInit {
 						naturalHeight / (window.innerHeight * 0.85),
 						1,
 					);
-					this.currentIndex = index;
+					this.currentIndex$.next(index);
 
 					return timer(1).pipe(
 						tap(() => {
@@ -293,6 +298,12 @@ export class LightboxDialogComponent implements OnInit {
 		galleryDisplayObject: TGalleryDisplayObject,
 	): galleryDisplayObject is IGalleryImage {
 		return galleryDisplayObject.type === 'image';
+	}
+
+	private isGalleryVideo(
+		galleryDisplayObject: TGalleryDisplayObject,
+	): galleryDisplayObject is IGalleryVideo {
+		return galleryDisplayObject.type === 'video';
 	}
 
 	imageMouseIn(event: MouseEvent): void {

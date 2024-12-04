@@ -3,6 +3,7 @@
 - Huge refactoring, cleanup, simplification & modernization
 - Use of css custom properties
 - Drop dependency on Angular Material
+- OnPush change detection strategy
 - Change Angular supported version to v19
 - Update dependencies
 
