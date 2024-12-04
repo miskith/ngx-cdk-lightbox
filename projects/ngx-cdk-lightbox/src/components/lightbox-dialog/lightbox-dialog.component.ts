@@ -7,7 +7,9 @@ import {
 	ElementRef,
 	inject,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
 	SubscriptionLike,
 	Observable,
@@ -17,21 +19,24 @@ import {
 	BehaviorSubject,
 } from 'rxjs';
 
-import { GalleryDataInterface } from '../ref/lightboxOverlay.ref';
+import { GalleryDataInterface } from '../../ref/lightboxOverlay.ref';
 import {
 	GalleryDisplayObjectType,
 	GalleryConfigInterface,
 	GalleryImageInterface,
 	GalleryVideoInterface,
-} from '../interfaces/gallery.interface';
+} from '../../interfaces/gallery.interface';
+import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 
 @Component({
-	selector: 'lib-ngx-cdk-lightbox',
-	templateUrl: 'ngx-cdk-lightbox.component.html',
-	styleUrl: 'ngx-cdk-lightbox.component.scss',
+	selector: 'lib-lightbox-dialog',
+	templateUrl: 'lightbox-dialog.component.html',
+	styleUrl: 'lightbox-dialog.component.scss',
+	standalone: true,
+	imports: [CommonModule, SafeHtmlPipe, MatProgressSpinnerModule],
 	// changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NgxCdkLightboxComponent implements OnDestroy {
+export class LightboxDialogComponent implements OnDestroy {
 	displayZoom = false;
 	zoomStyles = {
 		x: 0,

@@ -8,8 +8,8 @@ import {
 	arrowRightSvg,
 	arrowLeftSvg,
 	GalleryDisplayObjectType,
-} from '../interfaces/gallery.interface';
-import { NgxCdkLightboxComponent } from '../components/ngx-cdk-lightbox.component';
+} from '../../interfaces/gallery.interface';
+import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
 @Injectable({
 	providedIn: 'root',
@@ -40,7 +40,7 @@ export class NgxCdkLightboxService {
 	public open(
 		displayObjects: GalleryDisplayObjectType[],
 		config: GalleryConfigInterface = {},
-	): DialogRef<void, NgxCdkLightboxComponent> {
+	): DialogRef<void, LightboxDialogComponent> {
 		if (displayObjects.length < 1) {
 			return null;
 		}
@@ -51,8 +51,8 @@ export class NgxCdkLightboxService {
 			.centerHorizontally()
 			.centerVertically();
 
-		let dialogRef: DialogRef<void, NgxCdkLightboxComponent> = null;
-		dialogRef = this.dialog.open(NgxCdkLightboxComponent, {
+		let dialogRef: DialogRef<void, LightboxDialogComponent> = null;
+		dialogRef = this.dialog.open(LightboxDialogComponent, {
 			maxWidth: '95vw',
 			maxHeight: '95vh',
 			panelClass: 'ngx-cdk-lightbox',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -8,41 +8,42 @@ import { HighlightModule } from 'ngx-highlightjs';
 import {
 	GalleryConfigInterface,
 	NgxCdkLightboxService,
-	NgxCdkLightboxModule,
 } from '../../../ngx-cdk-lightbox/src/public-api';
 
 @Component({
 	standalone: true,
 	selector: 'app-root',
 	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [
-		CommonModule,
-		NgxCdkLightboxModule,
-		MatButtonModule,
-		MatTabsModule,
-		MatCardModule,
-		HighlightModule,
-	],
+	imports: [CommonModule, MatButtonModule, MatTabsModule, MatCardModule, HighlightModule],
 })
 export class AppComponent {
-	public config1: GalleryConfigInterface = {};
-	public config2: GalleryConfigInterface = { enableZoom: true };
-	public config3: GalleryConfigInterface = { startingIndex: 2, enableAnimations: false };
-	public config4: GalleryConfigInterface = {
+	readonly config1: GalleryConfigInterface = {};
+	readonly config2: GalleryConfigInterface = { enableZoom: true };
+	readonly config3: GalleryConfigInterface = { startingIndex: 2, enableAnimations: false };
+	readonly config4: GalleryConfigInterface = {
 		enableArrows: false,
 		enableCloseIcon: false,
 		enableImageClick: false,
 		enableImagePreloading: false,
 	};
-	public config5: GalleryConfigInterface = {
+	readonly config5: GalleryConfigInterface = {
 		enableZoom: true,
 		zoomSize: 3,
 		imageCounterText: 'IMAGE_INDEX fotografie z IMAGE_COUNT',
 	};
+	readonly installCommand: string[] = [
+		'npm install ngx-cdk-lightbox --save',
+		'yarn add ngx-cdk-lightbox',
+	];
+	readonly sampleUsage: string[] = [
+		"import { NgxCdkLightboxService } from 'ngx-cdk-lightbox';",
+		'private readonly lightboxService: NgxCdkLightboxService = inject<NgxCdkLightboxService>(NgxCdkLightboxService);',
+		"this.lightboxService.open([\n\t{\n\t\ttype: 'image',\n\t\tsource: 'https://image.shutterstock.com/z/stock-photo-two-beach-chairs-on-tropical-vacation-at-sea-1411290431.jpg',\n\t\tcopyright: 'https://www.shutterstock.com',\n\t},\n]);",
+	];
 
-	constructor(private readonly lightboxService: NgxCdkLightboxService) {}
+	private readonly lightboxService: NgxCdkLightboxService =
+		inject<NgxCdkLightboxService>(NgxCdkLightboxService);
 
 	public openLightbox(config?: GalleryConfigInterface): void {
 		this.lightboxService.open(
