@@ -1,6 +1,6 @@
 ## 19.0.0 (2024-12-05)
 
-- Huge refactoring, cleanup, simplification & modernization
+- Huge refactoring (and will be refactored even more), cleanup, simplification & modernization
 - Use of css custom properties
 - Drop dependency on Angular Material
 - OnPush change detection strategy
