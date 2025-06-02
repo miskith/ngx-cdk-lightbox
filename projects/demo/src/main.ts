@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
@@ -8,6 +8,7 @@ import { AppComponent } from './app/app.component';
 bootstrapApplication(AppComponent, {
 	providers: [
 		importProvidersFrom([BrowserAnimationsModule]),
+		provideZonelessChangeDetection(),
 		{
 			provide: HIGHLIGHT_OPTIONS,
 			useValue: {

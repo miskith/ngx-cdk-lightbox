@@ -1,3 +1,10 @@
+## 20.0.0 (2025-06-02)
+
+- Change Angular supported version to v20
+- Update dependencies
+- Switch to use pnpm
+- Switch from jest to vitest
+
 ## 19.0.0 (2024-12-05)
 
 - Huge refactoring (and will be refactored even more), cleanup, simplification & modernization

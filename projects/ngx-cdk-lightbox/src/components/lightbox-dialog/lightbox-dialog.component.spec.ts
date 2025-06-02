@@ -1,7 +1,9 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { first, Observable } from 'rxjs';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 
 import { LightboxDialogComponent } from './lightbox-dialog.component';
 import { LoaderComponent } from '../loader/loader.component';
@@ -11,7 +13,7 @@ describe('LightboxDialogComponent', () => {
 	let component: LightboxDialogComponent;
 	let fixture: ComponentFixture<LightboxDialogComponent>;
 
-	const mockDialogRef = { close: jest.fn() };
+	const mockDialogRef = { close: vi.fn() };
 	const mockData = {
 		config: { startingIndex: 0, loopGallery: true, enableZoom: true, zoomSize: 2 },
 		displayObjects: [
@@ -22,17 +24,21 @@ describe('LightboxDialogComponent', () => {
 	};
 
 	beforeEach(() => {
-		TestBed.overrideComponent(LightboxDialogComponent, {
-			add: {
-				providers: [
-					{ provide: DIALOG_DATA, useValue: mockData },
-					{ provide: DialogRef, useValue: mockDialogRef },
-				],
-			},
-			remove: {
-				imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
-			},
-		}).overrideTemplate(LightboxDialogComponent, '<div></div>');
+		TestBed.configureTestingModule({
+			providers: [provideZonelessChangeDetection()],
+		})
+			.overrideComponent(LightboxDialogComponent, {
+				add: {
+					providers: [
+						{ provide: DIALOG_DATA, useValue: mockData },
+						{ provide: DialogRef, useValue: mockDialogRef },
+					],
+				},
+				remove: {
+					imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
+				},
+			})
+			.overrideTemplate(LightboxDialogComponent, '<div></div>');
 
 		fixture = TestBed.createComponent(LightboxDialogComponent);
 		component = fixture.componentInstance;
@@ -43,21 +49,23 @@ describe('LightboxDialogComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should return null for displayObject when currentIndex is null', (done: jest.DoneCallback) => {
-		(component as any).currentIndex$.next(null);
-		component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
-			expect(currentDisplayObject).toBeNull();
-			done();
-		});
-	});
+	it('should return null for displayObject when currentIndex is null', () =>
+		new Promise((done) => {
+			(component as any).currentIndex$.next(null);
+			component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
+				expect(currentDisplayObject).toBeNull();
+				done(void 0);
+			});
+		}));
 
-	it('should return the current display object when currentIndex is set', (done: jest.DoneCallback) => {
-		(component as any).currentIndex$.next(0);
-		component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
-			expect(currentDisplayObject).toEqual(mockData.displayObjects[0]);
-			done();
-		});
-	});
+	it('should return the current display object when currentIndex is set', () =>
+		new Promise((done) => {
+			(component as any).currentIndex$.next(0);
+			component.currentDisplayObject$.pipe(first()).subscribe((currentDisplayObject) => {
+				expect(currentDisplayObject).toEqual(mockData.displayObjects[0]);
+				done(void 0);
+			});
+		}));
 
 	it('should close the modal when closeModal is called', () => {
 		component.closeModal();
@@ -106,20 +114,21 @@ describe('LightboxDialogComponent', () => {
 		expect(transform).toContain('translate');
 	});
 
-	it('should preload a display object with an image source', (done: jest.DoneCallback) => {
-		const mockDisplayObject = { type: 'image', source: 'test.jpg' };
-		const loadSpy = jest.spyOn(component as any, 'preloadDisplayObject').mockImplementation(() => {
-			return new Observable((observer) => {
-				observer.next(new Event('load'));
-				observer.complete();
+	it('should preload a display object with an image source', () =>
+		new Promise((done) => {
+			const mockDisplayObject = { type: 'image', source: 'test.jpg' };
+			const loadSpy = vi.spyOn(component as any, 'preloadDisplayObject').mockImplementation(() => {
+				return new Observable((observer) => {
+					observer.next(new Event('load'));
+					observer.complete();
+				});
 			});
-		});
 
-		(component['preloadDisplayObject'] as any)(mockDisplayObject).subscribe(() => {
-			expect(loadSpy).toHaveBeenCalledWith(mockDisplayObject);
-			done();
-		});
-	});
+			(component['preloadDisplayObject'] as any)(mockDisplayObject).subscribe(() => {
+				expect(loadSpy).toHaveBeenCalledWith(mockDisplayObject);
+				done(void 0);
+			});
+		}));
 
 	it('should reset zoom styles on imageMouseOut', () => {
 		component.imageMouseOut();
