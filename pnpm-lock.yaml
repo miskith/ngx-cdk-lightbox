@@ -28,7 +28,7 @@ importers:
         version: 20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(@angular/platform-browser@20.0.0(@angular/animations@20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@angular/material':
         specifier: ^20.0.1
-        version: 20.0.1(46aeccb0e43432d58c1e877af6b62a3c)
+        version: 20.0.1(vb4hwniwbp7tdcqytkbktfiyke)
       '@angular/platform-browser':
         specifier: ^20.0.0
         version: 20.0.0(@angular/animations@20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))
@@ -73,8 +73,8 @@ importers:
         specifier: ^20.0.0
         version: 20.0.0(@angular/compiler@20.0.0)(typescript@5.8.3)
       '@angular/language-service':
-        specifier: ^20.0.0
-        version: 20.0.0
+        specifier: ^20.2.3
+        version: 20.2.3
       '@types/node':
         specifier: ~22.15.29
         version: 22.15.29
@@ -305,8 +305,8 @@ packages:
       '@angular/platform-browser': 20.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/language-service@20.0.0':
-    resolution: {integrity: sha512-lprUUz56dk3ORWGD6Z7Hmzo2MqxezW5qXaxpJHOow3+8/Jx6q+PPWCZrFSEyTtaKr/oRGzHLVCEzB+tmB980Fw==}
+  '@angular/language-service@20.2.3':
+    resolution: {integrity: sha512-xYgAHX0qSLUiTHZEw5Q/a7pPaFrAusnMnYFPa3mNxhlWW8hpEpNvANq23TZAFYVkJ6HtFV1jL71OpRuMxQ8b6A==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/material@20.0.1':
@@ -3545,9 +3545,9 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/language-service@20.0.0': {}
+  '@angular/language-service@20.2.3': {}
 
-  '@angular/material@20.0.1(46aeccb0e43432d58c1e877af6b62a3c)':
+  '@angular/material@20.0.1(vb4hwniwbp7tdcqytkbktfiyke)':
     dependencies:
       '@angular/cdk': 20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/common': 20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
