@@ -28,7 +28,7 @@ importers:
         version: 20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(@angular/platform-browser@20.0.0(@angular/animations@20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@angular/material':
         specifier: ^20.0.1
-        version: 20.0.1(46aeccb0e43432d58c1e877af6b62a3c)
+        version: 20.0.1(vb4hwniwbp7tdcqytkbktfiyke)
       '@angular/platform-browser':
         specifier: ^20.0.0
         version: 20.0.0(@angular/animations@20.0.0(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2)))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))
@@ -39,8 +39,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       ngx-highlightjs:
-        specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 14.0.1
+        version: 14.0.1(@angular/cdk@20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
       rxjs:
         specifier: ~7.8.2
         version: 7.8.2
@@ -2512,8 +2512,8 @@ packages:
       tailwindcss:
         optional: true
 
-  ngx-highlightjs@14.0.0:
-    resolution: {integrity: sha512-G0dezuYyHhp/oixm22wvj38PukFcgk5MooFTIx1shpZTFfq+KnqER0ZMNbMSNEQZh1OPtX9zpyZvYDoKZV2Avg==}
+  ngx-highlightjs@14.0.1:
+    resolution: {integrity: sha512-pa4YPChIho+Qs6P036oMvTt8pmTlMwberz/kGBojKVMEHSj9t4PT1YzBplM+RMK0VWgLK4zRbJbxivQrLPr1fQ==}
     peerDependencies:
       '@angular/cdk': '>=19.0.0'
       '@angular/common': '>=19.0.0'
@@ -3547,7 +3547,7 @@ snapshots:
 
   '@angular/language-service@20.0.0': {}
 
-  '@angular/material@20.0.1(46aeccb0e43432d58c1e877af6b62a3c)':
+  '@angular/material@20.0.1(vb4hwniwbp7tdcqytkbktfiyke)':
     dependencies:
       '@angular/cdk': 20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/common': 20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -5625,7 +5625,7 @@ snapshots:
     optionalDependencies:
       rollup: 4.41.1
 
-  ngx-highlightjs@14.0.0(@angular/cdk@20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2):
+  ngx-highlightjs@14.0.1(@angular/cdk@20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2):
     dependencies:
       '@angular/cdk': 20.0.1(@angular/common@20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/common': 20.0.0(@angular/core@20.0.0(@angular/compiler@20.0.0)(rxjs@7.8.2))(rxjs@7.8.2)
