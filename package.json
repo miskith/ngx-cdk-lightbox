@@ -52,7 +52,7 @@
 		"@angular-eslint/schematics": "^19.7.0",
 		"@angular-eslint/template-parser": "^19.7.0",
 		"@angular/build": "^20.0.0",
-		"@angular/cli": "^20.0.0",
+		"@angular/cli": "^20.3.3",
 		"@angular/compiler-cli": "^20.0.0",
 		"@angular/language-service": "^20.0.0",
 		"@types/node": "~22.15.29",
