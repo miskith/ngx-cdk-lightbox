@@ -73,8 +73,8 @@ importers:
         specifier: ^20.3.13
         version: 20.3.13(@angular/compiler@20.3.13)(typescript@5.9.3)
       '@angular/language-service':
-        specifier: ^20.3.13
-        version: 20.3.13
+        specifier: ^21.0.0
+        version: 21.0.0
       '@types/node':
         specifier: ~24.10.1
         version: 24.10.1
@@ -363,8 +363,8 @@ packages:
       '@angular/platform-browser': 20.3.13
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/language-service@20.3.13':
-    resolution: {integrity: sha512-IfHYjVufV2jcG+AqQN/2VzIHwKSzokoKax0o+sHOQCk1gjkryc9JYkHHJIBQisQfG0IWbUQy1gDHuWQ3VmtzFg==}
+  '@angular/language-service@21.0.0':
+    resolution: {integrity: sha512-onJI3CzNSszcXK0/zVS66IDfaZpTVUdkduZTqth2w8CNaBkG6N/g9wleUVLwarx1+Vy4c4Fqr+gb85QkeGy2aQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/material@20.2.14':
@@ -4302,7 +4302,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/language-service@20.3.13': {}
+  '@angular/language-service@21.0.0': {}
 
   '@angular/material@20.2.14(e66ffe68fda5b54751a58aa1ea374da8)':
     dependencies:
