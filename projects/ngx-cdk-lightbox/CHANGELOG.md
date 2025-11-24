@@ -1,3 +1,7 @@
+## 20.0.1 (2025-11-24)
+
+- Minor dependencies update
+
 ## 20.0.0 (2025-06-02)
 
 - Change Angular supported version to v20
