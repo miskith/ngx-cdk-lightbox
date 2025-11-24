@@ -15,7 +15,7 @@
 		"experimentalDecorators": true,
 		"strictNullChecks": true,
 		"noUncheckedIndexedAccess": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"paths": {
 			"ngx-cdk-lightbox": [
 				"dist/ngx-cdk-lightbox"

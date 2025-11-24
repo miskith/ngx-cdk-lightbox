@@ -123,7 +123,7 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
-	nextDisplayObject(event?: KeyboardEvent | MouseEvent): void {
+	nextDisplayObject(event?: Event): void {
 		if (event) {
 			event.preventDefault();
 		}
@@ -133,7 +133,7 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	@HostListener('document:keyup.arrowleft', ['$event'])
-	prevDisplayObject(event?: KeyboardEvent | MouseEvent): void {
+	prevDisplayObject(event?: Event): void {
 		if (event) {
 			event.preventDefault();
 		}
