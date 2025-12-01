@@ -73,8 +73,8 @@ importers:
         specifier: ^21.0.0
         version: 21.0.0(@angular/compiler@21.0.0)(typescript@5.9.3)
       '@angular/language-service':
-        specifier: ^21.0.0
-        version: 21.0.0
+        specifier: ^21.0.1
+        version: 21.0.1
       '@types/node':
         specifier: ~24.10.1
         version: 24.10.1
@@ -347,8 +347,8 @@ packages:
       '@standard-schema/spec': ^1.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/language-service@21.0.0':
-    resolution: {integrity: sha512-onJI3CzNSszcXK0/zVS66IDfaZpTVUdkduZTqth2w8CNaBkG6N/g9wleUVLwarx1+Vy4c4Fqr+gb85QkeGy2aQ==}
+  '@angular/language-service@21.0.1':
+    resolution: {integrity: sha512-+QohcgWbgrsPsHFhbie1ZQaNsnoBpuVK7479WZXPyFiw4PWEceNuF0hSr9yrSNEh/kvgCu9BfJSzVf7w5Yj39A==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/material@21.0.0':
@@ -4225,7 +4225,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/language-service@21.0.0': {}
+  '@angular/language-service@21.0.1': {}
 
   '@angular/material@21.0.0(19b4b3e5bb6cbd1e432f95125c350b8c)':
     dependencies:

@@ -54,7 +54,7 @@
 		"@angular/build": "^21.0.0",
 		"@angular/cli": "^21.0.0",
 		"@angular/compiler-cli": "^21.0.0",
-		"@angular/language-service": "^21.0.0",
+		"@angular/language-service": "^21.0.1",
 		"@types/node": "~24.10.1",
 		"@typescript-eslint/eslint-plugin": "^8.47.0",
 		"@typescript-eslint/parser": "^8.47.0",
