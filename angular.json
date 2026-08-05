@@ -73,9 +73,6 @@
 						},
 						"index": "projects/demo/src/index.html",
 						"browser": "projects/demo/src/main.ts",
-						"polyfills": [
-							"projects/demo/src/polyfills.ts"
-						],
 						"tsConfig": "projects/demo/tsconfig.app.json",
 						"assets": [
 							"projects/demo/src/favicon.ico",
