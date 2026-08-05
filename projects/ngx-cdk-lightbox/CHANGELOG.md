@@ -1,3 +1,13 @@
+## 22.0.0 (2026-08-05)
+
+- Change Angular supported version to v22
+- Update dependencies (TypeScript 6.0, ESLint 10, angular-eslint flat config)
+- Migrate ESLint to flat config (required by angular-eslint v22 / ESLint v10)
+- Remove deprecated `@angular/animations` and `@angular/platform-browser-dynamic`
+- Remove obsolete empty polyfills and zoneless provider (zoneless is default since v21)
+- Adopt Angular v22 `@Service()` decorator and signal `input()` where applicable
+- Apply TypeScript 6 `baseUrl` deprecation migration for path mappings
+
 ## 21.0.0 (2025-11-24)
 
 - Change Angular supported version to v21
