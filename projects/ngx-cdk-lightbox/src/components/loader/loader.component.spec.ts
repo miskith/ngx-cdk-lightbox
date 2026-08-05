@@ -1,4 +1,3 @@
-import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { describe, beforeEach, it, expect } from 'vitest';
@@ -10,9 +9,7 @@ describe('LoaderComponent', () => {
 	let fixture: ComponentFixture<LoaderComponent>;
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({
-			providers: [provideZonelessChangeDetection()],
-		})
+		TestBed.configureTestingModule({})
 			.overrideComponent(LoaderComponent, {
 				remove: {
 					imports: [CommonModule],

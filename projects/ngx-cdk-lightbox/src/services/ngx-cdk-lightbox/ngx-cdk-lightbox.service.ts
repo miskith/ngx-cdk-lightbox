@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 
@@ -11,9 +11,7 @@ import {
 } from '../../interfaces/gallery.interface';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
-@Injectable({
-	providedIn: 'root',
-})
+@Service()
 export class NgxCdkLightboxService {
 	private defaultConfig: IGalleryConfig = {
 		enableZoom: false,
@@ -52,19 +50,21 @@ export class NgxCdkLightboxService {
 			.centerHorizontally()
 			.centerVertically();
 
-		let dialogRef: DialogRef<void, LightboxDialogComponent>;
-		dialogRef = this.dialog.open(LightboxDialogComponent, {
-			maxWidth: '95vw',
-			maxHeight: '95vh',
-			hasBackdrop: true,
-			scrollStrategy: this.overlay.scrollStrategies.block(),
-			positionStrategy: positionStrategy,
-			data: {
-				displayObjects,
-				config: { ...this.defaultConfig, ...config },
+		const dialogRef: DialogRef<void, LightboxDialogComponent> = this.dialog.open(
+			LightboxDialogComponent,
+			{
+				maxWidth: '95vw',
+				maxHeight: '95vh',
+				hasBackdrop: true,
+				scrollStrategy: this.overlay.scrollStrategies.block(),
+				positionStrategy: positionStrategy,
+				data: {
+					displayObjects,
+					config: { ...this.defaultConfig, ...config },
+				},
+				templateContext: () => ({ dialogRef }),
 			},
-			templateContext: () => ({ dialogRef }),
-		});
+		);
 
 		return dialogRef;
 	}

@@ -92,8 +92,8 @@ export class LightboxDialogComponent implements OnInit {
 
 	get imageCounter(): string {
 		return this.config.imageCounterText
-			.replace(/IMAGE\_INDEX/, '' + (this.currentIndex$.value! + 1))
-			.replace(/IMAGE\_COUNT/, '' + this.data.displayObjects.length);
+			.replace(/IMAGE_INDEX/, '' + (this.currentIndex$.value! + 1))
+			.replace(/IMAGE_COUNT/, '' + this.data.displayObjects.length);
 	}
 
 	private getNextIndex(): number | false {
@@ -308,16 +308,18 @@ export class LightboxDialogComponent implements OnInit {
 
 	imageMouseIn(event: MouseEvent): void {
 		this.setImageDetails(event.target as HTMLImageElement);
+		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
 		this.zoomStyles = {
 			...this.zoomStyles,
-			...{ x: (event as any).layerX, y: (event as any).layerY },
+			...{ x: layerX, y: layerY },
 		};
 	}
 
 	imageMouseMove(event: MouseEvent): void {
+		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
 		this.zoomStyles = {
 			...this.zoomStyles,
-			...{ x: (event as any).layerX, y: (event as any).layerY },
+			...{ x: layerX, y: layerY },
 		};
 	}
 
@@ -330,15 +332,16 @@ export class LightboxDialogComponent implements OnInit {
 			return;
 		}
 
-		if ((event as any).layerX / this.zoomStyles.width < 0.5) {
+		const { layerX } = event as MouseEvent & { layerX: number };
+		if (layerX / this.zoomStyles.width < 0.5) {
 			this.prevDisplayObject();
 		} else {
 			this.nextDisplayObject();
 		}
 	}
 
-	checkIsString(value: any): boolean {
-		return !!(typeof value === 'string');
+	checkIsString(value: unknown): boolean {
+		return typeof value === 'string';
 	}
 
 	get zoomTransformation(): string {

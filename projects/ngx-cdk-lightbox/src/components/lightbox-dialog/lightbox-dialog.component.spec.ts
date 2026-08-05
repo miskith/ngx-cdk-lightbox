@@ -1,4 +1,3 @@
-import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
@@ -24,9 +23,7 @@ describe('LightboxDialogComponent', () => {
 	};
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({
-			providers: [provideZonelessChangeDetection()],
-		})
+		TestBed.configureTestingModule({})
 			.overrideComponent(LightboxDialogComponent, {
 				add: {
 					providers: [
