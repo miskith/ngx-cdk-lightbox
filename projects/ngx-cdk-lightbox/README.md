@@ -1,51 +1,134 @@
 # ngx-cdk-lightbox
 
-Custom implementation of CDK to display image gallery in lightbox.
+A lightweight, performant, and flexible lightbox gallery component and service built on top of Angular CDK. Supports responsive images, multiple video resolutions, zoom, and customizable templates.
 
 ## Demo
 
-https://storage.davidmyska.com/ngx-cdk-lightbox/
+[Live Interactive Demo](https://storage.davidmyska.com/ngx-cdk-lightbox/)
+
+## Features
+
+- ⚡ **Modern Angular 22+ Architecture** — 100% Standalone, Signal-driven reactive state, and native `@if` / `@for` control flow.
+- 🖼️ **Mixed Media Support** — Seamlessly cycle between high-res photos and HTML5 multi-resolution video streams (240p up to 4K).
+- 🔍 **High-Performance Zoom Loupe** — Hover over high-resolution photos with 60/120 FPS cursor tracking executed outside Angular Zone.js.
+- 📱 **Touch & Swipe Gestures** — Mobile touch swipe navigation with intelligent axis discrimination against page scrolling.
+- ♿ **Full WCAG 2.1 AA Accessibility** — Dynamic `aria-label` customization, keyboard controls (Arrow keys, Escape), and `prefers-reduced-motion` support.
+- 📐 **Dynamic Responsive Fitting** — Physical scale-up and progressive dimension morphing between varying media aspect ratios with automatic window resize handling.
+- 🎨 **Custom CSS Loaders & Templates** — Easily plug in custom `TemplateRef` loader templates and customize CSS theme variables.
+
+---
 
 ## Installation
 
-### 1. Install npm package
-
-**npm**
-
 ```shell
+# npm
 npm install ngx-cdk-lightbox --save
-```
 
-**yarn**
+# pnpm
+pnpm add ngx-cdk-lightbox
 
-```shell
+# yarn
 yarn add ngx-cdk-lightbox
 ```
 
-### 2. Import library to your module
+---
+
+## Quick Start (Standalone Angular)
+
+Inject `NgxCdkLightboxService` directly into your standalone component or service:
 
 ```typescript
-import { NgxCdkLightboxModule } from 'ngx-cdk-lightbox';
-```
+import { Component, inject } from '@angular/core';
+import { NgxCdkLightboxService, type IGalleryImage } from 'ngx-cdk-lightbox';
 
-### 3. Import NgxCdkLightboxModule into your module
-
-```typescript
-@NgModule({
-	imports: [...NgxCdkLightboxModule],
+@Component({
+	selector: 'app-gallery',
+	standalone: true,
+	template: ` <button (click)="openGallery()">Open Lightbox Gallery</button> `,
 })
-export class SomeModule {}
+export class GalleryComponent {
+	private readonly lightbox = inject(NgxCdkLightboxService);
+
+	public readonly images: IGalleryImage[] = [
+		{
+			type: 'image',
+			source: 'assets/images/photo1.jpg',
+			description: 'Alpine Lake & Snowy Peaks',
+			copyright: '© 2026 Photographer',
+			resolution: { width: 1920, height: 1080 },
+		},
+		{
+			type: 'image',
+			source: 'assets/images/photo2.jpg',
+			description: 'Forest Waterfall',
+			copyright: '© 2026 Nature Studio',
+		},
+	];
+
+	public openGallery(): void {
+		this.lightbox.open(this.images, {
+			enableZoom: true,
+			zoomSize: 2.5,
+			loopGallery: true,
+		});
+	}
+}
 ```
 
-## Usage
+---
+
+## Global Configuration (Optional)
+
+Configure application-wide default lightbox options in your `app.config.ts`:
 
 ```typescript
-this.lightboxService.open(TGalleryDisplayObject[], IGalleryConfig);
+import { type ApplicationConfig } from '@angular/core';
+import { provideLightboxConfig } from 'ngx-cdk-lightbox';
+
+export const appConfig: ApplicationConfig = {
+	providers: [
+		provideLightboxConfig({
+			loopGallery: true,
+			enableAnimations: true,
+			enableImageCounter: true,
+			imageCounterText: 'PHOTO IMAGE_INDEX OF IMAGE_COUNT',
+		}),
+	],
+};
 ```
 
-```typescript
-type TGalleryDisplayObject = IGalleryImage | IGalleryVideo;
-```
+---
+
+## API & Configuration Reference
+
+### `IGalleryConfig` Options
+
+| Option                  | Type                           | Default                              | Description                                                            |
+| ----------------------- | ------------------------------ | ------------------------------------ | ---------------------------------------------------------------------- |
+| `enableZoom`            | `boolean`                      | `false`                              | Enables interactive zoom loupe on hover over images.                   |
+| `zoomSize`              | `number \| 'originalSize'`     | `'originalSize'`                     | Zoom magnification factor (e.g. `2.5`) or original natural resolution. |
+| `enableImageClick`      | `boolean`                      | `true`                               | Click on left/right half of image to navigate previous/next.           |
+| `loopGallery`           | `boolean`                      | `true`                               | Loop back to start/end when reaching gallery boundaries.               |
+| `enableImageCounter`    | `boolean`                      | `true`                               | Displays current slide counter (e.g. `1 photo of 5`).                  |
+| `imageCounterText`      | `string`                       | `'IMAGE_INDEX photo of IMAGE_COUNT'` | Format string for counter. Replaces `IMAGE_INDEX` and `IMAGE_COUNT`.   |
+| `enableCloseIcon`       | `boolean`                      | `true`                               | Displays close icon button.                                            |
+| `closeIcon`             | `string`                       | Material Close SVG                   | Custom SVG markup for close button.                                    |
+| `enableArrows`          | `boolean`                      | `true`                               | Displays previous/next navigation arrow buttons.                       |
+| `arrowLeft`             | `string`                       | Material Chevron SVG                 | Custom SVG markup for previous button.                                 |
+| `arrowRight`            | `string`                       | Material Chevron SVG                 | Custom SVG markup for next button.                                     |
+| `loaderTemplate`        | `TemplateRef<unknown> \| null` | `null`                               | Custom Angular `TemplateRef` for loading spinners.                     |
+| `enableImagePreloading` | `boolean`                      | `true`                               | Pre-caches adjacent images in the background for instant transitions.  |
+| `startingIndex`         | `number`                       | `0`                                  | Initial zero-based slide index to open at.                             |
+| `enableAnimations`      | `boolean`                      | `true`                               | Enables progressive dimension morphing and cross-fades.                |
+| `ariaLabelNext`         | `string`                       | `'Next'`                             | Accessible screen-reader label for next button.                        |
+| `ariaLabelPrev`         | `string`                       | `'Previous'`                         | Accessible screen-reader label for previous button.                    |
+| `ariaLabelClose`        | `string`                       | `'Close'`                            | Accessible screen-reader label for close button.                       |
+
+---
+
+### Media Types
+
+#### `IGalleryImage`
 
 ```typescript
 interface IGalleryImage {
@@ -53,114 +136,39 @@ interface IGalleryImage {
 	source: string;
 	description?: string;
 	copyright?: string;
+	resolution?: { width: number; height: number };
 }
 ```
 
-```typescript
-type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
-```
+#### `IGalleryVideo`
 
 ```typescript
-export interface IGalleryVideo {
+interface IGalleryVideo {
 	type: 'video';
 	mp4Source: string | Partial<Record<TVideoResolutions, string>>;
 	description?: string;
 	copyright?: string;
-	resolution?: {
-		width: number;
-		height: number;
-	};
+	resolution?: { width: number; height: number };
 }
 ```
 
-```typescript
-interface IGalleryConfig {
-	enableZoom?: boolean;
-	zoomSize?: number | 'originalSize';
-	enableImageClick?: boolean;
-	loopGallery?: boolean;
-	enableImageCounter?: boolean;
-	imageCounterText?: string;
-	enableCloseIcon?: boolean;
-	closeIcon?: string;
-	enableArrows?: boolean;
-	arrowRight?: string;
-	arrowLeft?: string;
-	loaderTemplate?: TemplateRef<unknown>;
-	enableImagePreloading?: boolean;
-	startingIndex?: number;
-	enableAnimations?: boolean;
+---
+
+## Theming & CSS Variables
+
+Override default styling using CSS custom properties on `:root` or parent containers:
+
+```scss
+:root {
+	--ngx-cdk-background: #ffffff;
+	--ngx-cdk-loader-color: #4f46e5;
+	--ngx-cdk-loader-size: 32px;
+	--ngx-cdk-loader-thickness: 3px;
 }
 ```
 
-#### IGalleryImage
+---
 
-| key         | value                           |
-| ----------- | ------------------------------- |
-| type        | 'image'                         |
-| source      | path to image                   |
-| description | optional - description of image |
-| copyright   | optional - copyright info       |
+## License
 
-#### IGalleryVideo
-
-| key         | value                           |
-| ----------- | ------------------------------- |
-| type        | 'video'                         |
-| mp4Source   | path to video source/sources    |
-| description | optional - description of video |
-| copyright   | optional - copyright info       |
-| resolution  | width and height of video       |
-
-#### IGalleryConfig
-
-| key                   | type                   | default                                                                   | value                                                                           |
-| --------------------- | ---------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| enableZoom            | boolean                | false                                                                     | display zoom on mouse hover over image                                          |
-| zoomSize              | number, 'originalSize' | 'originalSize'                                                            | zoom size, number for zoom multiplication, originalSize for original image size |
-| enableImageClick      | boolean                | true                                                                      | enable click on image to navigate to next or previous image                     |
-| loopGallery           | boolean                | true                                                                      | loop gallery after last image or before first image                             |
-| enableImageCounter    | boolean                | true                                                                      | display current image counter                                                   |
-| imageCounterText      | string                 | 'IMAGE_INDEX photo of IMAGE_COUNT'                                        | format for image counter                                                        |
-| enableCloseIcon       | boolean                | true                                                                      | display close icon                                                              |
-| closeIcon             | string                 | https://material.io/tools/icons/?icon=close&style=baseline                | HTML string containing close icon                                               |
-| enableArrows          | boolean                | true                                                                      | display next/prev icons                                                         |
-| arrowRight            | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_right&style=baseline | HTML string containing right arrow                                              |
-| arrowLeft             | string                 | https://material.io/tools/icons/?icon=keyboard_arrow_left&style=baseline  | HTML string containing left arrow                                               |
-| loaderTemplate        | TemplateRef            | null                                                                      | Set custom loader by providing template reference                               |
-| enableImagePreloading | boolean                | enable/disable image preloading                                           |
-| startingIndex         | number                 | 0                                                                         | index of starting image                                                         |
-| enableAnimations      | boolean                | true                                                                      | enable/disable animations                                                       |
-| ariaLabelNext         | string                 | 'Next'                                                                    | Aria label for next button                                                      |
-| ariaLabelPrev         | string                 | 'Previous'                                                                | Aria label for previous button                                                  |
-
-## Usage example
-
-```typescript
-@Component({
-	...
-})
-export class SomeComponent
-{
-	constructor(private readonly lightboxService: NgxCdkLightboxService) {}
-
-	public openLightbox(): void {
-		this.lightboxService.open([
-			{source: 'assets/images/image1.jpg', copyright: 'unknown'},
-			{source: 'assets/images/image5.jpg', copyright: 'unknown'},
-		], {
-			enableAnimations: false,
-		});
-	}
-}
-```
-
-## ToDo
-
-- Support for iframe
-
-## Donate
-
-You are currently using code that is totally for free and that is fine. But if you want to put a soup on a developer's table anyway, feel free to do so :).
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=LUUCVTX85J2NQ&item_name=For+the+soup%21+%28ngx-cdk-lightbox+development%29&currency_code=CZK&source=url)
+MIT © [miskith](https://github.com/miskith)
