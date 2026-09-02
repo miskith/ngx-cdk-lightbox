@@ -20,7 +20,6 @@
 	padding: 2rem 1.5rem 4rem;
 }
 
-/* Header / Hero */
 .demo-header {
 	text-align: center;
 	margin-bottom: 2.5rem;
@@ -84,7 +83,6 @@
 	}
 }
 
-/* Navigation Tabs */
 .demo-tabs {
 	display: flex;
 	gap: 0.5rem;
@@ -123,7 +121,6 @@
 	}
 }
 
-/* Cards Grid & Cards */
 .cards-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -199,7 +196,6 @@
 	}
 }
 
-/* Code Snippet Styles */
 .code-block {
 	border-radius: 10px;
 	overflow: hidden;
@@ -215,7 +211,6 @@
 	}
 }
 
-/* Thumbnails Strip */
 .thumbnails-strip {
 	display: flex;
 	gap: 0.5rem;
@@ -258,7 +253,6 @@
 	}
 }
 
-/* Buttons */
 .btn-primary {
 	display: inline-flex;
 	align-items: center;
@@ -304,7 +298,6 @@
 	}
 }
 
-/* Playground Configurator Form */
 .playground-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -373,7 +366,6 @@
 	}
 }
 
-/* Custom CSS Loader Demonstration */
 .custom-pulse-loader {
 	display: flex;
 	align-items: center;

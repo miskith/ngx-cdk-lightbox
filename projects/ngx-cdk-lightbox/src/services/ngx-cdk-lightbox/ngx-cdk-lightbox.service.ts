@@ -53,7 +53,7 @@ export class NgxCdkLightboxService {
 		optional: true,
 	});
 
-	public open(
+	open(
 		displayObjects: TGalleryDisplayObject[],
 		config: Partial<IGalleryConfig> = {},
 	): DialogRef<void, LightboxDialogComponent> | null {
@@ -81,6 +81,7 @@ export class NgxCdkLightboxService {
 				hasBackdrop: true,
 				scrollStrategy: this.overlay.scrollStrategies.block(),
 				positionStrategy,
+				panelClass: mergedConfig.panelClass,
 				data: {
 					displayObjects,
 					config: mergedConfig,

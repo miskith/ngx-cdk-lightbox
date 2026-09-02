@@ -1,6 +1,4 @@
 :host {
-	--ngx-cdk-background: #fff;
-
 	display: grid;
 	place-items: center;
 	position: relative;
@@ -15,22 +13,26 @@
 		position: relative;
 		margin: 0;
 		padding: 0;
-		max-width: 95vw;
-		max-height: 85vh;
-		background: var(--ngx-cdk-background);
-		border-radius: 4px;
+		max-width: var(--ngx-cdk-max-width, 95vw);
+		max-height: var(--ngx-cdk-max-height, 85vh);
+		background: var(--ngx-cdk-background, #ffffff);
+		color: var(--ngx-cdk-text-color, #0f172a);
+		border-radius: var(--ngx-cdk-border-radius, 4px);
+		box-shadow: var(--ngx-cdk-box-shadow, 0 10px 30px rgba(0, 0, 0, 0.35));
 		box-sizing: border-box;
 	}
 
 	&__close-button {
 		position: absolute;
-		top: -30px;
-		right: -30px;
-		width: 28px;
-		height: 28px;
+		top: var(--ngx-cdk-close-button-top, -30px);
+		right: var(--ngx-cdk-close-button-right, -30px);
+		width: var(--ngx-cdk-button-size, 28px);
+		height: var(--ngx-cdk-button-size, 28px);
 		cursor: pointer;
-		background: var(--ngx-cdk-background);
-		border-radius: 50%;
+		background: var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff));
+		color: var(--ngx-cdk-button-color, var(--ngx-cdk-text-color, #0f172a));
+		border-radius: var(--ngx-cdk-button-border-radius, 50%);
+		box-shadow: var(--ngx-cdk-button-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
 		transition: background-color 0.25s ease-out;
 		padding: 2px;
 		border: 0;
@@ -38,11 +40,25 @@
 		z-index: 2;
 
 		&:hover {
-			background: color-mix(in srgb, #000 7%, var(--ngx-cdk-background));
+			background: var(
+				--ngx-cdk-button-hover-background,
+				color-mix(
+					in srgb,
+					#000000 7%,
+					var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff))
+				)
+			);
 		}
 
 		&:active {
-			background: color-mix(in srgb, #000 14%, var(--ngx-cdk-background));
+			background: var(
+				--ngx-cdk-button-active-background,
+				color-mix(
+					in srgb,
+					#000000 14%,
+					var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff))
+				)
+			);
 		}
 	}
 
@@ -60,11 +76,13 @@
 	&__arrow {
 		pointer-events: all;
 		cursor: pointer;
-		background: var(--ngx-cdk-background);
-		border-radius: 50%;
+		background: var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff));
+		color: var(--ngx-cdk-button-color, var(--ngx-cdk-text-color, #0f172a));
+		border-radius: var(--ngx-cdk-button-border-radius, 50%);
+		box-shadow: var(--ngx-cdk-button-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
 		padding: 2px;
-		width: 28px;
-		height: 28px;
+		width: var(--ngx-cdk-button-size, 28px);
+		height: var(--ngx-cdk-button-size, 28px);
 		border: 0;
 		transition:
 			background-color 0.25s ease-out,
@@ -73,11 +91,25 @@
 		opacity: 0;
 
 		&:hover {
-			background: color-mix(in srgb, #000 7%, var(--ngx-cdk-background));
+			background: var(
+				--ngx-cdk-button-hover-background,
+				color-mix(
+					in srgb,
+					#000000 7%,
+					var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff))
+				)
+			);
 		}
 
 		&:active {
-			background: color-mix(in srgb, #000 14%, var(--ngx-cdk-background));
+			background: var(
+				--ngx-cdk-button-active-background,
+				color-mix(
+					in srgb,
+					#000000 14%,
+					var(--ngx-cdk-button-background, var(--ngx-cdk-background, #ffffff))
+				)
+			);
 		}
 
 		&.is-left {
@@ -94,17 +126,19 @@
 	}
 
 	&__media-wrapper {
-		background: var(--ngx-cdk-background);
+		background: var(--ngx-cdk-background, #ffffff);
 		position: relative;
 		display: grid;
 		place-items: center;
 		margin: 0 auto;
-		max-width: 95vw;
-		max-height: 85vh;
+		max-width: var(--ngx-cdk-max-width, 95vw);
+		max-height: var(--ngx-cdk-max-height, 85vh);
 		overflow: hidden;
 		transition:
-			width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1),
-			height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+			width var(--ngx-cdk-transition-duration, 0.35s)
+				var(--ngx-cdk-transition-timing, cubic-bezier(0.25, 0.8, 0.25, 1)),
+			height var(--ngx-cdk-transition-duration, 0.35s)
+				var(--ngx-cdk-transition-timing, cubic-bezier(0.25, 0.8, 0.25, 1));
 		box-sizing: border-box;
 	}
 
@@ -133,9 +167,10 @@
 		grid-template-columns: 1fr auto;
 		align-items: baseline;
 		gap: 2px 12px;
-		padding: 6px 12px 8px;
-		background: var(--ngx-cdk-background);
-		border-radius: 0 0 4px 4px;
+		padding: var(--ngx-cdk-caption-padding, 6px 12px 8px);
+		font-size: var(--ngx-cdk-caption-font-size, 0.9375rem);
+		background: var(--ngx-cdk-background, #ffffff);
+		border-radius: 0 0 var(--ngx-cdk-border-radius, 4px) var(--ngx-cdk-border-radius, 4px);
 		width: 100%;
 		max-width: 100%;
 		box-sizing: border-box;
@@ -154,12 +189,14 @@
 		grid-column: 2;
 		white-space: nowrap;
 		justify-self: end;
+		color: var(--ngx-cdk-counter-color, #64748b);
+		font-size: var(--ngx-cdk-counter-font-size, 0.875rem);
 	}
 
 	&__copyright {
 		grid-column: 1 / -1;
-		font-size: 0.85em;
-		opacity: 0.8;
+		font-size: var(--ngx-cdk-copyright-font-size, 0.8125rem);
+		color: var(--ngx-cdk-copyright-color, #64748b);
 		min-width: 0;
 		word-break: break-word;
 		overflow-wrap: break-word;
@@ -167,18 +204,19 @@
 
 	&__zoom {
 		position: absolute;
-		width: 160px;
-		height: 160px;
-		margin: -80px 0 0 -80px;
+		width: var(--ngx-cdk-zoom-size, 160px);
+		height: var(--ngx-cdk-zoom-size, 160px);
+		margin: calc(var(--ngx-cdk-zoom-size, 160px) / -2) 0 0
+			calc(var(--ngx-cdk-zoom-size, 160px) / -2);
 		pointer-events: none;
 		left: 0;
 		top: 0;
 		overflow: hidden;
-		border-radius: 50%;
+		border-radius: var(--ngx-cdk-zoom-border-radius, 50%);
 		z-index: 10;
-		border: 2px solid rgba(255, 255, 255, 0.9);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-		background: var(--ngx-cdk-background);
+		border: var(--ngx-cdk-zoom-border, 2px solid rgba(255, 255, 255, 0.9));
+		box-shadow: var(--ngx-cdk-zoom-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
+		background: var(--ngx-cdk-background, #ffffff);
 	}
 
 	&__zoom-image {

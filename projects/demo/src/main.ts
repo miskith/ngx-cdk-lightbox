@@ -13,6 +13,7 @@ bootstrapApplication(AppComponent, {
 					typescript: () => import('highlight.js/lib/languages/typescript'),
 					bash: () => import('highlight.js/lib/languages/bash'),
 					json: () => import('highlight.js/lib/languages/json'),
+					css: () => import('highlight.js/lib/languages/css'),
 				},
 			},
 		},

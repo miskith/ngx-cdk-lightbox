@@ -14,7 +14,7 @@ A lightweight, performant, and flexible lightbox gallery component and service b
 - 📱 **Touch & Swipe Gestures** — Mobile touch swipe navigation with intelligent axis discrimination against page scrolling.
 - ♿ **Full WCAG 2.1 AA Accessibility** — Dynamic `aria-label` customization, keyboard controls (Arrow keys, Escape), and `prefers-reduced-motion` support.
 - 📐 **Dynamic Responsive Fitting** — Physical scale-up and progressive dimension morphing between varying media aspect ratios with automatic window resize handling.
-- 🎨 **Custom CSS Loaders & Templates** — Easily plug in custom `TemplateRef` loader templates and customize CSS theme variables.
+- 🎨 **Custom CSS Loaders & Theming** — Easily plug in custom `TemplateRef` loader templates and adjust layout with comprehensive CSS custom properties.
 
 ---
 
@@ -49,7 +49,7 @@ import { NgxCdkLightboxService, type IGalleryImage } from 'ngx-cdk-lightbox';
 export class GalleryComponent {
 	private readonly lightbox = inject(NgxCdkLightboxService);
 
-	public readonly images: IGalleryImage[] = [
+	readonly images: IGalleryImage[] = [
 		{
 			type: 'image',
 			source: 'assets/images/photo1.jpg',
@@ -65,7 +65,7 @@ export class GalleryComponent {
 		},
 	];
 
-	public openGallery(): void {
+	openGallery(): void {
 		this.lightbox.open(this.images, {
 			enableZoom: true,
 			zoomSize: 2.5,
@@ -154,16 +154,53 @@ interface IGalleryVideo {
 
 ---
 
-## Theming & CSS Variables
+## Theming & CSS Custom Properties
 
-Override default styling using CSS custom properties on `:root` or parent containers:
+Customize colors, typography, sizing, buttons, zoom loupe, and transitions via CSS variables:
 
 ```scss
 :root {
+	// Surface & Elevation
 	--ngx-cdk-background: #ffffff;
+	--ngx-cdk-border-radius: 8px;
+	--ngx-cdk-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+	// Layout & Sizing
+	--ngx-cdk-max-width: 95vw;
+	--ngx-cdk-max-height: 85vh;
+	--ngx-cdk-caption-padding: 8px 16px 10px;
+
+	// Typography & Colors
+	--ngx-cdk-text-color: #0f172a;
+	--ngx-cdk-caption-font-size: 0.9375rem;
+	--ngx-cdk-counter-color: #64748b;
+	--ngx-cdk-counter-font-size: 0.875rem;
+	--ngx-cdk-copyright-color: #94a3b8;
+	--ngx-cdk-copyright-font-size: 0.8125rem;
+
+	// Navigation & Action Buttons
+	--ngx-cdk-button-background: #ffffff;
+	--ngx-cdk-button-color: #0f172a;
+	--ngx-cdk-button-size: 32px;
+	--ngx-cdk-button-border-radius: 50%;
+	--ngx-cdk-button-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	--ngx-cdk-close-button-top: -36px;
+	--ngx-cdk-close-button-right: -36px;
+
+	// Zoom Loupe
+	--ngx-cdk-zoom-size: 180px;
+	--ngx-cdk-zoom-border: 2px solid rgba(255, 255, 255, 0.9);
+	--ngx-cdk-zoom-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+	--ngx-cdk-zoom-border-radius: 50%;
+
+	// Loader Spinner
 	--ngx-cdk-loader-color: #4f46e5;
 	--ngx-cdk-loader-size: 32px;
-	--ngx-cdk-loader-thickness: 3px;
+	--ngx-cdk-loader-thickness: 4px;
+
+	// Animation Transitions
+	--ngx-cdk-transition-duration: 0.35s;
+	--ngx-cdk-transition-timing: cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 ```
 

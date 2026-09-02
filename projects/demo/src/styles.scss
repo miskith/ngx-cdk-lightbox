@@ -26,3 +26,26 @@ body {
 	color: #0f172a;
 	-webkit-font-smoothing: antialiased;
 }
+
+.cyberpunk-dark-lightbox {
+	--ngx-cdk-background: #090d16;
+	--ngx-cdk-text-color: #38bdf8;
+	--ngx-cdk-border-radius: 20px;
+	--ngx-cdk-box-shadow: 0 0 45px rgba(56, 189, 248, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+	--ngx-cdk-caption-padding: 12px 20px 14px;
+	--ngx-cdk-caption-font-size: 1.05rem;
+	--ngx-cdk-counter-color: #f59e0b;
+	--ngx-cdk-counter-font-size: 0.95rem;
+	--ngx-cdk-copyright-color: #64748b;
+	--ngx-cdk-button-background: #6366f1;
+	--ngx-cdk-button-color: #ffffff;
+	--ngx-cdk-button-size: 38px;
+	--ngx-cdk-button-border-radius: 12px;
+	--ngx-cdk-button-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+	--ngx-cdk-close-button-top: -20px;
+	--ngx-cdk-close-button-right: -20px;
+	--ngx-cdk-zoom-size: 220px;
+	--ngx-cdk-zoom-border: 3px solid #38bdf8;
+	--ngx-cdk-zoom-shadow: 0 0 30px rgba(56, 189, 248, 0.8);
+	--ngx-cdk-zoom-border-radius: 24px;
+}

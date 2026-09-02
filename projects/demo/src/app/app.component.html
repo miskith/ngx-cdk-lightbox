@@ -202,7 +202,7 @@
 	<!-- TAB 3: Custom Loader -->
 	@if (activeTab() === 'custom-loader') {
 		<div class="cards-grid">
-			<div class="demo-card" style="grid-column: 1 / -1;">
+			<div class="demo-card">
 				<div class="card-header">
 					<h2>Custom CSS Loader Template & Instant Transitions</h2>
 					<span class="feature-tag">Custom TemplateRef</span>
@@ -231,6 +231,29 @@
 							class="btn-primary"
 							(click)="openGallery(demoImages, configCustomLoader)">
 						Launch with Custom Loader
+					</button>
+				</div>
+			</div>
+
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>CSS Custom Properties & Cyberpunk Theme</h2>
+					<span class="feature-tag" style="background: #0f172a; color: #38bdf8;">Neon Dark Theme</span>
+				</div>
+				<div class="card-body">
+					<p>
+						Dramatically customize surfaces, glow shadows, buttons, squircle borders, and zoom loupe geometry by applying CSS custom properties via <code>panelClass</code> or <code>:root</code>:
+					</p>
+					<div class="code-block">
+						<pre><code [highlight]="cssThemingSnippet" language="css"></code></pre>
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button"
+							class="btn-primary"
+							style="background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8;"
+							(click)="openDarkThemeGallery()">
+						Launch Cyberpunk Theme Lightbox
 					</button>
 				</div>
 			</div>

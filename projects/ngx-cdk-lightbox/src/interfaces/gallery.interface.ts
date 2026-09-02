@@ -45,6 +45,7 @@ export interface IGalleryConfig {
 	ariaLabelNext: string;
 	ariaLabelPrev: string;
 	ariaLabelClose: string;
+	panelClass?: string | string[];
 }
 
 export interface IGalleryData {
