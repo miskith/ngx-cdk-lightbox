@@ -340,12 +340,13 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private updateZoomPosition(event: MouseEvent): void {
-		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
-		this.zoomStyles.x = layerX;
-		this.zoomStyles.y = layerY;
+		const offsetX = event.offsetX ?? 0;
+		const offsetY = event.offsetY ?? 0;
+		this.zoomStyles.x = offsetX;
+		this.zoomStyles.y = offsetY;
 
 		if (this.zoomElement?.nativeElement) {
-			this.zoomElement.nativeElement.style.transform = `translate(${layerX}px, ${layerY}px)`;
+			this.zoomElement.nativeElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 		}
 		if (this.zoomImageElement?.nativeElement) {
 			this.zoomImageElement.nativeElement.style.transform = this.zoomTransformation;
@@ -354,10 +355,11 @@ export class LightboxDialogComponent implements OnInit {
 
 	imageMouseIn(event: MouseEvent): void {
 		this.setImageDetails(event.target as HTMLImageElement);
-		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
+		const offsetX = event.offsetX ?? 0;
+		const offsetY = event.offsetY ?? 0;
 		this.zoomStyles = {
 			...this.zoomStyles,
-			...{ x: layerX, y: layerY },
+			...{ x: offsetX, y: offsetY },
 		};
 	}
 
@@ -374,8 +376,8 @@ export class LightboxDialogComponent implements OnInit {
 			return;
 		}
 
-		const { layerX } = event as MouseEvent & { layerX: number };
-		if (layerX / this.zoomStyles.width < 0.5) {
+		const offsetX = event.offsetX ?? 0;
+		if (offsetX / this.zoomStyles.width < 0.5) {
 			this.prevDisplayObject();
 		} else {
 			this.nextDisplayObject();
