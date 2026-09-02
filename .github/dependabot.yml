@@ -24,7 +24,6 @@ updates:
           - "husky"
           - "vitest*"
           - "jsdom"
-          - "ts-node"
           - "typescript"
 
   - package-ecosystem: "github-actions"
