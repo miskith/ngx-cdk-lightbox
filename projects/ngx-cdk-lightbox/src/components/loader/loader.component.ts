@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, TemplateRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
 	selector: 'lib-loader',
 	templateUrl: 'loader.component.html',
 	styleUrl: 'loader.component.scss',
-	imports: [CommonModule],
+	imports: [NgTemplateOutlet],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoaderComponent {

@@ -1,12 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Observable } from 'rxjs';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 
 import { LightboxDialogComponent } from './lightbox-dialog.component';
-import { LoaderComponent } from '../loader/loader.component';
-import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 
 describe('LightboxDialogComponent', () => {
 	let component: LightboxDialogComponent;
@@ -28,25 +25,23 @@ describe('LightboxDialogComponent', () => {
 				type: 'video',
 				mp4Source: { 720: 'video-720.mp4', 1080: 'video-1080.mp4' },
 				description: 'Video 1',
+				resolution: { width: 1920, height: 1080 },
 			},
 			{ type: 'image', source: 'test3.jpg', description: 'Photo 3' },
 		],
 	};
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({})
-			.overrideComponent(LightboxDialogComponent, {
-				add: {
-					providers: [
-						{ provide: DIALOG_DATA, useValue: mockData },
-						{ provide: DialogRef, useValue: mockDialogRef },
-					],
-				},
-				remove: {
-					imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
-				},
-			})
-			.overrideTemplate(LightboxDialogComponent, '<div></div>');
+		TestBed.configureTestingModule({}).overrideComponent(LightboxDialogComponent, {
+			set: {
+				providers: [
+					{ provide: DIALOG_DATA, useValue: mockData },
+					{ provide: DialogRef, useValue: mockDialogRef },
+				],
+				imports: [],
+				template: '<div></div>',
+			},
+		});
 
 		fixture = TestBed.createComponent(LightboxDialogComponent);
 		component = fixture.componentInstance;
@@ -55,6 +50,15 @@ describe('LightboxDialogComponent', () => {
 
 	it('should create the component', () => {
 		expect(component).toBeTruthy();
+	});
+
+	it('should calculate fitted dimensions correctly preserving aspect ratio', () => {
+		const dimensions = (component as any).calculateFittedDimensions(1200, 800);
+		expect(dimensions.width).toBeGreaterThan(0);
+		expect(dimensions.height).toBeGreaterThan(0);
+		expect(Math.round((dimensions.width / dimensions.height) * 100)).toBe(
+			Math.round((1200 / 800) * 100),
+		);
 	});
 
 	it('should compute imageCounter correctly', () => {
@@ -170,7 +174,8 @@ describe('LightboxDialogComponent', () => {
 		expect(component.currentIndex()).toBe(1);
 	});
 
-	it('should toggle zoom display based on configuration', () => {
+	it('should enable zoom based on configuration and dimensions', () => {
+		component.currentIndex.set(0);
 		component.zoomStyles.set({
 			width: 100,
 			naturalWidth: 200,
@@ -179,12 +184,15 @@ describe('LightboxDialogComponent', () => {
 			x: 0,
 			y: 0,
 		});
+		component.imageOpacity.set(1);
+		component.isHoveringImage.set(true);
 		(component as any)['config'] = { enableZoom: true, zoomSize: 'originalSize' };
-		component['switchDisplayZoom']();
+		expect(component.canZoom()).toBeTruthy();
 		expect(component.displayZoom()).toBeTruthy();
 	});
 
-	it('should not enable zoom if dimensions are equal or smaller', () => {
+	it('should not enable zoom if dimensions are equal or smaller in originalSize mode', () => {
+		component.currentIndex.set(0);
 		component.zoomStyles.set({
 			width: 200,
 			naturalWidth: 200,
@@ -194,8 +202,7 @@ describe('LightboxDialogComponent', () => {
 			y: 0,
 		});
 		(component as any)['config'] = { enableZoom: true, zoomSize: 'originalSize' };
-		component['switchDisplayZoom']();
-		expect(component.displayZoom()).toBeFalsy();
+		expect(component.canZoom()).toBeFalsy();
 	});
 
 	it('should correctly calculate the zoom transformation', () => {
@@ -229,7 +236,9 @@ describe('LightboxDialogComponent', () => {
 		}));
 
 	it('should reset zoom styles on imageMouseOut', () => {
+		component.isHoveringImage.set(true);
 		component.imageMouseOut();
+		expect(component.isHoveringImage()).toBeFalsy();
 		expect(component.displayZoom()).toBeFalsy();
 	});
 

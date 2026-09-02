@@ -6,7 +6,7 @@ import {
 	TemplateRef,
 	viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { JsonPipe } from '@angular/common';
 import { HighlightModule } from 'ngx-highlightjs';
 
 import {
@@ -24,7 +24,7 @@ type DemoTab =
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [CommonModule, HighlightModule],
+	imports: [JsonPipe, HighlightModule],
 })
 export class AppComponent {
 	readonly customLoaderTemplate = viewChild<TemplateRef<unknown>>('customLoaderTemplate');
@@ -48,77 +48,64 @@ export class AppComponent {
 	public readonly demoImages: IGalleryImage[] = [
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
-			description: 'Tropical Beach with Palm Trees and Turquoise Sea',
-			copyright: 'Photo by Sean Oulashin on Unsplash',
+			source: 'assets/images/image1.jpg',
+			description: 'Alpine Lake & Snowy Peaks (16:9 Widescreen Landscape)',
+			copyright: 'AI Generated Landscape',
 		},
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1600&q=80',
-			description: 'Crystal Clear Ocean Waves and Golden Sandy Coast',
-			copyright: 'Photo by Frank McKenna on Unsplash',
+			source: 'assets/images/image2.jpg',
+			description: 'Mossy Forest Waterfall (3:4 Vertical Portrait)',
+			copyright: 'AI Generated Nature',
 		},
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1600&q=80',
-			description: 'Serene Mountain Lake and Emerald Forest',
-			copyright: 'Photo by Luca Bravo on Unsplash',
+			source: 'assets/images/image3.jpg',
+			description: 'Modern Minimalist Villa with Pool (1:1 Square Architecture)',
+			copyright: 'AI Generated Architecture',
 		},
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80',
-			description: 'Yosemite Valley with Mist Rolling Across Granite Cliffs',
-			copyright: 'Photo by Bailey Zindel on Unsplash',
+			source: 'assets/images/image4.jpg',
+			description: 'Rainy Cyberpunk Metropolis (9:16 Ultra-Tall Portrait)',
+			copyright: 'AI Generated Cyberpunk',
 		},
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1600&q=80',
-			description: 'Dramatic Mountain Silhouette Under Golden Dusk Sky',
-			copyright: 'Photo by Florian van Duyn on Unsplash',
-		},
-		{
-			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80',
-			description: 'Foggy Forest Landscape with Morning Light Beams',
-			copyright: 'Photo by Kalen Emsley on Unsplash',
+			source: 'assets/images/image5.jpg',
+			description: 'Sahara Desert Sunset Dunes (4:3 Classic Landscape)',
+			copyright: 'AI Generated Nature',
 		},
 	];
 
 	public readonly mixedMedia: TGalleryDisplayObject[] = [
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
-			description: 'Tropical Beach with Palm Trees and Turquoise Sea',
-			copyright: 'Photo by Sean Oulashin on Unsplash',
+			source: 'assets/images/image1.jpg',
+			description: 'Alpine Lake & Snowy Peaks (16:9 Landscape)',
+			copyright: 'AI Generated Landscape',
 		},
 		{
 			type: 'video',
 			mp4Source: {
-				720: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-720.mp4',
-				1080: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-1080.mp4',
+				240: 'assets/videos/240p.mp4',
+				480: 'assets/videos/480p.mp4',
+				720: 'assets/videos/720p.mp4',
 			},
-			description: 'Big Buck Bunny (Multi-resolution HD/FHD Video)',
-			resolution: { width: 1920, height: 1080 },
+			description: 'Big Buck Bunny (Multi-resolution 240p / 480p / 720p)',
+			resolution: { width: 1280, height: 720 },
 			copyright: 'Blender Foundation | Creative Commons',
 		},
 		{
 			type: 'image',
-			source:
-				'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1600&q=80',
-			description: 'Pristine Alpine Lake Reflections',
-			copyright: 'Photo by Luca Bravo on Unsplash',
+			source: 'assets/images/image4.jpg',
+			description: 'Cyberpunk Neon Street (9:16 Tall Portrait)',
+			copyright: 'AI Generated Cyberpunk',
 		},
 		{
 			type: 'video',
-			mp4Source: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-720.mp4',
-			description: 'Single-source Streamlined Video',
+			mp4Source: 'assets/videos/720p.mp4',
+			description: 'Single-source 720p Video',
 			resolution: { width: 1280, height: 720 },
 			copyright: 'Blender Foundation',
 		},
@@ -177,8 +164,8 @@ export class GalleryComponent {
     this.lightbox.open([
       {
         type: 'image',
-        source: 'assets/images/scenic.jpg',
-        description: 'Mountain Peak',
+        source: 'assets/images/image1.jpg',
+        description: 'Alpine Lake & Mountain Peaks',
         copyright: '© 2026 Photographer',
       },
     ], {

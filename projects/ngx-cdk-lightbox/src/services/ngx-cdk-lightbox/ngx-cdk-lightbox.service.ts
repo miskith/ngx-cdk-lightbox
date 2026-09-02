@@ -1,4 +1,4 @@
-import { inject, Service } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 
@@ -11,29 +11,29 @@ import {
 } from '../../interfaces/gallery.interface';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
+const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
+	enableZoom: false,
+	zoomSize: 'originalSize',
+	enableImageClick: true,
+	loopGallery: true,
+	enableImageCounter: true,
+	imageCounterText: 'IMAGE_INDEX photo of IMAGE_COUNT',
+	enableCloseIcon: true,
+	closeIcon: closeIconSvg,
+	enableArrows: true,
+	arrowRight: arrowRightSvg,
+	arrowLeft: arrowLeftSvg,
+	loaderTemplate: null,
+	enableImagePreloading: true,
+	startingIndex: 0,
+	enableAnimations: true,
+	ariaLabelNext: 'Next',
+	ariaLabelPrev: 'Previous',
+	ariaLabelClose: 'Close',
+};
+
 @Service()
 export class NgxCdkLightboxService {
-	private defaultConfig: IGalleryConfig = {
-		enableZoom: false,
-		zoomSize: 'originalSize',
-		enableImageClick: true,
-		loopGallery: true,
-		enableImageCounter: true,
-		imageCounterText: 'IMAGE_INDEX photo of IMAGE_COUNT',
-		enableCloseIcon: true,
-		closeIcon: closeIconSvg,
-		enableArrows: true,
-		arrowRight: arrowRightSvg,
-		arrowLeft: arrowLeftSvg,
-		loaderTemplate: null,
-		enableImagePreloading: true,
-		startingIndex: 0,
-		enableAnimations: true,
-		ariaLabelNext: 'Next',
-		ariaLabelPrev: 'Previous',
-		ariaLabelClose: 'Close',
-	};
-
 	private readonly overlay: Overlay = inject<Overlay>(Overlay);
 	private readonly dialog: Dialog = inject<Dialog>(Dialog);
 
@@ -41,7 +41,7 @@ export class NgxCdkLightboxService {
 		displayObjects: TGalleryDisplayObject[],
 		config: Partial<IGalleryConfig> = {},
 	): DialogRef<void, LightboxDialogComponent> | null {
-		if (displayObjects.length < 1) {
+		if (displayObjects.length === 0) {
 			return null;
 		}
 
@@ -58,10 +58,10 @@ export class NgxCdkLightboxService {
 				maxHeight: '95vh',
 				hasBackdrop: true,
 				scrollStrategy: this.overlay.scrollStrategies.block(),
-				positionStrategy: positionStrategy,
+				positionStrategy,
 				data: {
 					displayObjects,
-					config: { ...this.defaultConfig, ...config },
+					config: { ...DEFAULT_GALLERY_CONFIG, ...config },
 				},
 				templateContext: () => ({ dialogRef }),
 			},

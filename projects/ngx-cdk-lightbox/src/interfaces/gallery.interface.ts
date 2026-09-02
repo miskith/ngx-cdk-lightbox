@@ -7,6 +7,10 @@ export interface IGalleryImage {
 	source: string;
 	description?: string;
 	copyright?: string;
+	resolution?: {
+		width: number;
+		height: number;
+	};
 }
 
 type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;

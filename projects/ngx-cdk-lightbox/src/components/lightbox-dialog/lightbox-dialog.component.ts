@@ -13,7 +13,6 @@ import {
 	computed,
 	effect,
 } from '@angular/core';
-import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
@@ -53,11 +52,16 @@ interface IVideoSourceItem {
 	size?: string;
 }
 
+interface IDimensions {
+	width: string;
+	height: string;
+}
+
 @Component({
 	selector: 'lib-lightbox-dialog',
 	templateUrl: 'lightbox-dialog.component.html',
 	styleUrl: 'lightbox-dialog.component.scss',
-	imports: [CommonModule, NgTemplateOutlet, SafeHtmlPipe, LoaderComponent],
+	imports: [SafeHtmlPipe, LoaderComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightboxDialogComponent implements OnInit {
@@ -78,10 +82,16 @@ export class LightboxDialogComponent implements OnInit {
 	private mouseMoveSubscription?: Subscription;
 	private touchStartX = 0;
 	private touchStartY = 0;
+	private isFirstLoad = true;
 
 	readonly currentIndex = signal<number>(0);
 	readonly isLoading = signal<boolean>(false);
-	readonly displayZoom = signal<boolean>(false);
+	readonly imageOpacity = signal<number>(0);
+	readonly isHoveringImage = signal<boolean>(false);
+	readonly wrapperDimensions = signal<IDimensions>({
+		width: '0px',
+		height: '0px',
+	});
 	readonly zoomStyles = signal<IZoomStyles>({
 		x: 0,
 		y: 0,
@@ -109,6 +119,21 @@ export class LightboxDialogComponent implements OnInit {
 		return item && this.isGalleryVideo(item) ? item : null;
 	});
 
+	readonly canZoom = computed<boolean>(() => {
+		if (!this.config.enableZoom || !this.currentImage()) {
+			return false;
+		}
+		if (this.config.zoomSize !== 'originalSize') {
+			return true;
+		}
+		const { width, naturalWidth, height, naturalHeight } = this.zoomStyles();
+		return (width > 0 && width < naturalWidth) || (height > 0 && height < naturalHeight);
+	});
+
+	readonly displayZoom = computed<boolean>(() => {
+		return this.canZoom() && this.isHoveringImage() && this.imageOpacity() > 0.5;
+	});
+
 	readonly imageCounter = computed<string>(() => {
 		return this.config.imageCounterText
 			.replace(/IMAGE_INDEX/, String(this.currentIndex() + 1))
@@ -132,26 +157,32 @@ export class LightboxDialogComponent implements OnInit {
 	readonly zoomTransformation = computed<string>(() => {
 		const { x, y, width, naturalWidth, height, naturalHeight } = this.zoomStyles();
 		if (this.config.zoomSize === 'originalSize') {
-			const translateX = -1 * (x * (width > 0 ? naturalWidth / width : 1) - 80);
-			const translateY = -1 * (y * (height > 0 ? naturalHeight / height : 1) - 80);
+			const scaleX = width > 0 ? naturalWidth / width : 1;
+			const scaleY = height > 0 ? naturalHeight / height : 1;
+			const translateX = -1 * (x * scaleX - 80);
+			const translateY = -1 * (y * scaleY - 80);
 			return `translate(${translateX}px, ${translateY}px)`;
 		}
-		const scale = this.config.zoomSize;
+		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
 		return `translate(${-1 * (x * scale - 80)}px, ${-1 * (y * scale - 80)}px)`;
 	});
 
 	readonly zoomWidth = computed<string>(() => {
 		const { width, naturalWidth } = this.zoomStyles();
-		return this.config.zoomSize === 'originalSize'
-			? `${naturalWidth}px`
-			: `${width * this.config.zoomSize}px`;
+		if (this.config.zoomSize === 'originalSize') {
+			return `${naturalWidth}px`;
+		}
+		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
+		return `${width * scale}px`;
 	});
 
 	readonly zoomHeight = computed<string>(() => {
 		const { height, naturalHeight } = this.zoomStyles();
-		return this.config.zoomSize === 'originalSize'
-			? `${naturalHeight}px`
-			: `${height * this.config.zoomSize}px`;
+		if (this.config.zoomSize === 'originalSize') {
+			return `${naturalHeight}px`;
+		}
+		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
+		return `${height * scale}px`;
 	});
 
 	ngOnInit(): void {
@@ -237,22 +268,16 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	imageMouseIn(event: MouseEvent): void {
-		this.setImageDetails(event.target as HTMLImageElement);
-		const offsetX = event.offsetX ?? 0;
-		const offsetY = event.offsetY ?? 0;
-		this.zoomStyles.update((current) => ({
-			...current,
-			x: offsetX,
-			y: offsetY,
-		}));
-	}
-
-	imageMouseMove(event: MouseEvent): void {
+		this.isHoveringImage.set(true);
+		const target = (event.currentTarget || event.target) as HTMLImageElement;
+		if (target) {
+			this.setImageDetails(target);
+		}
 		this.updateZoomPosition(event);
 	}
 
 	imageMouseOut(): void {
-		this.displayZoom.set(false);
+		this.isHoveringImage.set(false);
 	}
 
 	private setupImageMouseMoveListener(imageElement: HTMLImageElement): void {
@@ -265,8 +290,17 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private updateZoomPosition(event: MouseEvent): void {
-		const offsetX = event.offsetX ?? 0;
-		const offsetY = event.offsetY ?? 0;
+		const imageElement = this.imageElement()?.nativeElement;
+		let offsetX = event.offsetX ?? 0;
+		let offsetY = event.offsetY ?? 0;
+
+		if (imageElement) {
+			const rect = imageElement.getBoundingClientRect();
+			if (rect.width > 0 && rect.height > 0) {
+				offsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+				offsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+			}
+		}
 
 		this.zoomStyles.update((current) => ({
 			...current,
@@ -286,25 +320,19 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private setImageDetails(imageElement: HTMLImageElement): void {
+		const naturalWidth = imageElement.naturalWidth;
+		const naturalHeight = imageElement.naturalHeight;
+		const fitted = this.calculateFittedDimensions(naturalWidth, naturalHeight);
+		const width = imageElement.clientWidth || fitted.width;
+		const height = imageElement.clientHeight || fitted.height;
+
 		this.zoomStyles.update((current) => ({
 			...current,
-			width: imageElement.clientWidth,
-			naturalWidth: imageElement.naturalWidth,
-			height: imageElement.clientHeight,
-			naturalHeight: imageElement.naturalHeight,
+			width,
+			naturalWidth,
+			height,
+			naturalHeight,
 		}));
-
-		this.switchDisplayZoom();
-	}
-
-	private switchDisplayZoom(): void {
-		const styles = this.zoomStyles();
-		const canZoom =
-			this.config.zoomSize !== 'originalSize' ||
-			styles.width < styles.naturalWidth ||
-			styles.height < styles.naturalHeight;
-
-		this.displayZoom.set(this.config.enableZoom && canZoom);
 	}
 
 	private getNextIndex(): number | false {
@@ -324,111 +352,148 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	private loadDisplayObject(index: number): void {
-		this.isLoading.set(true);
+		const targetObject = this.data.displayObjects[index];
+		if (!targetObject) {
+			return;
+		}
 
-		this.animateImage(index)
-			.pipe(
-				takeUntilDestroyed(this.destroyRef),
-				tap(() => this.isLoading.set(false)),
-			)
-			.subscribe({
-				next: () => {
-					setTimeout(() => {
-						const imageElementRef = this.imageElement();
-						if (imageElementRef?.nativeElement) {
-							this.setImageDetails(imageElementRef.nativeElement);
+		this.currentIndex.set(index);
+
+		if (!this.config.enableAnimations) {
+			this.wrapperDimensions.set({ width: 'auto', height: 'auto' });
+			this.imageOpacity.set(1);
+			this.isLoading.set(true);
+
+			this.preloadDisplayObject(targetObject)
+				.pipe(
+					takeUntilDestroyed(this.destroyRef),
+					catchError((error) => {
+						console.error('Failed to load display object:', error);
+						this.isLoading.set(false);
+						return of(void 0);
+					}),
+				)
+				.subscribe({
+					next: (preloadedImage) => {
+						if (preloadedImage) {
+							this.setImageDetails(preloadedImage);
 						}
-
 						const videoElementRef = this.videoElement();
 						if (videoElementRef?.nativeElement) {
-							const videoElementContainer = videoElementRef.nativeElement;
-							const video = this.currentVideo();
-							if (video?.resolution) {
-								videoElementContainer.style.aspectRatio = `${video.resolution.width}/${video.resolution.height}`;
-							} else {
-								videoElementContainer.style.aspectRatio = '';
-							}
-							videoElementContainer.load();
+							videoElementRef.nativeElement.load();
 						}
-					}, 10);
+						this.isLoading.set(false);
+						this.prefetchAdjacentObjects();
+					},
+					error: () => {
+						this.isLoading.set(false);
+					},
+				});
+			return;
+		}
 
-					if (this.config.enableImagePreloading) {
-						const nextIndex = this.getNextIndex();
-						if (nextIndex !== false) {
-							this.preloadDisplayObject(this.data.displayObjects[nextIndex]!).subscribe();
-						}
-						const prevIndex = this.getPrevIndex();
-						if (prevIndex !== false) {
-							this.preloadDisplayObject(this.data.displayObjects[prevIndex]!).subscribe();
-						}
+		this.imageOpacity.set(0);
+		this.isHoveringImage.set(false);
+
+		if (this.isFirstLoad) {
+			this.wrapperDimensions.set({ width: '0px', height: '0px' });
+		}
+
+		this.preloadDisplayObject(targetObject)
+			.pipe(
+				takeUntilDestroyed(this.destroyRef),
+				catchError((error) => {
+					console.error('Failed to load display object:', error);
+					this.imageOpacity.set(1);
+					return of(void 0);
+				}),
+				switchMap((preloadedImage) => {
+					let naturalWidth = 900;
+					let naturalHeight = 600;
+
+					if (preloadedImage) {
+						naturalWidth = preloadedImage.naturalWidth;
+						naturalHeight = preloadedImage.naturalHeight;
+						this.setImageDetails(preloadedImage);
+					} else if (this.isGalleryVideo(targetObject) && targetObject.resolution) {
+						naturalWidth = targetObject.resolution.width;
+						naturalHeight = targetObject.resolution.height;
+					} else if (this.isGalleryImage(targetObject) && targetObject.resolution) {
+						naturalWidth = targetObject.resolution.width;
+						naturalHeight = targetObject.resolution.height;
 					}
+
+					const targetSize = this.calculateFittedDimensions(naturalWidth, naturalHeight);
+					const delayTime = this.isFirstLoad ? 30 : 10;
+					this.isFirstLoad = false;
+
+					return timer(delayTime).pipe(
+						tap(() => {
+							this.wrapperDimensions.set({
+								width: `${targetSize.width}px`,
+								height: `${targetSize.height}px`,
+							});
+						}),
+						switchMap(() => timer(350)),
+						map(() => preloadedImage),
+					);
+				}),
+			)
+			.subscribe({
+				next: (preloadedImage) => {
+					if (preloadedImage) {
+						this.setImageDetails(preloadedImage);
+					}
+
+					const videoElementRef = this.videoElement();
+					if (videoElementRef?.nativeElement) {
+						videoElementRef.nativeElement.load();
+					}
+
+					this.imageOpacity.set(1);
+					this.prefetchAdjacentObjects();
 				},
-				error: (error) => {
-					console.error('Image could not be loaded.', error);
-					this.isLoading.set(false);
+				error: () => {
+					this.imageOpacity.set(1);
 				},
 			});
 	}
 
-	private animateImage(index: number): Observable<unknown> {
-		if (!this.config.enableAnimations || !('source' in this.data.displayObjects[index]!)) {
-			this.currentIndex.set(index);
-			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex()]!);
+	private calculateFittedDimensions(
+		naturalWidth: number,
+		naturalHeight: number,
+	): { width: number; height: number } {
+		if (!naturalWidth || !naturalHeight) {
+			return { width: 600, height: 400 };
 		}
+		const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.95 : 1200;
+		const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800;
+		const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight, 1);
 
-		const imageElement = this.imageElement()?.nativeElement;
-		if (imageElement) {
-			imageElement.style.opacity = '0';
+		const fittedWidth = Math.round(naturalWidth * scale);
+		const fittedHeight = Math.round(naturalHeight * scale);
+
+		const minWidth = Math.min(300, maxWidth);
+		const width = Math.max(fittedWidth, minWidth);
+
+		return {
+			width,
+			height: fittedHeight,
+		};
+	}
+
+	private prefetchAdjacentObjects(): void {
+		if (!this.config.enableImagePreloading) {
+			return;
 		}
-
-		return this.preloadDisplayObject(this.data.displayObjects[index]!).pipe(
-			catchError((error) => {
-				console.error('Image preload error:', error);
-				return of(void 0);
-			}),
-			switchMap((preloadedImage: HTMLImageElement | void) => {
-				const parentElement = this.imageElement()?.nativeElement?.parentElement;
-				if (parentElement) {
-					parentElement.style.width = `${parentElement.clientWidth}px`;
-					parentElement.style.height = `${parentElement.clientHeight}px`;
-				}
-				const naturalWidth = preloadedImage ? preloadedImage.naturalWidth : 0;
-				const naturalHeight = preloadedImage ? preloadedImage.naturalHeight : 0;
-				const ratio = Math.max(
-					naturalWidth / (window.innerWidth * 0.95),
-					naturalHeight / (window.innerHeight * 0.85),
-					1,
-				);
-				this.currentIndex.set(index);
-
-				return timer(1).pipe(
-					tap(() => {
-						const currentImageElement = this.imageElement()?.nativeElement;
-						if (currentImageElement?.parentElement) {
-							currentImageElement.style.width = '0px';
-							currentImageElement.style.height = '0px';
-							currentImageElement.parentElement.style.width = `${naturalWidth / ratio}px`;
-							currentImageElement.parentElement.style.height = `${naturalHeight / ratio}px`;
-						}
-					}),
-					switchMap(() =>
-						timer(250).pipe(
-							tap(() => {
-								const currentImageElement = this.imageElement()?.nativeElement;
-								if (currentImageElement?.parentElement) {
-									currentImageElement.parentElement.style.width = '';
-									currentImageElement.parentElement.style.height = '';
-									currentImageElement.style.width = 'auto';
-									currentImageElement.style.height = 'auto';
-									currentImageElement.style.opacity = '1';
-								}
-							}),
-						),
-					),
-				);
-			}),
-			takeUntilDestroyed(this.destroyRef),
-		);
+		const nextIndex = this.getNextIndex();
+		if (nextIndex !== false) {
+			this.preloadDisplayObject(this.data.displayObjects[nextIndex]!).subscribe();
+		}
+		const prevIndex = this.getPrevIndex();
+		if (prevIndex !== false) {
+			this.preloadDisplayObject(this.data.displayObjects[prevIndex]!).subscribe();
+		}
 	}
 
 	private preloadDisplayObject(

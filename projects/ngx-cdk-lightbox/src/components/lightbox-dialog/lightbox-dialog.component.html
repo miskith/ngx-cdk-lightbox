@@ -1,13 +1,13 @@
 @if (currentDisplayObject() && (!isLoading() || config.enableAnimations)) {
-	<div 	class="lightbox-dialog__container"
-			(touchstart)="touchStart($event)"
-			(touchend)="touchEnd($event)">
+	<figure class="lightbox-dialog__container"
+		(touchstart)="touchStart($event)"
+		(touchend)="touchEnd($event)">
 		@if (config.enableCloseIcon) {
 			<button type="button"
-				class="lightbox-dialog__close-button"
-				[innerHTML]="config.closeIcon | safeHtml"
-				(click)="closeModal()"
-				[attr.aria-label]="config.ariaLabelClose || 'Close'">
+					class="lightbox-dialog__close-button"
+					[innerHTML]="config.closeIcon | safeHtml"
+					(click)="closeModal()"
+					[attr.aria-label]="config.ariaLabelClose || 'Close'">
 			</button>
 		}
 
@@ -29,81 +29,70 @@
 			</div>
 		}
 
-		@if (currentImage(); as image) {
-			<figure class="lightbox-dialog__image-container">
-				<div class="lightbox-dialog__image-wrapper">
-					<img 	#imageElement
-							[src]="image.source"
-							class="lightbox-dialog__image"
-							[alt]="image.description || ''"
-							title=""
-							[ngClass]="{ 'is-zoom': displayZoom(), 'is-animating': config.enableAnimations }"
-							(mouseover)="imageMouseIn($event)"
-							(mouseout)="imageMouseOut()"
-							(click)="imageClick($event)" />
+		<div 	class="lightbox-dialog__media-wrapper"
+				[style.width]="wrapperDimensions().width"
+				[style.height]="wrapperDimensions().height">
+			@if (currentImage(); as image) {
+				<img 	#imageElement
+						[src]="image.source"
+						class="lightbox-dialog__image"
+						[alt]="image.description || ''"
+						title=""
+						[style.opacity]="imageOpacity()"
+						[class.is-zoom]="canZoom()"
+						(mouseover)="imageMouseIn($event)"
+						(mouseout)="imageMouseOut()"
+						(click)="imageClick($event)" />
 
-					@if (displayZoom() && !isLoading()) {
-						<div #zoomElement
-							class="lightbox-dialog__zoom"
-							[style.transform]="'translate(' + zoomStyles().x + 'px, ' + zoomStyles().y + 'px)'">
-							<img 	#zoomImageElement
-									[src]="image.source"
-									class="lightbox-dialog__zoom-image"
-									[alt]="image.description || ''"
-									title=""
-									[style.transform]="zoomTransformation()"
-									[style.width]="zoomWidth()"
-									[style.height]="zoomHeight()" />
-						</div>
-					}
-				</div>
-
-				@if (image.description || config.enableImageCounter) {
-					<figcaption class="lightbox-dialog__image-caption">
-						<ng-container *ngTemplateOutlet="descriptionTemplate; context: { displayObject: image, config: config }" />
-					</figcaption>
+				@if (displayZoom() && !isLoading()) {
+					<div #zoomElement class="lightbox-dialog__zoom">
+						<img 	#zoomImageElement
+								[src]="image.source"
+								class="lightbox-dialog__zoom-image"
+								[alt]="image.description || ''"
+								title=""
+								[style.width]="zoomWidth()"
+								[style.height]="zoomHeight()" />
+					</div>
 				}
-			</figure>
-		}
+			}
 
-		@if (currentVideo(); as video) {
-			<div class="lightbox-dialog__video-wrapper">
+			@if (currentVideo(); as video) {
 				<video 	#videoElement
 						controls
-						class="lightbox-dialog__video">
+						class="lightbox-dialog__video"
+						[style.opacity]="imageOpacity()">
 					@for (source of videoSources(); track source.src) {
 						<source [src]="source.src" type="video/mp4" [attr.size]="source.size" />
 					}
 				</video>
+			}
+		</div>
 
-				@if (video.description || config.enableImageCounter) {
-					<div class="lightbox-dialog__image-caption">
-						<ng-container *ngTemplateOutlet="descriptionTemplate; context: { displayObject: video, config: config }" />
-					</div>
-				}
-			</div>
+		@if (currentDisplayObject(); as object) {
+			@if (object.description || config.enableImageCounter || object.copyright) {
+				<figcaption class="lightbox-dialog__caption">
+					@if (object.description) {
+						<div class="lightbox-dialog__description">
+							{{ object.description }}
+						</div>
+					}
+					@if (config.enableImageCounter) {
+						<div class="lightbox-dialog__counter">
+							{{ imageCounter() }}
+						</div>
+					}
+					@if (object.copyright) {
+						<div class="lightbox-dialog__copyright">
+							&copy;&nbsp;{{ object.copyright }}
+						</div>
+					}
+				</figcaption>
+			}
 		}
-	</div>
+	</figure>
 }
 
 @if (isLoading()) {
 	<lib-loader [loaderTemplate]="config.loaderTemplate" />
 }
-
-<ng-template #descriptionTemplate let-displayObject="displayObject" let-config="config">
-	<div class="lightbox-dialog__caption-wrapper">
-		<div class="lightbox-dialog__caption">
-			{{ displayObject.description }}
-		</div>
-		@if (config.enableImageCounter) {
-			<div class="lightbox-dialog__images-counter">
-				{{ imageCounter() }}
-			</div>
-		}
-	</div>
-	@if (displayObject.copyright) {
-		<div class="lightbox-dialog__copyright">
-			&copy;&nbsp;{{ displayObject.copyright }}
-		</div>
-	}
-</ng-template>
