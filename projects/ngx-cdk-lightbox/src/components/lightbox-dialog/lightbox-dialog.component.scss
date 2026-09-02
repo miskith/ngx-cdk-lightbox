@@ -38,6 +38,15 @@
 		border: 0;
 		box-sizing: border-box;
 		z-index: 2;
+		display: grid;
+		place-items: center;
+
+		svg {
+			width: 100%;
+			height: 100%;
+			fill: currentColor;
+			display: block;
+		}
 
 		&:hover {
 			background: var(
@@ -89,6 +98,15 @@
 			opacity 0.25s ease-out;
 		box-sizing: border-box;
 		opacity: 0;
+		display: grid;
+		place-items: center;
+
+		svg {
+			width: 100%;
+			height: 100%;
+			fill: currentColor;
+			display: block;
+		}
 
 		&:hover {
 			background: var(

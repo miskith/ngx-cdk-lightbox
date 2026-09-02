@@ -236,6 +236,30 @@ export class LightboxDialogComponent implements OnInit {
 				width: `${targetSize.width}px`,
 				height: `${targetSize.height}px`,
 			});
+			return;
+		}
+
+		const videoElement = this.videoElement()?.nativeElement;
+		if (videoElement && this.currentVideo() && videoElement.videoWidth > 0) {
+			const targetSize = this.calculateFittedDimensions(
+				videoElement.videoWidth,
+				videoElement.videoHeight,
+			);
+			this.wrapperDimensions.set({
+				width: `${targetSize.width}px`,
+				height: `${targetSize.height}px`,
+			});
+		}
+	}
+
+	onVideoMetadataLoaded(event: Event): void {
+		const video = event.target as HTMLVideoElement;
+		if (video && video.videoWidth > 0 && video.videoHeight > 0) {
+			const targetSize = this.calculateFittedDimensions(video.videoWidth, video.videoHeight);
+			this.wrapperDimensions.set({
+				width: `${targetSize.width}px`,
+				height: `${targetSize.height}px`,
+			});
 		}
 	}
 
@@ -416,10 +440,12 @@ export class LightboxDialogComponent implements OnInit {
 						if (preloadedImage) {
 							this.setImageDetails(preloadedImage);
 						}
-						const videoElementRef = this.videoElement();
-						if (videoElementRef?.nativeElement) {
-							videoElementRef.nativeElement.load();
-						}
+						queueMicrotask(() => {
+							const videoElementRef = this.videoElement();
+							if (videoElementRef?.nativeElement) {
+								videoElementRef.nativeElement.load();
+							}
+						});
 						this.isLoading.set(false);
 						this.prefetchAdjacentObjects();
 					},
@@ -485,10 +511,12 @@ export class LightboxDialogComponent implements OnInit {
 						this.setImageDetails(preloadedImage);
 					}
 
-					const videoElementRef = this.videoElement();
-					if (videoElementRef?.nativeElement) {
-						videoElementRef.nativeElement.load();
-					}
+					queueMicrotask(() => {
+						const videoElementRef = this.videoElement();
+						if (videoElementRef?.nativeElement) {
+							videoElementRef.nativeElement.load();
+						}
+					});
 
 					this.isLoading.set(false);
 					this.imageOpacity.set(1);

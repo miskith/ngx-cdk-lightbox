@@ -60,8 +60,10 @@
 			@if (currentVideo(); as video) {
 				<video 	#videoElement
 						controls
+						playsinline
 						class="lightbox-dialog__video"
-						[style.opacity]="imageOpacity()">
+						[style.opacity]="imageOpacity()"
+						(loadedmetadata)="onVideoMetadataLoaded($event)">
 					@for (source of videoSources(); track source.src) {
 						<source [src]="source.src" type="video/mp4" [attr.size]="source.size" />
 					}
