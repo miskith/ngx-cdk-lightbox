@@ -27,6 +27,7 @@
 		"test": "ng test --watch=false",
 		"lint": "ng lint",
 		"format": "prettier --config .prettierrc --write projects/**/*.{ts,json,md,scss}",
+		"format:check": "prettier --config .prettierrc --check projects/**/*.{ts,json,md,scss}",
 		"prepare": "husky"
 	},
 	"private": true,
