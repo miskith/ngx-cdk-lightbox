@@ -3,6 +3,10 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Observable } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import {
+	LIGHTBOX_DEFAULT_CONFIG,
+	provideLightboxConfig,
+} from '../../services/ngx-cdk-lightbox/ngx-cdk-lightbox.service';
 import { LightboxDialogComponent } from './lightbox-dialog.component';
 
 describe('LightboxDialogComponent', () => {
@@ -252,5 +256,24 @@ describe('LightboxDialogComponent', () => {
 		component.imageMouseIn(mockEvent);
 		expect(component.zoomStyles().width).toBe(100);
 		expect(component.zoomStyles().naturalWidth).toBe(200);
+	});
+
+	it('should refit dimensions on window resize', () => {
+		component.currentIndex.set(0);
+		const mockImg = {
+			naturalWidth: 800,
+			naturalHeight: 600,
+			clientWidth: 800,
+			clientHeight: 600,
+		} as HTMLImageElement;
+		(component as any)['imageElement'] = () => ({ nativeElement: mockImg });
+		component.onWindowResize();
+		expect(component.wrapperDimensions().width).not.toBe('0px');
+	});
+
+	it('should provide default lightbox config provider', () => {
+		const provider = provideLightboxConfig({ loopGallery: false });
+		expect((provider as any).provide).toBe(LIGHTBOX_DEFAULT_CONFIG);
+		expect((provider as any).useValue).toEqual({ loopGallery: false });
 	});
 });
