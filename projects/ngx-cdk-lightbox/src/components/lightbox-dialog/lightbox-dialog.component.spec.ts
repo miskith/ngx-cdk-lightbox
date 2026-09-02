@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Observable } from 'rxjs';
-import { describe, beforeEach, it, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LightboxDialogComponent } from './lightbox-dialog.component';
 
@@ -222,12 +222,13 @@ describe('LightboxDialogComponent', () => {
 	it('should preload a display object with an image source', () =>
 		new Promise((done) => {
 			const mockDisplayObject = { type: 'image', source: 'test.jpg' };
-			const loadSpy = vi.spyOn(component as any, 'preloadDisplayObject').mockImplementation(() => {
-				return new Observable((observer) => {
-					observer.next(new Event('load'));
-					observer.complete();
-				});
-			});
+			const loadSpy = vi.spyOn(component as any, 'preloadDisplayObject').mockImplementation(
+				() =>
+					new Observable((observer) => {
+						observer.next(new Event('load'));
+						observer.complete();
+					}),
+			);
 
 			(component['preloadDisplayObject'] as any)(mockDisplayObject).subscribe(() => {
 				expect(loadSpy).toHaveBeenCalledWith(mockDisplayObject);

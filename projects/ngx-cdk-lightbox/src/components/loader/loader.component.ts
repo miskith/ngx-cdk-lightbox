@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, type TemplateRef, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 
 @Component({

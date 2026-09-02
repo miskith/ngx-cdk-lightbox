@@ -1,13 +1,13 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { Dialog, type DialogRef } from '@angular/cdk/dialog';
 
 import {
-	IGalleryConfig,
-	closeIconSvg,
-	arrowRightSvg,
+	type IGalleryConfig,
+	type TGalleryDisplayObject,
 	arrowLeftSvg,
-	TGalleryDisplayObject,
+	arrowRightSvg,
+	closeIconSvg,
 } from '../../interfaces/gallery.interface';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
@@ -32,7 +32,9 @@ const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
 	ariaLabelClose: 'Close',
 };
 
-@Service()
+@Injectable({
+	providedIn: 'root',
+})
 export class NgxCdkLightboxService {
 	private readonly overlay: Overlay = inject<Overlay>(Overlay);
 	private readonly dialog: Dialog = inject<Dialog>(Dialog);

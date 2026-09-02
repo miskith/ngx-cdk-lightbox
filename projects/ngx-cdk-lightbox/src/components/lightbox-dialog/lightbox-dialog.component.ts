@@ -1,39 +1,38 @@
 import {
-	Component,
 	ChangeDetectionStrategy,
-	ElementRef,
-	viewChild,
-	HostListener,
-	OnInit,
+	Component,
 	DestroyRef,
-	NgZone,
+	type ElementRef,
 	Injector,
-	inject,
-	signal,
+	NgZone,
+	type OnInit,
 	computed,
 	effect,
+	inject,
+	signal,
+	viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
-	Observable,
-	Subscription,
-	fromEvent,
-	timer,
-	of,
-	map,
-	tap,
-	switchMap,
+	type Observable,
+	type Subscription,
 	catchError,
+	fromEvent,
+	map,
+	of,
 	shareReplay,
+	switchMap,
+	tap,
+	timer,
 } from 'rxjs';
 
 import {
-	TGalleryDisplayObject,
-	IGalleryConfig,
-	IGalleryImage,
-	IGalleryVideo,
-	IGalleryData,
+	type IGalleryConfig,
+	type IGalleryData,
+	type IGalleryImage,
+	type IGalleryVideo,
+	type TGalleryDisplayObject,
 } from '../../interfaces/gallery.interface';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 import { LoaderComponent } from '../loader/loader.component';
@@ -63,6 +62,11 @@ interface IDimensions {
 	styleUrl: 'lightbox-dialog.component.scss',
 	imports: [SafeHtmlPipe, LoaderComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'(document:keyup.arrowright)': 'nextDisplayObject($event)',
+		'(document:keyup.arrowleft)': 'prevDisplayObject($event)',
+		'(document:keyup.escape)': 'closeModal()',
+	},
 })
 export class LightboxDialogComponent implements OnInit {
 	readonly videoElement = viewChild<ElementRef<HTMLVideoElement>>('videoElement');
@@ -130,15 +134,15 @@ export class LightboxDialogComponent implements OnInit {
 		return (width > 0 && width < naturalWidth) || (height > 0 && height < naturalHeight);
 	});
 
-	readonly displayZoom = computed<boolean>(() => {
-		return this.canZoom() && this.isHoveringImage() && this.imageOpacity() > 0.5;
-	});
+	readonly displayZoom = computed<boolean>(
+		() => this.canZoom() && this.isHoveringImage() && this.imageOpacity() > 0.5,
+	);
 
-	readonly imageCounter = computed<string>(() => {
-		return this.config.imageCounterText
+	readonly imageCounter = computed<string>(() =>
+		this.config.imageCounterText
 			.replace(/IMAGE_INDEX/, String(this.currentIndex() + 1))
-			.replace(/IMAGE_COUNT/, String(this.data.displayObjects.length));
-	});
+			.replace(/IMAGE_COUNT/, String(this.data.displayObjects.length)),
+	);
 
 	readonly videoSources = computed<IVideoSourceItem[]>(() => {
 		const video = this.currentVideo();
@@ -208,7 +212,6 @@ export class LightboxDialogComponent implements OnInit {
 		this.loadDisplayObject(initialIndex);
 	}
 
-	@HostListener('document:keyup.arrowright', ['$event'])
 	nextDisplayObject(event?: Event): void {
 		if (event) {
 			event.preventDefault();
@@ -217,7 +220,6 @@ export class LightboxDialogComponent implements OnInit {
 		this.loadDisplayObject(index !== false ? index : this.data.displayObjects.length - 1);
 	}
 
-	@HostListener('document:keyup.arrowleft', ['$event'])
 	prevDisplayObject(event?: Event): void {
 		if (event) {
 			event.preventDefault();
@@ -226,7 +228,6 @@ export class LightboxDialogComponent implements OnInit {
 		this.loadDisplayObject(index !== false ? index : 0);
 	}
 
-	@HostListener('document:keyup.escape')
 	closeModal(): void {
 		this.dialogRef.close();
 	}

@@ -1,19 +1,19 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
+	type TemplateRef,
 	inject,
 	signal,
-	TemplateRef,
 	viewChild,
 } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { HighlightModule } from 'ngx-highlightjs';
 
 import {
-	IGalleryConfig,
-	IGalleryImage,
+	type IGalleryConfig,
+	type IGalleryImage,
 	NgxCdkLightboxService,
-	TGalleryDisplayObject,
+	type TGalleryDisplayObject,
 } from '../../../ngx-cdk-lightbox/src/public-api';
 
 type DemoTab =
