@@ -1,3 +1,33 @@
+## 22.1.0 (2026-09-02)
+
+### Breaking Changes:
+
+- **Unified i18n & Localization Interface**:
+  - Replaced legacy, fragmented `ariaLabel*` and `imageCounterText` properties in `IGalleryConfig` with a clean, unified `i18n: TSupportedLightboxLanguage | Partial<IGalleryI18n>` configuration.
+  - Standardized dictionary structure under `IGalleryI18n` with keys: `next`, `previous`, `close`, `loading`, `gallery`, `counter`.
+  - Added `resolveLightboxI18n(i18n)` helper function with English defaults fallback.
+  - Added DI token and provider `provideLightboxI18n()` for global application-level language configuration.
+
+### Features & Enhancements:
+
+- **Built-in Support for 26 Languages**:
+  - Added predefined internationalization presets for 26 languages: English (`en`), German (`de`), Polish (`pl`), Czech (`cs`), Slovak (`sk`), Spanish (`es`), Italian (`it`), French (`fr`), Portuguese (`pt`), Dutch (`nl`), Swedish (`sv`), Norwegian (`no`/`nb`), Danish (`da`), Finnish (`fi`), Hungarian (`hu`), Greek (`el`), Romanian (`ro`), Croatian (`hr`), Ukrainian (`uk`), Turkish (`tr`), Japanese (`ja`), Korean (`ko`), Chinese (`zh`/`zh-CN`), Hindi / Indian (`hi`/`in`), Vietnamese (`vi`), and Arabic (`ar`).
+- **Accessibility & Screen Reader Enhancements**:
+  - Integrated Angular CDK `LiveAnnouncer` for polite screen reader announcements (`LiveAnnouncer.announce(message, 'polite')`) on slide navigation.
+  - Standardized WAI-ARIA landmark roles (`role="region"` with `aria-roledescription="carousel"`, `role="group"` with `aria-roledescription="slide"`).
+  - Added accessible screen reader text (`loader__sr-only`) and `role="status"` to loading indicator.
+- **Dynamic Video Metadata Preloading & Sizing**:
+  - Added automatic background video metadata preloading (`loadedmetadata`) to retrieve true video dimensions and aspect ratios before initiating lightbox container morphing.
+  - Guarded against duplicate resize recalculations and eliminated awkward initial default dimension jumps (e.g. assuming 16:9 for non-16:9 videos).
+- **Flicker-Free Media Transitions**:
+  - Coordinated slide swapping and dimension animation timing in `loadDisplayObject()`.
+  - Applied baseline `opacity: 0` to image and video elements to eliminate transition flashes and double-rendering during slide navigation.
+- **Custom Loader Template Support**:
+  - Supported passing custom `TemplateRef` via `loaderTemplate` in `IGalleryConfig` to replace the default spinner.
+- **Modernized Interactive Demo Application**:
+  - Added real-time 26-language dropdown selector to Photo Gallery and Live Playground.
+  - Restored interactive demo cards including Cyberpunk Neon Theme, Minimalist Kiosk, Custom Labels, and live animated custom pulse loader preview.
+
 ## 22.0.0 (2026-08-05)
 
 - Change Angular supported version to v22
