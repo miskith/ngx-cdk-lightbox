@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, InjectionToken, type Provider, inject } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
 import { Dialog, type DialogRef } from '@angular/cdk/dialog';
 
@@ -10,6 +10,17 @@ import {
 	closeIconSvg,
 } from '../../interfaces/gallery.interface';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
+
+export const LIGHTBOX_DEFAULT_CONFIG = new InjectionToken<Partial<IGalleryConfig>>(
+	'LIGHTBOX_DEFAULT_CONFIG',
+);
+
+export function provideLightboxConfig(config: Partial<IGalleryConfig>): Provider {
+	return {
+		provide: LIGHTBOX_DEFAULT_CONFIG,
+		useValue: config,
+	};
+}
 
 const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
 	enableZoom: false,
@@ -38,6 +49,9 @@ const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
 export class NgxCdkLightboxService {
 	private readonly overlay: Overlay = inject<Overlay>(Overlay);
 	private readonly dialog: Dialog = inject<Dialog>(Dialog);
+	private readonly userConfig: Partial<IGalleryConfig> | null = inject(LIGHTBOX_DEFAULT_CONFIG, {
+		optional: true,
+	});
 
 	public open(
 		displayObjects: TGalleryDisplayObject[],
@@ -53,6 +67,12 @@ export class NgxCdkLightboxService {
 			.centerHorizontally()
 			.centerVertically();
 
+		const mergedConfig: IGalleryConfig = {
+			...DEFAULT_GALLERY_CONFIG,
+			...this.userConfig,
+			...config,
+		};
+
 		const dialogRef: DialogRef<void, LightboxDialogComponent> = this.dialog.open(
 			LightboxDialogComponent,
 			{
@@ -63,7 +83,7 @@ export class NgxCdkLightboxService {
 				positionStrategy,
 				data: {
 					displayObjects,
-					config: { ...DEFAULT_GALLERY_CONFIG, ...config },
+					config: mergedConfig,
 				},
 				templateContext: () => ({ dialogRef }),
 			},

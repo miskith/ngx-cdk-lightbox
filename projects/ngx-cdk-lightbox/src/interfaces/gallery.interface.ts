@@ -13,7 +13,8 @@ export interface IGalleryImage {
 	};
 }
 
-type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
+export type TVideoResolutions = 240 | 360 | 480 | 720 | 1080 | 2160 | 4320;
+
 export interface IGalleryVideo {
 	type: 'video';
 	mp4Source: string | Partial<Record<TVideoResolutions, string>>;

@@ -63,9 +63,13 @@ interface IDimensions {
 	imports: [SafeHtmlPipe, LoaderComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
+		role: 'dialog',
+		'aria-modal': 'true',
+		'aria-label': 'Media Lightbox Gallery',
 		'(document:keyup.arrowright)': 'nextDisplayObject($event)',
 		'(document:keyup.arrowleft)': 'prevDisplayObject($event)',
 		'(document:keyup.escape)': 'closeModal()',
+		'(window:resize)': 'onWindowResize()',
 	},
 })
 export class LightboxDialogComponent implements OnInit {
@@ -210,6 +214,21 @@ export class LightboxDialogComponent implements OnInit {
 			Math.min(this.config.startingIndex, this.data.displayObjects.length - 1),
 		);
 		this.loadDisplayObject(initialIndex);
+	}
+
+	onWindowResize(): void {
+		const imageElement = this.imageElement()?.nativeElement;
+		if (imageElement && this.currentImage() && imageElement.naturalWidth > 0) {
+			this.setImageDetails(imageElement);
+			const targetSize = this.calculateFittedDimensions(
+				imageElement.naturalWidth,
+				imageElement.naturalHeight,
+			);
+			this.wrapperDimensions.set({
+				width: `${targetSize.width}px`,
+				height: `${targetSize.height}px`,
+			});
+		}
 	}
 
 	nextDisplayObject(event?: Event): void {
@@ -395,6 +414,7 @@ export class LightboxDialogComponent implements OnInit {
 
 		this.imageOpacity.set(0);
 		this.isHoveringImage.set(false);
+		this.isLoading.set(true);
 
 		if (this.isFirstLoad) {
 			this.wrapperDimensions.set({ width: '0px', height: '0px' });
@@ -405,6 +425,7 @@ export class LightboxDialogComponent implements OnInit {
 				takeUntilDestroyed(this.destroyRef),
 				catchError((error) => {
 					console.error('Failed to load display object:', error);
+					this.isLoading.set(false);
 					this.imageOpacity.set(1);
 					return of(void 0);
 				}),
@@ -451,10 +472,12 @@ export class LightboxDialogComponent implements OnInit {
 						videoElementRef.nativeElement.load();
 					}
 
+					this.isLoading.set(false);
 					this.imageOpacity.set(1);
 					this.prefetchAdjacentObjects();
 				},
 				error: () => {
+					this.isLoading.set(false);
 					this.imageOpacity.set(1);
 				},
 			});
