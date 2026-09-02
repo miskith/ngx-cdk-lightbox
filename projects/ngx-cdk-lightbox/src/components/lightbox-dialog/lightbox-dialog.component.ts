@@ -509,13 +509,16 @@ export class LightboxDialogComponent implements OnInit {
 			return { width: 600, height: 400 };
 		}
 		const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.95 : 1200;
-		const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800;
-		const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight, 1);
+		const viewportMaxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800;
+		const captionHeightBudget = 80;
+		const maxMediaHeight = Math.max(160, viewportMaxHeight - captionHeightBudget);
+
+		const scale = Math.min(maxWidth / naturalWidth, maxMediaHeight / naturalHeight, 1);
 
 		const fittedWidth = Math.round(naturalWidth * scale);
 		const fittedHeight = Math.round(naturalHeight * scale);
 
-		const minWidth = Math.min(300, maxWidth);
+		const minWidth = Math.min(340, maxWidth);
 		const width = Math.max(fittedWidth, minWidth);
 
 		return {

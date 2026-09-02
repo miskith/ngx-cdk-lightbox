@@ -14,7 +14,7 @@
 		margin: 0;
 		padding: 0;
 		max-width: var(--ngx-cdk-max-width, 95vw);
-		max-height: var(--ngx-cdk-max-height, 85vh);
+		max-height: var(--ngx-cdk-max-height, 90vh);
 		background: var(--ngx-cdk-background, #ffffff);
 		color: var(--ngx-cdk-text-color, #0f172a);
 		border-radius: var(--ngx-cdk-border-radius, 4px);
@@ -132,7 +132,7 @@
 		place-items: center;
 		margin: 0 auto;
 		max-width: var(--ngx-cdk-max-width, 95vw);
-		max-height: var(--ngx-cdk-max-height, 85vh);
+		max-height: var(--ngx-cdk-max-height, 90vh);
 		overflow: hidden;
 		transition:
 			width var(--ngx-cdk-transition-duration, 0.35s)
@@ -166,8 +166,8 @@
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: baseline;
-		gap: 2px 12px;
-		padding: var(--ngx-cdk-caption-padding, 6px 12px 8px);
+		gap: 4px 12px;
+		padding: var(--ngx-cdk-caption-padding, 8px 14px 10px);
 		font-size: var(--ngx-cdk-caption-font-size, 0.9375rem);
 		background: var(--ngx-cdk-background, #ffffff);
 		border-radius: 0 0 var(--ngx-cdk-border-radius, 4px) var(--ngx-cdk-border-radius, 4px);
@@ -175,7 +175,7 @@
 		max-width: 100%;
 		box-sizing: border-box;
 		min-width: 0;
-		overflow: hidden;
+		flex-shrink: 0;
 	}
 
 	&__description {
@@ -191,6 +191,7 @@
 		justify-self: end;
 		color: var(--ngx-cdk-counter-color, #64748b);
 		font-size: var(--ngx-cdk-counter-font-size, 0.875rem);
+		flex-shrink: 0;
 	}
 
 	&__copyright {
