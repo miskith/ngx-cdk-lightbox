@@ -26,12 +26,12 @@ import {
 	switchMap,
 } from 'rxjs';
 
-import { IGalleryData } from '../../ref/lightboxOverlay.ref';
 import {
 	TGalleryDisplayObject,
 	IGalleryConfig,
 	IGalleryImage,
 	IGalleryVideo,
+	IGalleryData,
 } from '../../interfaces/gallery.interface';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 import { LoaderComponent } from '../loader/loader.component';
