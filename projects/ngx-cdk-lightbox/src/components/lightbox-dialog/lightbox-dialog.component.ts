@@ -8,12 +8,14 @@ import {
 	OnInit,
 	DestroyRef,
 	ChangeDetectionStrategy,
+	NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
 	Observable,
+	Subscription,
 	fromEvent,
 	timer,
 	BehaviorSubject,
@@ -56,6 +58,9 @@ export class LightboxDialogComponent implements OnInit {
 
 	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
 	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
+	private readonly ngZone: NgZone = inject<NgZone>(NgZone);
+	private mouseMoveSub?: Subscription;
+
 	private readonly currentIndex$: BehaviorSubject<number | null> = new BehaviorSubject<
 		number | null
 	>(null);
@@ -82,9 +87,26 @@ export class LightboxDialogComponent implements OnInit {
 	);
 
 	@ViewChild('videoElement', { static: false }) private videoElement!: ElementRef<HTMLVideoElement>;
-	@ViewChild('imageElement', { static: false }) private imageElement!: ElementRef<HTMLImageElement>;
+	@ViewChild('zoomElement', { static: false }) private zoomElement?: ElementRef<HTMLDivElement>;
+	@ViewChild('zoomImageElement', { static: false })
+	private zoomImageElement?: ElementRef<HTMLImageElement>;
+
+	private _imageElement?: ElementRef<HTMLImageElement>;
+	@ViewChild('imageElement', { static: false })
+	set imageElement(ref: ElementRef<HTMLImageElement> | undefined) {
+		this._imageElement = ref;
+		if (ref?.nativeElement) {
+			this.setupImageMouseMoveListener(ref.nativeElement);
+		}
+	}
+	get imageElement(): ElementRef<HTMLImageElement> | undefined {
+		return this._imageElement;
+	}
 
 	ngOnInit(): void {
+		this.destroyRef.onDestroy(() => {
+			this.mouseMoveSub?.unsubscribe();
+		});
 		this.loadDisplayObject(
 			Math.max(0, Math.min(this.config.startingIndex, this.data.displayObjects.length - 1)),
 		);
@@ -223,15 +245,15 @@ export class LightboxDialogComponent implements OnInit {
 			this.currentIndex$.next(index);
 			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex$.value!]!);
 		} else {
-			if (this.imageElement) {
+			if (this.imageElement?.nativeElement) {
 				this.imageElement.nativeElement.style.opacity = '0';
 			}
 
 			return this.preloadDisplayObject(this.data.displayObjects[index]!).pipe(
 				switchMap((image: HTMLImageElement | void) => {
-					if (this.imageElement) {
-						this.imageElement.nativeElement.parentElement!.style.width = `${this.imageElement.nativeElement.parentElement!.clientWidth}px`;
-						this.imageElement.nativeElement.parentElement!.style.height = `${this.imageElement.nativeElement.parentElement!.clientHeight}px`;
+					if (this.imageElement?.nativeElement?.parentElement) {
+						this.imageElement.nativeElement.parentElement.style.width = `${this.imageElement.nativeElement.parentElement.clientWidth}px`;
+						this.imageElement.nativeElement.parentElement.style.height = `${this.imageElement.nativeElement.parentElement.clientHeight}px`;
 					}
 					const naturalWidth = image!.naturalWidth;
 					const naturalHeight = image!.naturalHeight;
@@ -244,21 +266,23 @@ export class LightboxDialogComponent implements OnInit {
 
 					return timer(1).pipe(
 						tap(() => {
-							if (this.imageElement) {
+							if (this.imageElement?.nativeElement?.parentElement) {
 								this.imageElement.nativeElement.style.width = '0px';
 								this.imageElement.nativeElement.style.height = '0px';
+								this.imageElement.nativeElement.parentElement.style.width = `${naturalWidth / ratio}px`;
+								this.imageElement.nativeElement.parentElement.style.height = `${naturalHeight / ratio}px`;
 							}
-							this.imageElement.nativeElement.parentElement!.style.width = `${naturalWidth / ratio}px`;
-							this.imageElement.nativeElement.parentElement!.style.height = `${naturalHeight / ratio}px`;
 						}),
 						switchMap(() =>
 							timer(250).pipe(
 								tap(() => {
-									this.imageElement.nativeElement.parentElement!.style.width = '';
-									this.imageElement.nativeElement.parentElement!.style.height = '';
-									this.imageElement.nativeElement.style.width = 'auto';
-									this.imageElement.nativeElement.style.height = 'auto';
-									this.imageElement.nativeElement.style.opacity = '1';
+									if (this.imageElement?.nativeElement?.parentElement) {
+										this.imageElement.nativeElement.parentElement.style.width = '';
+										this.imageElement.nativeElement.parentElement.style.height = '';
+										this.imageElement.nativeElement.style.width = 'auto';
+										this.imageElement.nativeElement.style.height = 'auto';
+										this.imageElement.nativeElement.style.opacity = '1';
+									}
 								}),
 							),
 						),
@@ -306,6 +330,28 @@ export class LightboxDialogComponent implements OnInit {
 		return galleryDisplayObject.type === 'video';
 	}
 
+	private setupImageMouseMoveListener(imageEl: HTMLImageElement): void {
+		this.mouseMoveSub?.unsubscribe();
+		this.mouseMoveSub = this.ngZone.runOutsideAngular(() =>
+			fromEvent<MouseEvent>(imageEl, 'mousemove').subscribe((event: MouseEvent) => {
+				this.updateZoomPosition(event);
+			}),
+		);
+	}
+
+	private updateZoomPosition(event: MouseEvent): void {
+		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
+		this.zoomStyles.x = layerX;
+		this.zoomStyles.y = layerY;
+
+		if (this.zoomElement?.nativeElement) {
+			this.zoomElement.nativeElement.style.transform = `translate(${layerX}px, ${layerY}px)`;
+		}
+		if (this.zoomImageElement?.nativeElement) {
+			this.zoomImageElement.nativeElement.style.transform = this.zoomTransformation;
+		}
+	}
+
 	imageMouseIn(event: MouseEvent): void {
 		this.setImageDetails(event.target as HTMLImageElement);
 		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
@@ -316,11 +362,7 @@ export class LightboxDialogComponent implements OnInit {
 	}
 
 	imageMouseMove(event: MouseEvent): void {
-		const { layerX, layerY } = event as MouseEvent & { layerX: number; layerY: number };
-		this.zoomStyles = {
-			...this.zoomStyles,
-			...{ x: layerX, y: layerY },
-		};
+		this.updateZoomPosition(event);
 	}
 
 	imageMouseOut(): void {
