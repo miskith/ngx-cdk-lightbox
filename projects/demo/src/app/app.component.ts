@@ -1,6 +1,7 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
+	type OnInit,
 	type TemplateRef,
 	inject,
 	signal,
@@ -26,10 +27,11 @@ type DemoTab =
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [JsonPipe, HighlightModule],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 	readonly customLoaderTemplate = viewChild<TemplateRef<unknown>>('customLoaderTemplate');
 
 	readonly activeTab = signal<DemoTab>('photo-gallery');
+	readonly isDarkMode = signal<boolean>(false);
 
 	readonly playgroundEnableZoom = signal<boolean>(true);
 	readonly playgroundZoomSize = signal<number | 'originalSize'>(2.5);
@@ -191,6 +193,25 @@ export class GalleryComponent {
     });
   }
 }`;
+
+	ngOnInit(): void {
+		if (typeof window !== 'undefined') {
+			const saved = localStorage.getItem('theme');
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const isDark = saved === 'dark' || (!saved && prefersDark);
+			this.isDarkMode.set(isDark);
+			document.documentElement.classList.toggle('dark-theme', isDark);
+		}
+	}
+
+	toggleTheme(): void {
+		const next = !this.isDarkMode();
+		this.isDarkMode.set(next);
+		if (typeof window !== 'undefined') {
+			document.documentElement.classList.toggle('dark-theme', next);
+			localStorage.setItem('theme', next ? 'dark' : 'light');
+		}
+	}
 
 	get playgroundConfig(): Partial<IGalleryConfig> {
 		return {

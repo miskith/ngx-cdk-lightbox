@@ -202,6 +202,24 @@ Customize colors, typography, sizing, buttons, zoom loupe, and transitions via C
 	--ngx-cdk-transition-duration: 0.35s;
 	--ngx-cdk-transition-timing: cubic-bezier(0.25, 0.8, 0.25, 1);
 }
+
+// Optional: Automatic or Class-Based Dark Mode
+html.dark-theme,
+[data-theme='dark'],
+@media (prefers-color-scheme: dark) {
+	:root {
+		--ngx-cdk-background: #111827;
+		--ngx-cdk-text-color: #f8fafc;
+		--ngx-cdk-counter-color: #94a3b8;
+		--ngx-cdk-copyright-color: #64748b;
+		--ngx-cdk-button-background: #1f2937;
+		--ngx-cdk-button-color: #f8fafc;
+		--ngx-cdk-button-hover-background: #374151;
+		--ngx-cdk-button-active-background: #4b5563;
+		--ngx-cdk-zoom-border: 2px solid rgba(255, 255, 255, 0.6);
+		--ngx-cdk-zoom-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+	}
+}
 ```
 
 ---

@@ -25,6 +25,26 @@ body {
 	background-color: #f8fafc;
 	color: #0f172a;
 	-webkit-font-smoothing: antialiased;
+	transition:
+		background-color 0.25s ease,
+		color 0.25s ease;
+}
+
+html.dark-theme,
+body.dark-theme {
+	background-color: #0b0f19;
+	color: #f1f5f9;
+
+	--ngx-cdk-background: #111827;
+	--ngx-cdk-text-color: #f8fafc;
+	--ngx-cdk-counter-color: #94a3b8;
+	--ngx-cdk-copyright-color: #64748b;
+	--ngx-cdk-button-background: #1f2937;
+	--ngx-cdk-button-color: #f8fafc;
+	--ngx-cdk-button-hover-background: #374151;
+	--ngx-cdk-button-active-background: #4b5563;
+	--ngx-cdk-zoom-border: 2px solid rgba(255, 255, 255, 0.6);
+	--ngx-cdk-zoom-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
 }
 
 .cyberpunk-dark-lightbox {
