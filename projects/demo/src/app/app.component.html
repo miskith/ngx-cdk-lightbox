@@ -267,7 +267,7 @@
 								type="number"
 								min="0"
 								[max]="demoImages.length - 1"
-								[value]="pgStartingIndex()"
+								[value]="playgroundStartingIndex()"
 								(input)="updateStartingIndex($event)"
 							/>
 						</div>
@@ -277,7 +277,7 @@
 							<input
 								id="counterTextInput"
 								type="text"
-								[value]="pgCounterText()"
+								[value]="playgroundCounterText()"
 								(input)="updateCounterText($event)"
 							/>
 						</div>
@@ -286,64 +286,64 @@
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableZoom()"
-									(change)="pgEnableZoom.set(!pgEnableZoom())"
+									[checked]="playgroundEnableZoom()"
+									(change)="playgroundEnableZoom.set(!playgroundEnableZoom())"
 								/>
 								Enable Zoom
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgLoop()"
-									(change)="pgLoop.set(!pgLoop())"
+									[checked]="playgroundLoop()"
+									(change)="playgroundLoop.set(!playgroundLoop())"
 								/>
 								Loop Gallery
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableCounter()"
-									(change)="pgEnableCounter.set(!pgEnableCounter())"
+									[checked]="playgroundEnableCounter()"
+									(change)="playgroundEnableCounter.set(!playgroundEnableCounter())"
 								/>
 								Show Counter
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableAnimations()"
-									(change)="pgEnableAnimations.set(!pgEnableAnimations())"
+									[checked]="playgroundEnableAnimations()"
+									(change)="playgroundEnableAnimations.set(!playgroundEnableAnimations())"
 								/>
 								Animations
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableArrows()"
-									(change)="pgEnableArrows.set(!pgEnableArrows())"
+									[checked]="playgroundEnableArrows()"
+									(change)="playgroundEnableArrows.set(!playgroundEnableArrows())"
 								/>
 								Navigation Arrows
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableClose()"
-									(change)="pgEnableClose.set(!pgEnableClose())"
+									[checked]="playgroundEnableClose()"
+									(change)="playgroundEnableClose.set(!playgroundEnableClose())"
 								/>
 								Close Icon
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgEnableClick()"
-									(change)="pgEnableClick.set(!pgEnableClick())"
+									[checked]="playgroundEnableClick()"
+									(change)="playgroundEnableClick.set(!playgroundEnableClick())"
 								/>
 								Click to Next
 							</label>
 							<label class="checkbox-item">
 								<input
 									type="checkbox"
-									[checked]="pgPreloading()"
-									(change)="pgPreloading.set(!pgPreloading())"
+									[checked]="playgroundPreloading()"
+									(change)="playgroundPreloading.set(!playgroundPreloading())"
 								/>
 								Preload Next
 							</label>

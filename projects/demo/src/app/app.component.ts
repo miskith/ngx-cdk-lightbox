@@ -4,7 +4,7 @@ import {
 	inject,
 	signal,
 	TemplateRef,
-	ViewChild,
+	viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HighlightModule } from 'ngx-highlightjs';
@@ -27,23 +27,21 @@ type DemoTab =
 	imports: [CommonModule, HighlightModule],
 })
 export class AppComponent {
-	@ViewChild('customLoaderTemplate', { static: true })
-	readonly customLoaderTemplate!: TemplateRef<unknown>;
+	readonly customLoaderTemplate = viewChild<TemplateRef<unknown>>('customLoaderTemplate');
 
 	public readonly activeTab = signal<DemoTab>('photo-gallery');
 
-	// Playground configurator state
-	public readonly pgEnableZoom = signal<boolean>(true);
-	public readonly pgZoomSize = signal<number | 'originalSize'>(2.5);
-	public readonly pgLoop = signal<boolean>(true);
-	public readonly pgEnableCounter = signal<boolean>(true);
-	public readonly pgCounterText = signal<string>('IMAGE_INDEX of IMAGE_COUNT');
-	public readonly pgEnableAnimations = signal<boolean>(true);
-	public readonly pgEnableArrows = signal<boolean>(true);
-	public readonly pgEnableClose = signal<boolean>(true);
-	public readonly pgEnableClick = signal<boolean>(true);
-	public readonly pgStartingIndex = signal<number>(0);
-	public readonly pgPreloading = signal<boolean>(true);
+	public readonly playgroundEnableZoom = signal<boolean>(true);
+	public readonly playgroundZoomSize = signal<number | 'originalSize'>(2.5);
+	public readonly playgroundLoop = signal<boolean>(true);
+	public readonly playgroundEnableCounter = signal<boolean>(true);
+	public readonly playgroundCounterText = signal<string>('IMAGE_INDEX of IMAGE_COUNT');
+	public readonly playgroundEnableAnimations = signal<boolean>(true);
+	public readonly playgroundEnableArrows = signal<boolean>(true);
+	public readonly playgroundEnableClose = signal<boolean>(true);
+	public readonly playgroundEnableClick = signal<boolean>(true);
+	public readonly playgroundStartingIndex = signal<number>(0);
+	public readonly playgroundPreloading = signal<boolean>(true);
 
 	private readonly lightboxService = inject(NgxCdkLightboxService);
 
@@ -71,48 +69,28 @@ export class AppComponent {
 		},
 		{
 			type: 'image',
-			source: 'assets/images/image1.jpg',
-			description: 'Nature Trail Exploration',
-			copyright: 'Demo Assets',
+			source:
+				'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80',
+			description: 'Yosemite Valley with Mist Rolling Across Granite Cliffs',
+			copyright: 'Photo by Bailey Zindel on Unsplash',
 		},
 		{
 			type: 'image',
-			source: 'assets/images/image2.jpg',
-			description: 'Sunset Horizon View',
-			copyright: 'Demo Assets',
+			source:
+				'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1600&q=80',
+			description: 'Dramatic Mountain Silhouette Under Golden Dusk Sky',
+			copyright: 'Photo by Florian van Duyn on Unsplash',
 		},
 		{
 			type: 'image',
-			source: 'assets/images/image3.jpg',
-			description: 'Coastal Architecture and Seashore',
-			copyright: 'Demo Assets',
-		},
-		{
-			type: 'image',
-			source: 'assets/images/image4.jpg',
-			description: 'Scenic Panorama Landscape',
-			copyright: 'Demo Assets',
-		},
-		{
-			type: 'image',
-			source: 'assets/images/image5.jpg',
-			description: 'Quiet Forest Path in Autumn',
-			copyright: 'Demo Assets',
+			source:
+				'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80',
+			description: 'Foggy Forest Landscape with Morning Light Beams',
+			copyright: 'Photo by Kalen Emsley on Unsplash',
 		},
 	];
 
 	public readonly mixedMedia: TGalleryDisplayObject[] = [
-		{
-			type: 'video',
-			mp4Source: {
-				240: 'assets/videos/240p.mp4',
-				480: 'assets/videos/480p.mp4',
-				720: 'assets/videos/720p.mp4',
-			},
-			description: 'Adaptive Resolution Video (240p / 480p / 720p)',
-			copyright: 'Sample Video Suite',
-			resolution: { width: 1280, height: 720 },
-		},
 		{
 			type: 'image',
 			source:
@@ -122,17 +100,27 @@ export class AppComponent {
 		},
 		{
 			type: 'video',
-			mp4Source: 'assets/videos/720p.mp4',
-			description: 'Single MP4 Stream Video (720p HD)',
-			copyright: 'Sample Video Suite',
-			resolution: { width: 1280, height: 720 },
+			mp4Source: {
+				720: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-720.mp4',
+				1080: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-1080.mp4',
+			},
+			description: 'Big Buck Bunny (Multi-resolution HD/FHD Video)',
+			resolution: { width: 1920, height: 1080 },
+			copyright: 'Blender Foundation | Creative Commons',
 		},
 		{
 			type: 'image',
 			source:
 				'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1600&q=80',
-			description: 'Serene Mountain Lake and Emerald Forest',
+			description: 'Pristine Alpine Lake Reflections',
 			copyright: 'Photo by Luca Bravo on Unsplash',
+		},
+		{
+			type: 'video',
+			mp4Source: 'https://storage.davidmyska.com/ngx-cdk-lightbox/video-720.mp4',
+			description: 'Single-source Streamlined Video',
+			resolution: { width: 1280, height: 720 },
+			copyright: 'Blender Foundation',
 		},
 	];
 
@@ -168,7 +156,7 @@ export class AppComponent {
 		return {
 			startingIndex: 2,
 			enableAnimations: false,
-			loaderTemplate: this.customLoaderTemplate,
+			loaderTemplate: this.customLoaderTemplate() ?? null,
 		};
 	}
 
@@ -202,17 +190,17 @@ export class GalleryComponent {
 
 	public get playgroundConfig(): Partial<IGalleryConfig> {
 		return {
-			enableZoom: this.pgEnableZoom(),
-			zoomSize: this.pgZoomSize(),
-			loopGallery: this.pgLoop(),
-			enableImageCounter: this.pgEnableCounter(),
-			imageCounterText: this.pgCounterText(),
-			enableAnimations: this.pgEnableAnimations(),
-			enableArrows: this.pgEnableArrows(),
-			enableCloseIcon: this.pgEnableClose(),
-			enableImageClick: this.pgEnableClick(),
-			startingIndex: this.pgStartingIndex(),
-			enableImagePreloading: this.pgPreloading(),
+			enableZoom: this.playgroundEnableZoom(),
+			zoomSize: this.playgroundZoomSize(),
+			loopGallery: this.playgroundLoop(),
+			enableImageCounter: this.playgroundEnableCounter(),
+			imageCounterText: this.playgroundCounterText(),
+			enableAnimations: this.playgroundEnableAnimations(),
+			enableArrows: this.playgroundEnableArrows(),
+			enableCloseIcon: this.playgroundEnableClose(),
+			enableImageClick: this.playgroundEnableClick(),
+			startingIndex: this.playgroundStartingIndex(),
+			enableImagePreloading: this.playgroundPreloading(),
 		};
 	}
 
@@ -239,20 +227,23 @@ export class GalleryComponent {
 	}
 
 	public updateZoomSize(event: Event): void {
-		const val = (event.target as HTMLSelectElement).value;
-		if (val === 'originalSize') {
-			this.pgZoomSize.set('originalSize');
+		const selectElement = event.target as HTMLSelectElement;
+		const selectedValue = selectElement.value;
+		if (selectedValue === 'originalSize') {
+			this.playgroundZoomSize.set('originalSize');
 		} else {
-			this.pgZoomSize.set(Number(val));
+			this.playgroundZoomSize.set(Number(selectedValue));
 		}
 	}
 
 	public updateStartingIndex(event: Event): void {
-		const val = Number((event.target as HTMLInputElement).value);
-		this.pgStartingIndex.set(isNaN(val) ? 0 : Math.max(0, val));
+		const inputElement = event.target as HTMLInputElement;
+		const parsedIndex = Number(inputElement.value);
+		this.playgroundStartingIndex.set(isNaN(parsedIndex) ? 0 : Math.max(0, parsedIndex));
 	}
 
 	public updateCounterText(event: Event): void {
-		this.pgCounterText.set((event.target as HTMLInputElement).value);
+		const inputElement = event.target as HTMLInputElement;
+		this.playgroundCounterText.set(inputElement.value);
 	}
 }

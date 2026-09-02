@@ -1,16 +1,19 @@
 import {
 	Component,
-	Inject,
-	HostListener,
-	ViewChild,
+	ChangeDetectionStrategy,
 	ElementRef,
-	inject,
+	viewChild,
+	HostListener,
 	OnInit,
 	DestroyRef,
-	ChangeDetectionStrategy,
 	NgZone,
+	Injector,
+	inject,
+	signal,
+	computed,
+	effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
@@ -18,12 +21,12 @@ import {
 	Subscription,
 	fromEvent,
 	timer,
-	BehaviorSubject,
-	shareReplay,
 	of,
 	map,
 	tap,
 	switchMap,
+	catchError,
+	shareReplay,
 } from 'rxjs';
 
 import {
@@ -36,112 +39,142 @@ import {
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 import { LoaderComponent } from '../loader/loader.component';
 
+interface IZoomStyles {
+	x: number;
+	y: number;
+	width: number;
+	naturalWidth: number;
+	height: number;
+	naturalHeight: number;
+}
+
+interface IVideoSourceItem {
+	src: string;
+	size?: string;
+}
+
 @Component({
 	selector: 'lib-lightbox-dialog',
 	templateUrl: 'lightbox-dialog.component.html',
 	styleUrl: 'lightbox-dialog.component.scss',
-	imports: [CommonModule, SafeHtmlPipe, LoaderComponent],
+	imports: [CommonModule, NgTemplateOutlet, SafeHtmlPipe, LoaderComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightboxDialogComponent implements OnInit {
-	displayZoom = false;
-	zoomStyles = {
+	readonly videoElement = viewChild<ElementRef<HTMLVideoElement>>('videoElement');
+	readonly zoomElement = viewChild<ElementRef<HTMLDivElement>>('zoomElement');
+	readonly zoomImageElement = viewChild<ElementRef<HTMLImageElement>>('zoomImageElement');
+	readonly imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
+
+	readonly data: IGalleryData = inject<IGalleryData>(DIALOG_DATA);
+	readonly config: IGalleryConfig = this.data.config;
+
+	private readonly dialogRef: DialogRef = inject<DialogRef>(DialogRef);
+	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
+	private readonly ngZone: NgZone = inject<NgZone>(NgZone);
+	private readonly injector: Injector = inject<Injector>(Injector);
+	private readonly preloadedImagesCache = new Map<string, Observable<HTMLImageElement>>();
+
+	private mouseMoveSubscription?: Subscription;
+	private touchStartX = 0;
+	private touchStartY = 0;
+
+	readonly currentIndex = signal<number>(0);
+	readonly isLoading = signal<boolean>(false);
+	readonly displayZoom = signal<boolean>(false);
+	readonly zoomStyles = signal<IZoomStyles>({
 		x: 0,
 		y: 0,
 		width: 0,
 		naturalWidth: 0,
 		height: 0,
 		naturalHeight: 0,
-	};
+	});
 
-	@Inject(DIALOG_DATA) readonly data: IGalleryData = inject<IGalleryData>(DIALOG_DATA);
-
-	private readonly modalRef: DialogRef = inject<DialogRef>(DialogRef);
-	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
-	private readonly ngZone: NgZone = inject<NgZone>(NgZone);
-	private mouseMoveSub?: Subscription;
-
-	private readonly currentIndex$: BehaviorSubject<number | null> = new BehaviorSubject<
-		number | null
-	>(null);
-	private readonly preloadedImages: Map<string, Observable<HTMLImageElement>> = new Map<
-		string,
-		Observable<HTMLImageElement>
-	>();
-
-	readonly config: IGalleryConfig = this.data.config;
-	readonly isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-	readonly currentDisplayObject$: Observable<TGalleryDisplayObject | null> =
-		this.currentIndex$.pipe(
-			map((index: number | null) => (index !== null ? this.data.displayObjects[index]! : null)),
-		);
-	readonly currentImage$: Observable<IGalleryImage | null> = this.currentDisplayObject$.pipe(
-		map((displayObject: TGalleryDisplayObject | null) =>
-			displayObject && this.isGalleryImage(displayObject) ? displayObject : null,
-		),
-	);
-	readonly currentVideo$: Observable<IGalleryVideo | null> = this.currentDisplayObject$.pipe(
-		map((displayObject: TGalleryDisplayObject | null) =>
-			displayObject && this.isGalleryVideo(displayObject) ? displayObject : null,
-		),
-	);
-
-	@ViewChild('videoElement', { static: false }) private videoElement!: ElementRef<HTMLVideoElement>;
-	@ViewChild('zoomElement', { static: false }) private zoomElement?: ElementRef<HTMLDivElement>;
-	@ViewChild('zoomImageElement', { static: false })
-	private zoomImageElement?: ElementRef<HTMLImageElement>;
-
-	private _imageElement?: ElementRef<HTMLImageElement>;
-	@ViewChild('imageElement', { static: false })
-	set imageElement(ref: ElementRef<HTMLImageElement> | undefined) {
-		this._imageElement = ref;
-		if (ref?.nativeElement) {
-			this.setupImageMouseMoveListener(ref.nativeElement);
+	readonly currentDisplayObject = computed<TGalleryDisplayObject | null>(() => {
+		const index = this.currentIndex();
+		if (index < 0 || index >= this.data.displayObjects.length) {
+			return null;
 		}
-	}
-	get imageElement(): ElementRef<HTMLImageElement> | undefined {
-		return this._imageElement;
-	}
+		return this.data.displayObjects[index] ?? null;
+	});
+
+	readonly currentImage = computed<IGalleryImage | null>(() => {
+		const item = this.currentDisplayObject();
+		return item && this.isGalleryImage(item) ? item : null;
+	});
+
+	readonly currentVideo = computed<IGalleryVideo | null>(() => {
+		const item = this.currentDisplayObject();
+		return item && this.isGalleryVideo(item) ? item : null;
+	});
+
+	readonly imageCounter = computed<string>(() => {
+		return this.config.imageCounterText
+			.replace(/IMAGE_INDEX/, String(this.currentIndex() + 1))
+			.replace(/IMAGE_COUNT/, String(this.data.displayObjects.length));
+	});
+
+	readonly videoSources = computed<IVideoSourceItem[]>(() => {
+		const video = this.currentVideo();
+		if (!video) {
+			return [];
+		}
+		if (typeof video.mp4Source === 'string') {
+			return [{ src: video.mp4Source }];
+		}
+		return Object.entries(video.mp4Source).map(([size, src]) => ({
+			size,
+			src,
+		}));
+	});
+
+	readonly zoomTransformation = computed<string>(() => {
+		const { x, y, width, naturalWidth, height, naturalHeight } = this.zoomStyles();
+		if (this.config.zoomSize === 'originalSize') {
+			const translateX = -1 * (x * (width > 0 ? naturalWidth / width : 1) - 80);
+			const translateY = -1 * (y * (height > 0 ? naturalHeight / height : 1) - 80);
+			return `translate(${translateX}px, ${translateY}px)`;
+		}
+		const scale = this.config.zoomSize;
+		return `translate(${-1 * (x * scale - 80)}px, ${-1 * (y * scale - 80)}px)`;
+	});
+
+	readonly zoomWidth = computed<string>(() => {
+		const { width, naturalWidth } = this.zoomStyles();
+		return this.config.zoomSize === 'originalSize'
+			? `${naturalWidth}px`
+			: `${width * this.config.zoomSize}px`;
+	});
+
+	readonly zoomHeight = computed<string>(() => {
+		const { height, naturalHeight } = this.zoomStyles();
+		return this.config.zoomSize === 'originalSize'
+			? `${naturalHeight}px`
+			: `${height * this.config.zoomSize}px`;
+	});
 
 	ngOnInit(): void {
-		this.destroyRef.onDestroy(() => {
-			this.mouseMoveSub?.unsubscribe();
-		});
-		this.loadDisplayObject(
-			Math.max(0, Math.min(this.config.startingIndex, this.data.displayObjects.length - 1)),
+		effect(
+			() => {
+				const imageElement = this.imageElement()?.nativeElement;
+				if (imageElement) {
+					this.setupImageMouseMoveListener(imageElement);
+				}
+			},
+			{ injector: this.injector },
 		);
-	}
 
-	get imageCounter(): string {
-		return this.config.imageCounterText
-			.replace(/IMAGE_INDEX/, '' + (this.currentIndex$.value! + 1))
-			.replace(/IMAGE_COUNT/, '' + this.data.displayObjects.length);
-	}
+		this.destroyRef.onDestroy(() => {
+			this.mouseMoveSubscription?.unsubscribe();
+			this.preloadedImagesCache.clear();
+		});
 
-	private getNextIndex(): number | false {
-		const nextIndex = this.currentIndex$.value! + 1;
-		if (nextIndex > this.data.displayObjects.length - 1) {
-			if (this.config.loopGallery === true) {
-				return 0;
-			} else {
-				return false;
-			}
-		} else {
-			return nextIndex;
-		}
-	}
-
-	private getPrevIndex(): number | false {
-		const prevIndex = this.currentIndex$.value! - 1;
-		if (prevIndex < 0) {
-			if (this.config.loopGallery === true) {
-				return this.data.displayObjects.length - 1;
-			} else {
-				return false;
-			}
-		} else {
-			return prevIndex;
-		}
+		const initialIndex = Math.max(
+			0,
+			Math.min(this.config.startingIndex, this.data.displayObjects.length - 1),
+		);
+		this.loadDisplayObject(initialIndex);
 	}
 
 	@HostListener('document:keyup.arrowright', ['$event'])
@@ -149,7 +182,6 @@ export class LightboxDialogComponent implements OnInit {
 		if (event) {
 			event.preventDefault();
 		}
-
 		const index = this.getNextIndex();
 		this.loadDisplayObject(index !== false ? index : this.data.displayObjects.length - 1);
 	}
@@ -159,71 +191,168 @@ export class LightboxDialogComponent implements OnInit {
 		if (event) {
 			event.preventDefault();
 		}
-
 		const index = this.getPrevIndex();
 		this.loadDisplayObject(index !== false ? index : 0);
 	}
 
 	@HostListener('document:keyup.escape')
 	closeModal(): void {
-		this.modalRef.close();
+		this.dialogRef.close();
 	}
 
-	private setImageDetails(image: HTMLImageElement): void {
-		this.zoomStyles = {
-			...this.zoomStyles,
-			...{
-				width: image.clientWidth,
-				naturalWidth: image.naturalWidth,
-				height: image.clientHeight,
-				naturalHeight: image.naturalHeight,
-			},
-		};
+	imageClick(event: MouseEvent): void {
+		if (!this.config.enableImageClick) {
+			return;
+		}
+
+		const offsetX = event.offsetX ?? 0;
+		const width = this.zoomStyles().width;
+		if (width > 0 && offsetX / width < 0.5) {
+			this.prevDisplayObject();
+		} else {
+			this.nextDisplayObject();
+		}
+	}
+
+	touchStart(event: TouchEvent): void {
+		if (event.touches.length === 1) {
+			this.touchStartX = event.touches[0]!.clientX;
+			this.touchStartY = event.touches[0]!.clientY;
+		}
+	}
+
+	touchEnd(event: TouchEvent): void {
+		if (event.changedTouches.length === 1) {
+			const deltaX = event.changedTouches[0]!.clientX - this.touchStartX;
+			const deltaY = event.changedTouches[0]!.clientY - this.touchStartY;
+
+			if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+				if (deltaX < 0) {
+					this.nextDisplayObject();
+				} else {
+					this.prevDisplayObject();
+				}
+			}
+		}
+	}
+
+	imageMouseIn(event: MouseEvent): void {
+		this.setImageDetails(event.target as HTMLImageElement);
+		const offsetX = event.offsetX ?? 0;
+		const offsetY = event.offsetY ?? 0;
+		this.zoomStyles.update((current) => ({
+			...current,
+			x: offsetX,
+			y: offsetY,
+		}));
+	}
+
+	imageMouseMove(event: MouseEvent): void {
+		this.updateZoomPosition(event);
+	}
+
+	imageMouseOut(): void {
+		this.displayZoom.set(false);
+	}
+
+	private setupImageMouseMoveListener(imageElement: HTMLImageElement): void {
+		this.mouseMoveSubscription?.unsubscribe();
+		this.mouseMoveSubscription = this.ngZone.runOutsideAngular(() =>
+			fromEvent<MouseEvent>(imageElement, 'mousemove').subscribe((event: MouseEvent) => {
+				this.updateZoomPosition(event);
+			}),
+		);
+	}
+
+	private updateZoomPosition(event: MouseEvent): void {
+		const offsetX = event.offsetX ?? 0;
+		const offsetY = event.offsetY ?? 0;
+
+		this.zoomStyles.update((current) => ({
+			...current,
+			x: offsetX,
+			y: offsetY,
+		}));
+
+		const zoomElement = this.zoomElement()?.nativeElement;
+		if (zoomElement) {
+			zoomElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+		}
+
+		const zoomImageElement = this.zoomImageElement()?.nativeElement;
+		if (zoomImageElement) {
+			zoomImageElement.style.transform = this.zoomTransformation();
+		}
+	}
+
+	private setImageDetails(imageElement: HTMLImageElement): void {
+		this.zoomStyles.update((current) => ({
+			...current,
+			width: imageElement.clientWidth,
+			naturalWidth: imageElement.naturalWidth,
+			height: imageElement.clientHeight,
+			naturalHeight: imageElement.naturalHeight,
+		}));
 
 		this.switchDisplayZoom();
 	}
 
 	private switchDisplayZoom(): void {
-		if (
+		const styles = this.zoomStyles();
+		const canZoom =
 			this.config.zoomSize !== 'originalSize' ||
-			this.zoomStyles.width < this.zoomStyles.naturalWidth ||
-			this.zoomStyles.height < this.zoomStyles.naturalHeight
-		) {
-			this.displayZoom = this.config.enableZoom === true;
-		} else {
-			this.displayZoom = false;
+			styles.width < styles.naturalWidth ||
+			styles.height < styles.naturalHeight;
+
+		this.displayZoom.set(this.config.enableZoom && canZoom);
+	}
+
+	private getNextIndex(): number | false {
+		const nextIndex = this.currentIndex() + 1;
+		if (nextIndex > this.data.displayObjects.length - 1) {
+			return this.config.loopGallery ? 0 : false;
 		}
+		return nextIndex;
+	}
+
+	private getPrevIndex(): number | false {
+		const prevIndex = this.currentIndex() - 1;
+		if (prevIndex < 0) {
+			return this.config.loopGallery ? this.data.displayObjects.length - 1 : false;
+		}
+		return prevIndex;
 	}
 
 	private loadDisplayObject(index: number): void {
-		this.isLoading$.next(true);
+		this.isLoading.set(true);
 
 		this.animateImage(index)
 			.pipe(
 				takeUntilDestroyed(this.destroyRef),
-				tap(() => this.isLoading$.next(false)),
+				tap(() => this.isLoading.set(false)),
 			)
 			.subscribe({
 				next: () => {
 					setTimeout(() => {
-						if (this.imageElement) {
-							this.setImageDetails(this.imageElement.nativeElement);
+						const imageElementRef = this.imageElement();
+						if (imageElementRef?.nativeElement) {
+							this.setImageDetails(imageElementRef.nativeElement);
 						}
 
-						if (this.videoElement) {
-							const videoElementContainer = this.videoElement.nativeElement;
-							const video = this.data.displayObjects[this.currentIndex$.value!] as IGalleryVideo;
-							if (video.resolution) {
+						const videoElementRef = this.videoElement();
+						if (videoElementRef?.nativeElement) {
+							const videoElementContainer = videoElementRef.nativeElement;
+							const video = this.currentVideo();
+							if (video?.resolution) {
 								videoElementContainer.style.aspectRatio = `${video.resolution.width}/${video.resolution.height}`;
 							} else {
 								videoElementContainer.style.aspectRatio = '';
 							}
-
-							this.videoElement.nativeElement.load();
+							videoElementContainer.load();
 						}
 					}, 10);
 
-					if (this.config.enableImagePreloading === true) {
+					if (this.config.enableImagePreloading) {
 						const nextIndex = this.getNextIndex();
 						if (nextIndex !== false) {
 							this.preloadDisplayObject(this.data.displayObjects[nextIndex]!).subscribe();
@@ -236,70 +365,79 @@ export class LightboxDialogComponent implements OnInit {
 				},
 				error: (error) => {
 					console.error('Image could not be loaded.', error);
+					this.isLoading.set(false);
 				},
 			});
 	}
 
 	private animateImage(index: number): Observable<unknown> {
-		if (this.config.enableAnimations === false || !('source' in this.data.displayObjects[index]!)) {
-			this.currentIndex$.next(index);
-			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex$.value!]!);
-		} else {
-			if (this.imageElement?.nativeElement) {
-				this.imageElement.nativeElement.style.opacity = '0';
-			}
-
-			return this.preloadDisplayObject(this.data.displayObjects[index]!).pipe(
-				switchMap((image: HTMLImageElement | void) => {
-					if (this.imageElement?.nativeElement?.parentElement) {
-						this.imageElement.nativeElement.parentElement.style.width = `${this.imageElement.nativeElement.parentElement.clientWidth}px`;
-						this.imageElement.nativeElement.parentElement.style.height = `${this.imageElement.nativeElement.parentElement.clientHeight}px`;
-					}
-					const naturalWidth = image!.naturalWidth;
-					const naturalHeight = image!.naturalHeight;
-					const ratio = Math.max(
-						naturalWidth / (window.innerWidth * 0.95),
-						naturalHeight / (window.innerHeight * 0.85),
-						1,
-					);
-					this.currentIndex$.next(index);
-
-					return timer(1).pipe(
-						tap(() => {
-							if (this.imageElement?.nativeElement?.parentElement) {
-								this.imageElement.nativeElement.style.width = '0px';
-								this.imageElement.nativeElement.style.height = '0px';
-								this.imageElement.nativeElement.parentElement.style.width = `${naturalWidth / ratio}px`;
-								this.imageElement.nativeElement.parentElement.style.height = `${naturalHeight / ratio}px`;
-							}
-						}),
-						switchMap(() =>
-							timer(250).pipe(
-								tap(() => {
-									if (this.imageElement?.nativeElement?.parentElement) {
-										this.imageElement.nativeElement.parentElement.style.width = '';
-										this.imageElement.nativeElement.parentElement.style.height = '';
-										this.imageElement.nativeElement.style.width = 'auto';
-										this.imageElement.nativeElement.style.height = 'auto';
-										this.imageElement.nativeElement.style.opacity = '1';
-									}
-								}),
-							),
-						),
-					);
-				}),
-				takeUntilDestroyed(this.destroyRef),
-			);
+		if (!this.config.enableAnimations || !('source' in this.data.displayObjects[index]!)) {
+			this.currentIndex.set(index);
+			return this.preloadDisplayObject(this.data.displayObjects[this.currentIndex()]!);
 		}
+
+		const imageElement = this.imageElement()?.nativeElement;
+		if (imageElement) {
+			imageElement.style.opacity = '0';
+		}
+
+		return this.preloadDisplayObject(this.data.displayObjects[index]!).pipe(
+			catchError((error) => {
+				console.error('Image preload error:', error);
+				return of(void 0);
+			}),
+			switchMap((preloadedImage: HTMLImageElement | void) => {
+				const parentElement = this.imageElement()?.nativeElement?.parentElement;
+				if (parentElement) {
+					parentElement.style.width = `${parentElement.clientWidth}px`;
+					parentElement.style.height = `${parentElement.clientHeight}px`;
+				}
+				const naturalWidth = preloadedImage ? preloadedImage.naturalWidth : 0;
+				const naturalHeight = preloadedImage ? preloadedImage.naturalHeight : 0;
+				const ratio = Math.max(
+					naturalWidth / (window.innerWidth * 0.95),
+					naturalHeight / (window.innerHeight * 0.85),
+					1,
+				);
+				this.currentIndex.set(index);
+
+				return timer(1).pipe(
+					tap(() => {
+						const currentImageElement = this.imageElement()?.nativeElement;
+						if (currentImageElement?.parentElement) {
+							currentImageElement.style.width = '0px';
+							currentImageElement.style.height = '0px';
+							currentImageElement.parentElement.style.width = `${naturalWidth / ratio}px`;
+							currentImageElement.parentElement.style.height = `${naturalHeight / ratio}px`;
+						}
+					}),
+					switchMap(() =>
+						timer(250).pipe(
+							tap(() => {
+								const currentImageElement = this.imageElement()?.nativeElement;
+								if (currentImageElement?.parentElement) {
+									currentImageElement.parentElement.style.width = '';
+									currentImageElement.parentElement.style.height = '';
+									currentImageElement.style.width = 'auto';
+									currentImageElement.style.height = 'auto';
+									currentImageElement.style.opacity = '1';
+								}
+							}),
+						),
+					),
+				);
+			}),
+			takeUntilDestroyed(this.destroyRef),
+		);
 	}
 
 	private preloadDisplayObject(
 		displayObject: TGalleryDisplayObject,
 	): Observable<HTMLImageElement | void> {
 		if (this.isGalleryImage(displayObject)) {
-			if (!this.preloadedImages.has(displayObject.source)) {
+			if (!this.preloadedImagesCache.has(displayObject.source)) {
 				const image = new Image();
-				this.preloadedImages.set(
+				this.preloadedImagesCache.set(
 					displayObject.source,
 					fromEvent(image, 'load').pipe(
 						map(() => image),
@@ -311,11 +449,9 @@ export class LightboxDialogComponent implements OnInit {
 				);
 				image.src = displayObject.source;
 			}
-
-			return this.preloadedImages.get(displayObject.source)!;
-		} else {
-			return of(void 0);
+			return this.preloadedImagesCache.get(displayObject.source)!;
 		}
+		return of(void 0);
 	}
 
 	private isGalleryImage(
@@ -328,87 +464,5 @@ export class LightboxDialogComponent implements OnInit {
 		galleryDisplayObject: TGalleryDisplayObject,
 	): galleryDisplayObject is IGalleryVideo {
 		return galleryDisplayObject.type === 'video';
-	}
-
-	private setupImageMouseMoveListener(imageEl: HTMLImageElement): void {
-		this.mouseMoveSub?.unsubscribe();
-		this.mouseMoveSub = this.ngZone.runOutsideAngular(() =>
-			fromEvent<MouseEvent>(imageEl, 'mousemove').subscribe((event: MouseEvent) => {
-				this.updateZoomPosition(event);
-			}),
-		);
-	}
-
-	private updateZoomPosition(event: MouseEvent): void {
-		const offsetX = event.offsetX ?? 0;
-		const offsetY = event.offsetY ?? 0;
-		this.zoomStyles.x = offsetX;
-		this.zoomStyles.y = offsetY;
-
-		if (this.zoomElement?.nativeElement) {
-			this.zoomElement.nativeElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-		}
-		if (this.zoomImageElement?.nativeElement) {
-			this.zoomImageElement.nativeElement.style.transform = this.zoomTransformation;
-		}
-	}
-
-	imageMouseIn(event: MouseEvent): void {
-		this.setImageDetails(event.target as HTMLImageElement);
-		const offsetX = event.offsetX ?? 0;
-		const offsetY = event.offsetY ?? 0;
-		this.zoomStyles = {
-			...this.zoomStyles,
-			...{ x: offsetX, y: offsetY },
-		};
-	}
-
-	imageMouseMove(event: MouseEvent): void {
-		this.updateZoomPosition(event);
-	}
-
-	imageMouseOut(): void {
-		this.displayZoom = false;
-	}
-
-	imageClick(event: MouseEvent): void {
-		if (this.config.enableImageClick === false) {
-			return;
-		}
-
-		const offsetX = event.offsetX ?? 0;
-		if (offsetX / this.zoomStyles.width < 0.5) {
-			this.prevDisplayObject();
-		} else {
-			this.nextDisplayObject();
-		}
-	}
-
-	checkIsString(value: unknown): boolean {
-		return typeof value === 'string';
-	}
-
-	get zoomTransformation(): string {
-		if (this.config.zoomSize === 'originalSize') {
-			return `translate(${-1 * (this.zoomStyles.x * (this.zoomStyles.naturalWidth / this.zoomStyles.width) - 80)}px, ${-1 * (this.zoomStyles.y * (this.zoomStyles.naturalHeight / this.zoomStyles.height) - 80)}px)`;
-		} else {
-			return `translate(${-1 * (this.zoomStyles.x * this.config.zoomSize - 80)}px, ${-1 * (this.zoomStyles.y * this.config.zoomSize - 80)}px)`;
-		}
-	}
-
-	get zoomWidth(): string {
-		if (this.config.zoomSize === 'originalSize') {
-			return `${this.zoomStyles.naturalWidth}px`;
-		} else {
-			return `${this.zoomStyles.width * this.config.zoomSize}px`;
-		}
-	}
-
-	get zoomHeight(): string {
-		if (this.config.zoomSize === 'originalSize') {
-			return `${this.zoomStyles.naturalHeight}px`;
-		} else {
-			return `${this.zoomStyles.height * this.config.zoomSize}px`;
-		}
 	}
 }

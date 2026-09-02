@@ -4,6 +4,7 @@
 	"useTabs": true,
 	"semi": true,
 	"bracketSpacing": true,
+	"bracketSameLine": true,
 	"trailingComma": "all",
 	"overrides": [
 		{

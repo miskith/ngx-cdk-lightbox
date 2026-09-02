@@ -31,6 +31,7 @@ export class NgxCdkLightboxService {
 		enableAnimations: true,
 		ariaLabelNext: 'Next',
 		ariaLabelPrev: 'Previous',
+		ariaLabelClose: 'Close',
 	};
 
 	private readonly overlay: Overlay = inject<Overlay>(Overlay);

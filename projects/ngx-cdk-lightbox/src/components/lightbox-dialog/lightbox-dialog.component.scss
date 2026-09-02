@@ -1,10 +1,6 @@
-::ng-deep {
-	:root {
-		--ngx-cdk-background: #fff;
-	}
-}
-
 :host {
+	--ngx-cdk-background: #fff;
+
 	max-width: 100%;
 	max-height: 100%;
 	position: relative;
@@ -22,9 +18,8 @@
 		background: var(--ngx-cdk-background);
 		border-radius: 50%;
 		transition: background-color 0.25s ease-out;
-		padding: 0;
-		border: 0;
 		padding: 2px;
+		border: 0;
 		box-sizing: border-box;
 
 		&:hover {
@@ -72,12 +67,13 @@
 		padding: 6px 12px 8px;
 		background: var(--ngx-cdk-background);
 		border-radius: 0 0 3px 3px;
+	}
 
-		&:after {
-			content: '';
-			display: table;
-			clear: both;
-		}
+	&__caption-wrapper {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: baseline;
+		gap: 12px;
 	}
 
 	&__zoom {
@@ -97,7 +93,7 @@
 	}
 
 	&__images-counter {
-		float: right;
+		white-space: nowrap;
 		margin: 2px 0 0;
 	}
 

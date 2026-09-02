@@ -39,6 +39,7 @@ export interface IGalleryConfig {
 	enableAnimations: boolean;
 	ariaLabelNext: string;
 	ariaLabelPrev: string;
+	ariaLabelClose: string;
 }
 
 export interface IGalleryData {
