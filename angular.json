@@ -76,6 +76,7 @@
 						"tsConfig": "projects/demo/tsconfig.app.json",
 						"assets": [
 							"projects/demo/src/favicon.ico",
+							"projects/demo/src/favicon.svg",
 							"projects/demo/src/assets"
 						],
 						"styles": [

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
+	<defs>
+		<linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" stop-color="#4f46e5" />
+			<stop offset="50%" stop-color="#3730a3" />
+			<stop offset="100%" stop-color="#1e1b4b" />
+		</linearGradient>
+		<linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" stop-color="#38bdf8" />
+			<stop offset="50%" stop-color="#818cf8" />
+			<stop offset="100%" stop-color="#c084fc" />
+		</linearGradient>
+		<linearGradient id="glowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+			<stop offset="100%" stop-color="#c084fc" stop-opacity="0.4" />
+		</linearGradient>
+		<filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+			<feGaussianBlur stdDeviation="3" result="blur" />
+			<feComposite in="SourceGraphic" in2="blur" operator="over" />
+		</filter>
+	</defs>
+
+	<!-- App Icon Squircle Background -->
+	<rect width="128" height="128" rx="28" fill="url(#bgGrad)" />
+	<rect width="126" height="126" x="1" y="1" rx="27" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-opacity="0.6" />
+
+	<!-- Camera Aperture Outer Ring -->
+	<circle cx="64" cy="64" r="42" fill="none" stroke="url(#accentGrad)" stroke-width="3.5" filter="url(#glow)" opacity="0.85" />
+
+	<!-- Aperture Blades -->
+	<g stroke="url(#accentGrad)" stroke-width="2.5" stroke-linecap="round" opacity="0.9">
+		<line x1="64" y1="22" x2="98" y2="44" />
+		<line x1="98" y1="44" x2="98" y2="84" />
+		<line x1="98" y1="84" x2="64" y2="106" />
+		<line x1="64" y1="106" x2="30" y2="84" />
+		<line x1="30" y1="84" x2="30" y2="44" />
+		<line x1="30" y1="44" x2="64" y2="22" />
+	</g>
+
+	<!-- Central Luminous Picture / Lightbox Frame -->
+	<rect x="46" y="46" width="36" height="36" rx="6" fill="#0f172a" fill-opacity="0.85" stroke="url(#glowGrad)" stroke-width="2" />
+
+	<!-- Picture Mountains & Sun Inside Frame -->
+	<path d="M50 74 L58 64 L66 74 Z" fill="url(#accentGrad)" opacity="0.9" />
+	<path d="M62 74 L70 60 L78 74 Z" fill="#38bdf8" opacity="0.8" />
+	<circle cx="72" cy="54" r="3" fill="#fbbf24" />
+</svg>
