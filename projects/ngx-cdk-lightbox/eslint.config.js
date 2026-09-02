@@ -6,6 +6,12 @@ module.exports = tseslint.config(
 	...rootConfig,
 	{
 		files: ['**/*.ts'],
+		languageOptions: {
+			parserOptions: {
+				project: ['tsconfig.eslint.json'],
+				tsconfigRootDir: __dirname,
+			},
+		},
 		rules: {
 			'@angular-eslint/directive-selector': [
 				'error',
@@ -33,6 +39,7 @@ module.exports = tseslint.config(
 		files: ['**/*.spec.ts'],
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/explicit-function-return-type': 'off',
 		},
 	},
 );
