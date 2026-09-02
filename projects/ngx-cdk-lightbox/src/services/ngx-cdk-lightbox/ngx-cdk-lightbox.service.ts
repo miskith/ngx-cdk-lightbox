@@ -9,6 +9,7 @@ import {
 	arrowRightSvg,
 	closeIconSvg,
 } from '../../interfaces/gallery.interface';
+import { type IGalleryI18n, type TSupportedLightboxLanguage } from '../../i18n/lightbox-i18n';
 import { LightboxDialogComponent } from '../../components/lightbox-dialog/lightbox-dialog.component';
 
 export const LIGHTBOX_DEFAULT_CONFIG = new InjectionToken<Partial<IGalleryConfig>>(
@@ -22,13 +23,20 @@ export function provideLightboxConfig(config: Partial<IGalleryConfig>): Provider
 	};
 }
 
+export function provideLightboxI18n(
+	i18nOrLanguage: TSupportedLightboxLanguage | Partial<IGalleryI18n>,
+): Provider {
+	return provideLightboxConfig({
+		i18n: i18nOrLanguage,
+	});
+}
+
 const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
 	enableZoom: false,
 	zoomSize: 'originalSize',
 	enableImageClick: true,
 	loopGallery: true,
 	enableImageCounter: true,
-	imageCounterText: 'IMAGE_INDEX photo of IMAGE_COUNT',
 	enableCloseIcon: true,
 	closeIcon: closeIconSvg,
 	enableArrows: true,
@@ -38,9 +46,7 @@ const DEFAULT_GALLERY_CONFIG: IGalleryConfig = {
 	enableImagePreloading: true,
 	startingIndex: 0,
 	enableAnimations: true,
-	ariaLabelNext: 'Next',
-	ariaLabelPrev: 'Previous',
-	ariaLabelClose: 'Close',
+	i18n: 'en',
 };
 
 @Injectable({
@@ -67,10 +73,16 @@ export class NgxCdkLightboxService {
 			.centerHorizontally()
 			.centerVertically();
 
+		const userI18n = this.userConfig?.i18n;
+		const callI18n = config.i18n;
+		const mergedI18n: TSupportedLightboxLanguage | Partial<IGalleryI18n> =
+			callI18n !== undefined ? callI18n : userI18n !== undefined ? userI18n : 'en';
+
 		const mergedConfig: IGalleryConfig = {
 			...DEFAULT_GALLERY_CONFIG,
 			...this.userConfig,
 			...config,
+			i18n: mergedI18n,
 		};
 
 		const dialogRef: DialogRef<void, LightboxDialogComponent> = this.dialog.open(

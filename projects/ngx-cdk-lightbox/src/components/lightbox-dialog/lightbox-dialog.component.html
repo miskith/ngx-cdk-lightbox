@@ -1,13 +1,16 @@
 @if (currentDisplayObject() && (!isLoading() || config.enableAnimations)) {
 	<figure class="lightbox-dialog__container"
-		(touchstart)="touchStart($event)"
-		(touchend)="touchEnd($event)">
+			role="region"
+			aria-roledescription="carousel"
+			[attr.aria-label]="currentDisplayObject()?.description || 'Media Gallery item'"
+			(touchstart)="touchStart($event)"
+			(touchend)="touchEnd($event)">
 		@if (config.enableCloseIcon) {
 			<button type="button"
 					class="lightbox-dialog__close-button"
 					[innerHTML]="config.closeIcon | safeHtml"
 					(click)="closeModal()"
-					[attr.aria-label]="config.ariaLabelClose || 'Close'">
+					[attr.aria-label]="i18n().close">
 			</button>
 		}
 
@@ -16,27 +19,34 @@
 				<button type="button"
 						(click)="prevDisplayObject($event)"
 						class="lightbox-dialog__arrow is-left"
+						[class.is-disabled]="isAtFirstSlide()"
+						[disabled]="isAtFirstSlide()"
 						[innerHTML]="config.arrowLeft | safeHtml"
-						[attr.aria-label]="config.ariaLabelPrev">
+						[attr.aria-label]="i18n().previous">
 				</button>
 
 				<button type="button"
 						(click)="nextDisplayObject($event)"
 						class="lightbox-dialog__arrow is-right"
+						[class.is-disabled]="isAtLastSlide()"
+						[disabled]="isAtLastSlide()"
 						[innerHTML]="config.arrowRight | safeHtml"
-						[attr.aria-label]="config.ariaLabelNext">
+						[attr.aria-label]="i18n().next">
 				</button>
 			</div>
 		}
 
 		<div 	class="lightbox-dialog__media-wrapper"
+				role="group"
+				aria-roledescription="slide"
+				[attr.aria-label]="imageCounter()"
 				[style.width]="wrapperDimensions().width"
 				[style.height]="wrapperDimensions().height">
-			@if (currentImage(); as image) {
+			@if (currentImage(); as activeImage) {
 				<img 	#imageElement
-						[src]="image.source"
+						[src]="activeImage.source"
 						class="lightbox-dialog__image"
-						[alt]="image.description || ''"
+						[alt]="activeImage.description || 'Gallery image ' + (currentIndex() + 1)"
 						title=""
 						[style.opacity]="imageOpacity()"
 						[class.is-zoom]="canZoom()"
@@ -45,48 +55,50 @@
 						(click)="imageClick($event)" />
 
 				@if (displayZoom() && !isLoading()) {
-					<div #zoomElement class="lightbox-dialog__zoom">
+					<div #zoomElement class="lightbox-dialog__zoom" aria-hidden="true">
 						<img 	#zoomImageElement
-								[src]="image.source"
+								[src]="activeImage.source"
 								class="lightbox-dialog__zoom-image"
-								[alt]="image.description || ''"
+								alt=""
 								title=""
+								aria-hidden="true"
 								[style.width]="zoomWidth()"
 								[style.height]="zoomHeight()" />
 					</div>
 				}
 			}
 
-			@if (currentVideo(); as video) {
+			@if (currentVideo(); as activeVideo) {
 				<video 	#videoElement
 						controls
 						playsinline
 						class="lightbox-dialog__video"
+						[attr.aria-label]="activeVideo.description || 'Gallery video ' + (currentIndex() + 1)"
 						[style.opacity]="imageOpacity()"
 						(loadedmetadata)="onVideoMetadataLoaded($event)">
-					@for (source of videoSources(); track source.src) {
-						<source [src]="source.src" type="video/mp4" [attr.size]="source.size" />
+					@for (videoSource of videoSources(); track videoSource.src) {
+						<source [src]="videoSource.src" type="video/mp4" [attr.size]="videoSource.size" />
 					}
 				</video>
 			}
 		</div>
 
-		@if (currentDisplayObject(); as object) {
-			@if (object.description || config.enableImageCounter || object.copyright) {
-				<figcaption class="lightbox-dialog__caption">
-					@if (object.description) {
+		@if (currentDisplayObject(); as currentDisplayItem) {
+			@if (currentDisplayItem.description || config.enableImageCounter || currentDisplayItem.copyright) {
+				<figcaption class="lightbox-dialog__caption" aria-live="off">
+					@if (currentDisplayItem.description) {
 						<div class="lightbox-dialog__description">
-							{{ object.description }}
+							{{ currentDisplayItem.description }}
 						</div>
 					}
 					@if (config.enableImageCounter) {
-						<div class="lightbox-dialog__counter">
+						<div class="lightbox-dialog__counter" aria-hidden="true">
 							{{ imageCounter() }}
 						</div>
 					}
-					@if (object.copyright) {
+					@if (currentDisplayItem.copyright) {
 						<div class="lightbox-dialog__copyright">
-							&copy;&nbsp;{{ object.copyright }}
+							&copy;&nbsp;{{ currentDisplayItem.copyright }}
 						</div>
 					}
 				</figcaption>
@@ -96,5 +108,5 @@
 }
 
 @if (isLoading()) {
-	<lib-loader [loaderTemplate]="config.loaderTemplate" />
+	<lib-loader [loaderTemplate]="config.loaderTemplate" [loadingText]="i18n().loading" />
 }

@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import {
 	type Observable,
 	type Subscription,
@@ -34,6 +35,7 @@ import {
 	type IGalleryVideo,
 	type TGalleryDisplayObject,
 } from '../../interfaces/gallery.interface';
+import { type IGalleryI18n, resolveLightboxI18n } from '../../i18n/lightbox-i18n';
 import { SafeHtmlPipe } from '../../pipes/safe-html/safe-html.pipe';
 import { LoaderComponent } from '../loader/loader.component';
 
@@ -67,9 +69,11 @@ interface IDimensions {
 	host: {
 		role: 'dialog',
 		'aria-modal': 'true',
-		'aria-label': 'Media Lightbox Gallery',
+		'[attr.aria-label]': 'i18n().gallery',
 		'(document:keyup.arrowright)': 'nextDisplayObject($event)',
 		'(document:keyup.arrowleft)': 'prevDisplayObject($event)',
+		'(document:keyup.home)': 'firstDisplayObject($event)',
+		'(document:keyup.end)': 'lastDisplayObject($event)',
 		'(document:keyup.escape)': 'closeModal()',
 		'(window:resize)': 'onWindowResize()',
 	},
@@ -87,13 +91,15 @@ export class LightboxDialogComponent implements OnInit {
 	private readonly destroyRef: DestroyRef = inject<DestroyRef>(DestroyRef);
 	private readonly ngZone: NgZone = inject<NgZone>(NgZone);
 	private readonly injector: Injector = inject<Injector>(Injector);
+	private readonly liveAnnouncer: LiveAnnouncer = inject<LiveAnnouncer>(LiveAnnouncer);
 	private readonly preloadedImagesCache = new Map<string, Observable<HTMLImageElement>>();
 
 	private mouseMoveSubscription?: Subscription;
-	private touchStartX = 0;
-	private touchStartY = 0;
+	private touchStartXCoordinate = 0;
+	private touchStartYCoordinate = 0;
 	private isFirstLoad = true;
 
+	readonly i18n = computed<IGalleryI18n>(() => resolveLightboxI18n(this.config.i18n));
 	readonly currentIndex = signal<number>(0);
 	readonly isLoading = signal<boolean>(false);
 	readonly imageOpacity = signal<number>(0);
@@ -114,21 +120,21 @@ export class LightboxDialogComponent implements OnInit {
 	});
 
 	readonly currentDisplayObject = computed<TGalleryDisplayObject | null>(() => {
-		const index = this.currentIndex();
-		if (index < 0 || index >= this.data.displayObjects.length) {
+		const activeIndex = this.currentIndex();
+		if (activeIndex < 0 || activeIndex >= this.data.displayObjects.length) {
 			return null;
 		}
-		return this.data.displayObjects[index] ?? null;
+		return this.data.displayObjects[activeIndex] ?? null;
 	});
 
 	readonly currentImage = computed<IGalleryImage | null>(() => {
-		const item = this.currentDisplayObject();
-		return item && this.isGalleryImage(item) ? item : null;
+		const displayItem = this.currentDisplayObject();
+		return displayItem && this.isGalleryImage(displayItem) ? displayItem : null;
 	});
 
 	readonly currentVideo = computed<IGalleryVideo | null>(() => {
-		const item = this.currentDisplayObject();
-		return item && this.isGalleryVideo(item) ? item : null;
+		const displayItem = this.currentDisplayObject();
+		return displayItem && this.isGalleryVideo(displayItem) ? displayItem : null;
 	});
 
 	readonly canZoom = computed<boolean>(() => {
@@ -147,20 +153,40 @@ export class LightboxDialogComponent implements OnInit {
 	);
 
 	readonly imageCounter = computed<string>(() =>
-		this.config.imageCounterText
-			.replace(/IMAGE_INDEX/, String(this.currentIndex() + 1))
+		this.i18n()
+			.counter.replace(/IMAGE_INDEX/, String(this.currentIndex() + 1))
 			.replace(/IMAGE_COUNT/, String(this.data.displayObjects.length)),
 	);
 
+	readonly isAtFirstSlide = computed<boolean>(
+		() => !this.config.loopGallery && this.currentIndex() === 0,
+	);
+
+	readonly isAtLastSlide = computed<boolean>(
+		() => !this.config.loopGallery && this.currentIndex() === this.data.displayObjects.length - 1,
+	);
+
+	readonly liveAnnouncementText = computed<string>(() => {
+		const activeDisplayObject = this.currentDisplayObject();
+		if (!activeDisplayObject) {
+			return '';
+		}
+		const counterText = this.imageCounter();
+		const descriptionText = activeDisplayObject.description
+			? `. ${activeDisplayObject.description}`
+			: '';
+		return `${counterText}${descriptionText}`;
+	});
+
 	readonly videoSources = computed<IVideoSourceItem[]>(() => {
-		const video = this.currentVideo();
-		if (!video) {
+		const activeVideo = this.currentVideo();
+		if (!activeVideo) {
 			return [];
 		}
-		if (typeof video.mp4Source === 'string') {
-			return [{ src: video.mp4Source }];
+		if (typeof activeVideo.mp4Source === 'string') {
+			return [{ src: activeVideo.mp4Source }];
 		}
-		return Object.entries(video.mp4Source).map(([size, src]) => ({
+		return Object.entries(activeVideo.mp4Source).map(([size, src]) => ({
 			size,
 			src,
 		}));
@@ -169,18 +195,18 @@ export class LightboxDialogComponent implements OnInit {
 	readonly zoomTransformation = computed<string>(() => {
 		const { x, y, width, naturalWidth, height, naturalHeight, zoomWindowWidth, zoomWindowHeight } =
 			this.zoomStyles();
-		const halfZoomX = (zoomWindowWidth || 160) / 2;
-		const halfZoomY = (zoomWindowHeight || 160) / 2;
+		const halfZoomWidth = (zoomWindowWidth || 160) / 2;
+		const halfZoomHeight = (zoomWindowHeight || 160) / 2;
 
 		if (this.config.zoomSize === 'originalSize') {
 			const scaleX = width > 0 ? naturalWidth / width : 1;
 			const scaleY = height > 0 ? naturalHeight / height : 1;
-			const translateX = -1 * (x * scaleX - halfZoomX);
-			const translateY = -1 * (y * scaleY - halfZoomY);
+			const translateX = -1 * (x * scaleX - halfZoomWidth);
+			const translateY = -1 * (y * scaleY - halfZoomHeight);
 			return `translate(${translateX}px, ${translateY}px)`;
 		}
-		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
-		return `translate(${-1 * (x * scale - halfZoomX)}px, ${-1 * (y * scale - halfZoomY)}px)`;
+		const numericScale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
+		return `translate(${-1 * (x * numericScale - halfZoomWidth)}px, ${-1 * (y * numericScale - halfZoomHeight)}px)`;
 	});
 
 	readonly zoomWidth = computed<string>(() => {
@@ -188,8 +214,8 @@ export class LightboxDialogComponent implements OnInit {
 		if (this.config.zoomSize === 'originalSize') {
 			return `${naturalWidth}px`;
 		}
-		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
-		return `${width * scale}px`;
+		const numericScale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
+		return `${width * numericScale}px`;
 	});
 
 	readonly zoomHeight = computed<string>(() => {
@@ -197,8 +223,8 @@ export class LightboxDialogComponent implements OnInit {
 		if (this.config.zoomSize === 'originalSize') {
 			return `${naturalHeight}px`;
 		}
-		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
-		return `${height * scale}px`;
+		const numericScale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
+		return `${height * numericScale}px`;
 	});
 
 	ngOnInit(): void {
@@ -212,9 +238,20 @@ export class LightboxDialogComponent implements OnInit {
 			{ injector: this.injector },
 		);
 
+		effect(
+			() => {
+				const announcementMessage = this.liveAnnouncementText();
+				if (announcementMessage) {
+					void this.liveAnnouncer.announce(announcementMessage, 'polite');
+				}
+			},
+			{ injector: this.injector },
+		);
+
 		this.destroyRef.onDestroy(() => {
 			this.mouseMoveSubscription?.unsubscribe();
 			this.preloadedImagesCache.clear();
+			this.liveAnnouncer.clear();
 		});
 
 		const initialIndex = Math.max(
@@ -228,37 +265,40 @@ export class LightboxDialogComponent implements OnInit {
 		const imageElement = this.imageElement()?.nativeElement;
 		if (imageElement && this.currentImage() && imageElement.naturalWidth > 0) {
 			this.setImageDetails(imageElement);
-			const targetSize = this.calculateFittedDimensions(
+			const targetDimensions = this.calculateFittedDimensions(
 				imageElement.naturalWidth,
 				imageElement.naturalHeight,
 			);
 			this.wrapperDimensions.set({
-				width: `${targetSize.width}px`,
-				height: `${targetSize.height}px`,
+				width: `${targetDimensions.width}px`,
+				height: `${targetDimensions.height}px`,
 			});
 			return;
 		}
 
 		const videoElement = this.videoElement()?.nativeElement;
 		if (videoElement && this.currentVideo() && videoElement.videoWidth > 0) {
-			const targetSize = this.calculateFittedDimensions(
+			const targetDimensions = this.calculateFittedDimensions(
 				videoElement.videoWidth,
 				videoElement.videoHeight,
 			);
 			this.wrapperDimensions.set({
-				width: `${targetSize.width}px`,
-				height: `${targetSize.height}px`,
+				width: `${targetDimensions.width}px`,
+				height: `${targetDimensions.height}px`,
 			});
 		}
 	}
 
 	onVideoMetadataLoaded(event: Event): void {
-		const video = event.target as HTMLVideoElement;
-		if (video && video.videoWidth > 0 && video.videoHeight > 0) {
-			const targetSize = this.calculateFittedDimensions(video.videoWidth, video.videoHeight);
+		const videoElement = event.target as HTMLVideoElement;
+		if (videoElement && videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+			const targetDimensions = this.calculateFittedDimensions(
+				videoElement.videoWidth,
+				videoElement.videoHeight,
+			);
 			this.wrapperDimensions.set({
-				width: `${targetSize.width}px`,
-				height: `${targetSize.height}px`,
+				width: `${targetDimensions.width}px`,
+				height: `${targetDimensions.height}px`,
 			});
 		}
 	}
@@ -267,16 +307,34 @@ export class LightboxDialogComponent implements OnInit {
 		if (event) {
 			event.preventDefault();
 		}
-		const index = this.getNextIndex();
-		this.loadDisplayObject(index !== false ? index : this.data.displayObjects.length - 1);
+		const nextIndex = this.getNextDisplayObjectIndex();
+		if (nextIndex !== false) {
+			this.loadDisplayObject(nextIndex);
+		}
 	}
 
 	prevDisplayObject(event?: Event): void {
 		if (event) {
 			event.preventDefault();
 		}
-		const index = this.getPrevIndex();
-		this.loadDisplayObject(index !== false ? index : 0);
+		const previousIndex = this.getPreviousDisplayObjectIndex();
+		if (previousIndex !== false) {
+			this.loadDisplayObject(previousIndex);
+		}
+	}
+
+	firstDisplayObject(event?: Event): void {
+		if (event) {
+			event.preventDefault();
+		}
+		this.loadDisplayObject(0);
+	}
+
+	lastDisplayObject(event?: Event): void {
+		if (event) {
+			event.preventDefault();
+		}
+		this.loadDisplayObject(this.data.displayObjects.length - 1);
 	}
 
 	closeModal(): void {
@@ -288,9 +346,9 @@ export class LightboxDialogComponent implements OnInit {
 			return;
 		}
 
-		const offsetX = event.offsetX ?? 0;
-		const width = this.zoomStyles().width;
-		if (width > 0 && offsetX / width < 0.5) {
+		const cursorOffsetX = event.offsetX ?? 0;
+		const displayedWidth = this.zoomStyles().width;
+		if (displayedWidth > 0 && cursorOffsetX / displayedWidth < 0.5) {
 			this.prevDisplayObject();
 		} else {
 			this.nextDisplayObject();
@@ -299,18 +357,21 @@ export class LightboxDialogComponent implements OnInit {
 
 	touchStart(event: TouchEvent): void {
 		if (event.touches.length === 1) {
-			this.touchStartX = event.touches[0]!.clientX;
-			this.touchStartY = event.touches[0]!.clientY;
+			this.touchStartXCoordinate = event.touches[0]!.clientX;
+			this.touchStartYCoordinate = event.touches[0]!.clientY;
 		}
 	}
 
 	touchEnd(event: TouchEvent): void {
 		if (event.changedTouches.length === 1) {
-			const deltaX = event.changedTouches[0]!.clientX - this.touchStartX;
-			const deltaY = event.changedTouches[0]!.clientY - this.touchStartY;
+			const horizontalSwipeDistance = event.changedTouches[0]!.clientX - this.touchStartXCoordinate;
+			const verticalSwipeDistance = event.changedTouches[0]!.clientY - this.touchStartYCoordinate;
 
-			if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
-				if (deltaX < 0) {
+			if (
+				Math.abs(horizontalSwipeDistance) > 40 &&
+				Math.abs(horizontalSwipeDistance) > Math.abs(verticalSwipeDistance) * 1.5
+			) {
+				if (horizontalSwipeDistance < 0) {
 					this.nextDisplayObject();
 				} else {
 					this.prevDisplayObject();
@@ -321,9 +382,9 @@ export class LightboxDialogComponent implements OnInit {
 
 	imageMouseIn(event: MouseEvent): void {
 		this.isHoveringImage.set(true);
-		const target = (event.currentTarget || event.target) as HTMLImageElement;
-		if (target) {
-			this.setImageDetails(target);
+		const targetImage = (event.currentTarget || event.target) as HTMLImageElement;
+		if (targetImage) {
+			this.setImageDetails(targetImage);
 		}
 		this.updateZoomPosition(event);
 	}
@@ -343,14 +404,20 @@ export class LightboxDialogComponent implements OnInit {
 
 	private updateZoomPosition(event: MouseEvent): void {
 		const imageElement = this.imageElement()?.nativeElement;
-		let offsetX = event.offsetX ?? 0;
-		let offsetY = event.offsetY ?? 0;
+		let cursorOffsetX = event.offsetX ?? 0;
+		let cursorOffsetY = event.offsetY ?? 0;
 
 		if (imageElement) {
-			const rect = imageElement.getBoundingClientRect();
-			if (rect.width > 0 && rect.height > 0) {
-				offsetX = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-				offsetY = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+			const boundingRectangle = imageElement.getBoundingClientRect();
+			if (boundingRectangle.width > 0 && boundingRectangle.height > 0) {
+				cursorOffsetX = Math.max(
+					0,
+					Math.min(boundingRectangle.width, event.clientX - boundingRectangle.left),
+				);
+				cursorOffsetY = Math.max(
+					0,
+					Math.min(boundingRectangle.height, event.clientY - boundingRectangle.top),
+				);
 			}
 		}
 
@@ -358,16 +425,16 @@ export class LightboxDialogComponent implements OnInit {
 		const zoomWindowWidth = zoomElement?.offsetWidth || this.zoomStyles().zoomWindowWidth || 160;
 		const zoomWindowHeight = zoomElement?.offsetHeight || this.zoomStyles().zoomWindowHeight || 160;
 
-		this.zoomStyles.update((current) => ({
-			...current,
-			x: offsetX,
-			y: offsetY,
+		this.zoomStyles.update((currentStyles) => ({
+			...currentStyles,
+			x: cursorOffsetX,
+			y: cursorOffsetY,
 			zoomWindowWidth,
 			zoomWindowHeight,
 		}));
 
 		if (zoomElement) {
-			zoomElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+			zoomElement.style.transform = `translate(${cursorOffsetX}px, ${cursorOffsetY}px)`;
 		}
 
 		const zoomImageElement = this.zoomImageElement()?.nativeElement;
@@ -379,15 +446,15 @@ export class LightboxDialogComponent implements OnInit {
 	private setImageDetails(imageElement: HTMLImageElement): void {
 		const naturalWidth = imageElement.naturalWidth;
 		const naturalHeight = imageElement.naturalHeight;
-		const fitted = this.calculateFittedDimensions(naturalWidth, naturalHeight);
-		const width = imageElement.clientWidth || fitted.width;
-		const height = imageElement.clientHeight || fitted.height;
+		const fittedDimensions = this.calculateFittedDimensions(naturalWidth, naturalHeight);
+		const width = imageElement.clientWidth || fittedDimensions.width;
+		const height = imageElement.clientHeight || fittedDimensions.height;
 		const zoomElement = this.zoomElement()?.nativeElement;
 		const zoomWindowWidth = zoomElement?.offsetWidth || this.zoomStyles().zoomWindowWidth || 160;
 		const zoomWindowHeight = zoomElement?.offsetHeight || this.zoomStyles().zoomWindowHeight || 160;
 
-		this.zoomStyles.update((current) => ({
-			...current,
+		this.zoomStyles.update((currentStyles) => ({
+			...currentStyles,
 			width,
 			naturalWidth,
 			height,
@@ -397,7 +464,7 @@ export class LightboxDialogComponent implements OnInit {
 		}));
 	}
 
-	private getNextIndex(): number | false {
+	private getNextDisplayObjectIndex(): number | false {
 		const nextIndex = this.currentIndex() + 1;
 		if (nextIndex > this.data.displayObjects.length - 1) {
 			return this.config.loopGallery ? 0 : false;
@@ -405,21 +472,21 @@ export class LightboxDialogComponent implements OnInit {
 		return nextIndex;
 	}
 
-	private getPrevIndex(): number | false {
-		const prevIndex = this.currentIndex() - 1;
-		if (prevIndex < 0) {
+	private getPreviousDisplayObjectIndex(): number | false {
+		const previousIndex = this.currentIndex() - 1;
+		if (previousIndex < 0) {
 			return this.config.loopGallery ? this.data.displayObjects.length - 1 : false;
 		}
-		return prevIndex;
+		return previousIndex;
 	}
 
-	private loadDisplayObject(index: number): void {
-		const targetObject = this.data.displayObjects[index];
+	private loadDisplayObject(targetIndex: number): void {
+		const targetObject = this.data.displayObjects[targetIndex];
 		if (!targetObject) {
 			return;
 		}
 
-		this.currentIndex.set(index);
+		this.currentIndex.set(targetIndex);
 
 		if (!this.config.enableAnimations) {
 			this.wrapperDimensions.set({ width: 'auto', height: 'auto' });
@@ -489,15 +556,15 @@ export class LightboxDialogComponent implements OnInit {
 						naturalHeight = targetObject.resolution.height;
 					}
 
-					const targetSize = this.calculateFittedDimensions(naturalWidth, naturalHeight);
+					const targetDimensions = this.calculateFittedDimensions(naturalWidth, naturalHeight);
 					const delayTime = this.isFirstLoad ? 30 : 10;
 					this.isFirstLoad = false;
 
 					return timer(delayTime).pipe(
 						tap(() => {
 							this.wrapperDimensions.set({
-								width: `${targetSize.width}px`,
-								height: `${targetSize.height}px`,
+								width: `${targetDimensions.width}px`,
+								height: `${targetDimensions.height}px`,
 							});
 						}),
 						switchMap(() => timer(350)),
@@ -536,21 +603,25 @@ export class LightboxDialogComponent implements OnInit {
 		if (!naturalWidth || !naturalHeight) {
 			return { width: 600, height: 400 };
 		}
-		const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.95 : 1200;
-		const viewportMaxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800;
+		const maxViewportWidth = typeof window !== 'undefined' ? window.innerWidth * 0.95 : 1200;
+		const maxViewportHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 800;
 		const captionHeightBudget = 80;
-		const maxMediaHeight = Math.max(160, viewportMaxHeight - captionHeightBudget);
+		const maxMediaHeight = Math.max(160, maxViewportHeight - captionHeightBudget);
 
-		const scale = Math.min(maxWidth / naturalWidth, maxMediaHeight / naturalHeight, 1);
+		const scalingFactor = Math.min(
+			maxViewportWidth / naturalWidth,
+			maxMediaHeight / naturalHeight,
+			1,
+		);
 
-		const fittedWidth = Math.round(naturalWidth * scale);
-		const fittedHeight = Math.round(naturalHeight * scale);
+		const fittedWidth = Math.round(naturalWidth * scalingFactor);
+		const fittedHeight = Math.round(naturalHeight * scalingFactor);
 
-		const minWidth = Math.min(340, maxWidth);
-		const width = Math.max(fittedWidth, minWidth);
+		const minContainerWidth = Math.min(340, maxViewportWidth);
+		const finalWidth = Math.max(fittedWidth, minContainerWidth);
 
 		return {
-			width,
+			width: finalWidth,
 			height: fittedHeight,
 		};
 	}
@@ -559,13 +630,13 @@ export class LightboxDialogComponent implements OnInit {
 		if (!this.config.enableImagePreloading) {
 			return;
 		}
-		const nextIndex = this.getNextIndex();
+		const nextIndex = this.getNextDisplayObjectIndex();
 		if (nextIndex !== false) {
 			this.preloadDisplayObject(this.data.displayObjects[nextIndex]!).subscribe();
 		}
-		const prevIndex = this.getPrevIndex();
-		if (prevIndex !== false) {
-			this.preloadDisplayObject(this.data.displayObjects[prevIndex]!).subscribe();
+		const previousIndex = this.getPreviousDisplayObjectIndex();
+		if (previousIndex !== false) {
+			this.preloadDisplayObject(this.data.displayObjects[previousIndex]!).subscribe();
 		}
 	}
 
@@ -574,18 +645,18 @@ export class LightboxDialogComponent implements OnInit {
 	): Observable<HTMLImageElement | void> {
 		if (this.isGalleryImage(displayObject)) {
 			if (!this.preloadedImagesCache.has(displayObject.source)) {
-				const image = new Image();
+				const preloadedImageInstance = new Image();
 				this.preloadedImagesCache.set(
 					displayObject.source,
-					fromEvent(image, 'load').pipe(
-						map(() => image),
+					fromEvent(preloadedImageInstance, 'load').pipe(
+						map(() => preloadedImageInstance),
 						shareReplay({
 							bufferSize: 1,
 							refCount: true,
 						}),
 					),
 				);
-				image.src = displayObject.source;
+				preloadedImageInstance.src = displayObject.source;
 			}
 			return this.preloadedImagesCache.get(displayObject.source)!;
 		}

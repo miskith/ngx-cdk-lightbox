@@ -20,7 +20,7 @@ describe('LightboxDialogComponent', () => {
 			loopGallery: true,
 			enableZoom: true,
 			zoomSize: 2,
-			imageCounterText: 'IMAGE_INDEX / IMAGE_COUNT',
+			i18n: { counter: 'IMAGE_INDEX / IMAGE_COUNT' },
 			enableImageClick: true,
 		},
 		displayObjects: [
@@ -36,7 +36,7 @@ describe('LightboxDialogComponent', () => {
 	};
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({}).overrideComponent(LightboxDialogComponent, {
+		TestBed.overrideComponent(LightboxDialogComponent, {
 			set: {
 				providers: [
 					{ provide: DIALOG_DATA, useValue: mockData },
@@ -251,27 +251,50 @@ describe('LightboxDialogComponent', () => {
 	});
 
 	it('should set image details on imageMouseIn', () => {
-		const mockEvent = {
+		const mockMouseEvent = {
 			target: { clientWidth: 100, clientHeight: 100, naturalWidth: 200, naturalHeight: 200 },
 			offsetX: 0,
 			offsetY: 0,
 		} as unknown as MouseEvent;
-		component.imageMouseIn(mockEvent);
+		component.imageMouseIn(mockMouseEvent);
 		expect(component.zoomStyles().width).toBe(100);
 		expect(component.zoomStyles().naturalWidth).toBe(200);
 	});
 
 	it('should refit dimensions on window resize', () => {
 		component.currentIndex.set(0);
-		const mockImg = {
+		const mockImageElement = {
 			naturalWidth: 800,
 			naturalHeight: 600,
 			clientWidth: 800,
 			clientHeight: 600,
 		} as HTMLImageElement;
-		(component as any)['imageElement'] = () => ({ nativeElement: mockImg });
+		(component as any)['imageElement'] = () => ({ nativeElement: mockImageElement });
 		component.onWindowResize();
 		expect(component.wrapperDimensions().width).not.toBe('0px');
+	});
+
+	it('should jump to first and last display object via firstDisplayObject and lastDisplayObject', () => {
+		component.lastDisplayObject();
+		expect(component.currentIndex()).toBe(2);
+		component.firstDisplayObject();
+		expect(component.currentIndex()).toBe(0);
+	});
+
+	it('should generate correct live announcement text for screen readers', () => {
+		component.currentIndex.set(0);
+		expect(component.liveAnnouncementText()).toBe('1 / 3. Photo 1');
+	});
+
+	it('should correctly calculate boundary slide states when loopGallery is false', () => {
+		(component as any)['config'] = { ...component.config, loopGallery: false };
+		component.currentIndex.set(0);
+		expect(component.isAtFirstSlide()).toBeTruthy();
+		expect(component.isAtLastSlide()).toBeFalsy();
+
+		component.currentIndex.set(2);
+		expect(component.isAtFirstSlide()).toBeFalsy();
+		expect(component.isAtLastSlide()).toBeTruthy();
 	});
 
 	it('should provide default lightbox config provider', () => {

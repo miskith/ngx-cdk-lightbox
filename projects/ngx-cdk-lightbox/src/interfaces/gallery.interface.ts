@@ -1,4 +1,5 @@
 import type { TemplateRef } from '@angular/core';
+import type { IGalleryI18n, TSupportedLightboxLanguage } from '../i18n/lightbox-i18n';
 
 export type TGalleryDisplayObject = IGalleryImage | IGalleryVideo;
 
@@ -32,7 +33,6 @@ export interface IGalleryConfig {
 	enableImageClick: boolean;
 	loopGallery: boolean;
 	enableImageCounter: boolean;
-	imageCounterText: string;
 	enableCloseIcon: boolean;
 	closeIcon: string;
 	enableArrows: boolean;
@@ -42,9 +42,7 @@ export interface IGalleryConfig {
 	enableImagePreloading: boolean;
 	startingIndex: number;
 	enableAnimations: boolean;
-	ariaLabelNext: string;
-	ariaLabelPrev: string;
-	ariaLabelClose: string;
+	i18n: TSupportedLightboxLanguage | Partial<IGalleryI18n>;
 	panelClass?: string | string[];
 }
 

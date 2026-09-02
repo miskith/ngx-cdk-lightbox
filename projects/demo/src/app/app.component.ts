@@ -15,10 +15,17 @@ import {
 	type IGalleryImage,
 	NgxCdkLightboxService,
 	type TGalleryDisplayObject,
+	type TSupportedLightboxLanguage,
 } from '../../../ngx-cdk-lightbox/src/public-api';
 
 type DemoTab =
 	'photo-gallery' | 'mixed-gallery' | 'custom-loader' | 'playground' | 'getting-started';
+
+interface ILanguageOption {
+	code: TSupportedLightboxLanguage;
+	name: string;
+	flag: string;
+}
 
 @Component({
 	selector: 'app-root',
@@ -32,12 +39,43 @@ export class AppComponent implements OnInit {
 
 	readonly activeTab = signal<DemoTab>('photo-gallery');
 	readonly isDarkMode = signal<boolean>(false);
+	readonly selectedDemoLanguage = signal<TSupportedLightboxLanguage>('de');
+
+	readonly availableLanguages: readonly ILanguageOption[] = [
+		{ code: 'en', name: 'English', flag: '🇬🇧' },
+		{ code: 'de', name: 'German (Deutsch)', flag: '🇩🇪' },
+		{ code: 'pl', name: 'Polish (Polski)', flag: '🇵🇱' },
+		{ code: 'cs', name: 'Czech (Čeština)', flag: '🇨🇿' },
+		{ code: 'sk', name: 'Slovak (Slovenčina)', flag: '🇸🇰' },
+		{ code: 'es', name: 'Spanish (Español)', flag: '🇪🇸' },
+		{ code: 'it', name: 'Italian (Italiano)', flag: '🇮🇹' },
+		{ code: 'fr', name: 'French (Français)', flag: '🇫🇷' },
+		{ code: 'pt', name: 'Portuguese (Português)', flag: '🇵🇹' },
+		{ code: 'nl', name: 'Dutch (Nederlands)', flag: '🇳🇱' },
+		{ code: 'sv', name: 'Swedish (Svenska)', flag: '🇸🇪' },
+		{ code: 'no', name: 'Norwegian (Norsk)', flag: '🇳🇴' },
+		{ code: 'da', name: 'Danish (Dansk)', flag: '🇩🇰' },
+		{ code: 'fi', name: 'Finnish (Suomi)', flag: '🇫🇮' },
+		{ code: 'hu', name: 'Hungarian (Magyar)', flag: '🇭🇺' },
+		{ code: 'el', name: 'Greek (Ελληνικά)', flag: '🇬🇷' },
+		{ code: 'ro', name: 'Romanian (Română)', flag: '🇷🇴' },
+		{ code: 'hr', name: 'Croatian (Hrvatski)', flag: '🇭🇷' },
+		{ code: 'uk', name: 'Ukrainian (Українська)', flag: '🇺🇦' },
+		{ code: 'tr', name: 'Turkish (Türkçe)', flag: '🇹🇷' },
+		{ code: 'ja', name: 'Japanese (日本語)', flag: '🇯🇵' },
+		{ code: 'ko', name: 'Korean (한국어)', flag: '🇰🇷' },
+		{ code: 'zh', name: 'Chinese (简体中文)', flag: '🇨🇳' },
+		{ code: 'hi', name: 'Hindi / Indian (हिन्दी)', flag: '🇮🇳' },
+		{ code: 'vi', name: 'Vietnamese (Tiếng Việt)', flag: '🇻🇳' },
+		{ code: 'ar', name: 'Arabic (العربية)', flag: '🇸🇦' },
+	];
 
 	readonly playgroundEnableZoom = signal<boolean>(true);
 	readonly playgroundZoomSize = signal<number | 'originalSize'>(2.5);
 	readonly playgroundLoop = signal<boolean>(true);
 	readonly playgroundEnableCounter = signal<boolean>(true);
 	readonly playgroundCounterText = signal<string>('IMAGE_INDEX of IMAGE_COUNT');
+	readonly playgroundLanguage = signal<string>('en');
 	readonly playgroundEnableAnimations = signal<boolean>(true);
 	readonly playgroundEnableArrows = signal<boolean>(true);
 	readonly playgroundEnableClose = signal<boolean>(true);
@@ -125,6 +163,17 @@ export class AppComponent implements OnInit {
 		loopGallery: true,
 	};
 
+	readonly configCustomLocalized: Partial<IGalleryConfig> = {
+		enableZoom: true,
+		zoomSize: 'originalSize',
+		startingIndex: 1,
+		i18n: {
+			counter: 'PHOTO [IMAGE_INDEX] OF [IMAGE_COUNT]',
+			next: 'Next picture',
+			previous: 'Previous picture',
+		},
+	};
+
 	readonly configMinimal: Partial<IGalleryConfig> = {
 		enableArrows: false,
 		enableCloseIcon: false,
@@ -132,14 +181,14 @@ export class AppComponent implements OnInit {
 		enableImagePreloading: false,
 	};
 
-	readonly configCustomLocalized: Partial<IGalleryConfig> = {
-		enableZoom: true,
-		zoomSize: 'originalSize',
-		imageCounterText: 'PHOTO [IMAGE_INDEX] OF [IMAGE_COUNT]',
-		ariaLabelNext: 'Next picture',
-		ariaLabelPrev: 'Previous picture',
-		startingIndex: 1,
-	};
+	get configSelectedLanguage(): Partial<IGalleryConfig> {
+		return {
+			i18n: this.selectedDemoLanguage(),
+			enableZoom: true,
+			loopGallery: true,
+			startingIndex: 0,
+		};
+	}
 
 	get configCustomLoader(): Partial<IGalleryConfig> {
 		return {
@@ -188,6 +237,7 @@ export class GalleryComponent {
         copyright: '© 2026 Photographer',
       },
     ], {
+      i18n: 'de', // Predefined: 'en', 'de', 'pl', 'cs', 'sk', 'es', 'it', 'uk', 'ja', 'hi'
       enableZoom: true,
       loopGallery: true,
     });
@@ -196,36 +246,43 @@ export class GalleryComponent {
 
 	ngOnInit(): void {
 		if (typeof window !== 'undefined') {
-			const saved = localStorage.getItem('theme');
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const isDark = saved === 'dark' || (!saved && prefersDark);
-			this.isDarkMode.set(isDark);
-			document.documentElement.classList.toggle('dark-theme', isDark);
+			const savedThemePreference = localStorage.getItem('theme');
+			const prefersDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const isDarkModeActive =
+				savedThemePreference === 'dark' || (!savedThemePreference && prefersDarkColorScheme);
+			this.isDarkMode.set(isDarkModeActive);
+			document.documentElement.classList.toggle('dark-theme', isDarkModeActive);
 		}
 	}
 
 	toggleTheme(): void {
-		const next = !this.isDarkMode();
-		this.isDarkMode.set(next);
+		const nextThemeMode = !this.isDarkMode();
+		this.isDarkMode.set(nextThemeMode);
 		if (typeof window !== 'undefined') {
-			document.documentElement.classList.toggle('dark-theme', next);
-			localStorage.setItem('theme', next ? 'dark' : 'light');
+			document.documentElement.classList.toggle('dark-theme', nextThemeMode);
+			localStorage.setItem('theme', nextThemeMode ? 'dark' : 'light');
 		}
 	}
 
 	get playgroundConfig(): Partial<IGalleryConfig> {
+		const languageChoice = this.playgroundLanguage();
+		const i18nConfig =
+			languageChoice === 'custom'
+				? { counter: this.playgroundCounterText() }
+				: (languageChoice as TSupportedLightboxLanguage);
+
 		return {
 			enableZoom: this.playgroundEnableZoom(),
 			zoomSize: this.playgroundZoomSize(),
 			loopGallery: this.playgroundLoop(),
 			enableImageCounter: this.playgroundEnableCounter(),
-			imageCounterText: this.playgroundCounterText(),
 			enableAnimations: this.playgroundEnableAnimations(),
 			enableArrows: this.playgroundEnableArrows(),
 			enableCloseIcon: this.playgroundEnableClose(),
 			enableImageClick: this.playgroundEnableClick(),
 			startingIndex: this.playgroundStartingIndex(),
 			enableImagePreloading: this.playgroundPreloading(),
+			i18n: i18nConfig,
 		};
 	}
 
@@ -233,18 +290,20 @@ export class GalleryComponent {
 		return JSON.stringify(this.playgroundConfig, null, 2);
 	}
 
-	selectTab(tab: DemoTab): void {
-		this.activeTab.set(tab);
+	selectTab(selectedTab: DemoTab): void {
+		this.activeTab.set(selectedTab);
 	}
 
 	openGallery(
-		items: TGalleryDisplayObject[] = this.demoImages,
-		config?: Partial<IGalleryConfig>,
-		startIndex?: number,
+		galleryItems: TGalleryDisplayObject[] = this.demoImages,
+		customConfig?: Partial<IGalleryConfig>,
+		startingSlideIndex?: number,
 	): void {
 		const finalConfig =
-			startIndex !== undefined ? { ...config, startingIndex: startIndex } : config;
-		this.lightboxService.open(items, finalConfig);
+			startingSlideIndex !== undefined
+				? { ...customConfig, startingIndex: startingSlideIndex }
+				: customConfig;
+		this.lightboxService.open(galleryItems, finalConfig);
 	}
 
 	openDarkThemeGallery(): void {
@@ -258,6 +317,16 @@ export class GalleryComponent {
 
 	launchPlayground(): void {
 		this.openGallery(this.demoImages, this.playgroundConfig);
+	}
+
+	updateDemoLanguage(event: Event): void {
+		const selectElement = event.target as HTMLSelectElement;
+		this.selectedDemoLanguage.set(selectElement.value as TSupportedLightboxLanguage);
+	}
+
+	updatePlaygroundLanguage(event: Event): void {
+		const selectElement = event.target as HTMLSelectElement;
+		this.playgroundLanguage.set(selectElement.value);
 	}
 
 	updateZoomSize(event: Event): void {

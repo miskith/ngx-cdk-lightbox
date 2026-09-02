@@ -10,4 +10,5 @@ import { NgTemplateOutlet } from '@angular/common';
 })
 export class LoaderComponent {
 	readonly loaderTemplate = input<TemplateRef<unknown> | null>(null);
+	readonly loadingText = input<string>('Loading gallery media...');
 }

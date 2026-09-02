@@ -33,7 +33,9 @@
 		color: var(--ngx-cdk-button-color, var(--ngx-cdk-text-color, #0f172a));
 		border-radius: var(--ngx-cdk-button-border-radius, 50%);
 		box-shadow: var(--ngx-cdk-button-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
-		transition: background-color 0.25s ease-out;
+		transition:
+			background-color 0.25s ease-out,
+			box-shadow 0.25s ease-out;
 		padding: 2px;
 		border: 0;
 		box-sizing: border-box;
@@ -69,6 +71,11 @@
 				)
 			);
 		}
+
+		&:focus-visible {
+			outline: 2px solid var(--ngx-cdk-focus-ring-color, #6366f1);
+			outline-offset: 2px;
+		}
 	}
 
 	&__arrows-container {
@@ -95,7 +102,8 @@
 		border: 0;
 		transition:
 			background-color 0.25s ease-out,
-			opacity 0.25s ease-out;
+			opacity 0.25s ease-out,
+			box-shadow 0.25s ease-out;
 		box-sizing: border-box;
 		opacity: 0;
 		display: grid;
@@ -130,6 +138,19 @@
 			);
 		}
 
+		&:focus-visible {
+			outline: 2px solid var(--ngx-cdk-focus-ring-color, #6366f1);
+			outline-offset: 2px;
+			opacity: 1 !important;
+		}
+
+		&:disabled,
+		&.is-disabled {
+			opacity: 0.2 !important;
+			cursor: not-allowed;
+			pointer-events: none;
+		}
+
 		&.is-left {
 			justify-self: start;
 		}
@@ -138,7 +159,7 @@
 			justify-self: end;
 		}
 
-		.lightbox-dialog__container:hover & {
+		.lightbox-dialog__container:hover &:not(:disabled):not(.is-disabled) {
 			opacity: 1;
 		}
 	}
@@ -243,6 +264,18 @@
 		pointer-events: none;
 		max-width: none;
 		max-height: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.lightbox-dialog__close-button,
+	.lightbox-dialog__arrow {
+		forced-color-adjust: none;
+		border: 2px solid ButtonText;
+	}
+
+	.lightbox-dialog__container {
+		border: 2px solid CanvasText;
 	}
 }
 
