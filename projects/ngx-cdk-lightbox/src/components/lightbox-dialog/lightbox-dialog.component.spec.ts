@@ -209,7 +209,7 @@ describe('LightboxDialogComponent', () => {
 		expect(component.canZoom()).toBeFalsy();
 	});
 
-	it('should correctly calculate the zoom transformation', () => {
+	it('should correctly calculate the zoom transformation based on dynamic window size', () => {
 		component.zoomStyles.set({
 			x: 50,
 			y: 50,
@@ -217,10 +217,13 @@ describe('LightboxDialogComponent', () => {
 			height: 100,
 			naturalWidth: 200,
 			naturalHeight: 200,
+			zoomWindowWidth: 220,
+			zoomWindowHeight: 220,
 		});
 		(component as any)['config'] = { zoomSize: 'originalSize', enableZoom: true };
+		// scale = 200 / 100 = 2; halfZoom = 110; translateX = -1 * (50 * 2 - 110) = 10px
 		const transform = component.zoomTransformation();
-		expect(transform).toContain('translate');
+		expect(transform).toBe('translate(10px, 10px)');
 	});
 
 	it('should preload a display object with an image source', () =>

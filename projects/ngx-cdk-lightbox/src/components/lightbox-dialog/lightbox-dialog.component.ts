@@ -44,6 +44,8 @@ interface IZoomStyles {
 	naturalWidth: number;
 	height: number;
 	naturalHeight: number;
+	zoomWindowWidth?: number;
+	zoomWindowHeight?: number;
 }
 
 interface IVideoSourceItem {
@@ -107,6 +109,8 @@ export class LightboxDialogComponent implements OnInit {
 		naturalWidth: 0,
 		height: 0,
 		naturalHeight: 0,
+		zoomWindowWidth: 160,
+		zoomWindowHeight: 160,
 	});
 
 	readonly currentDisplayObject = computed<TGalleryDisplayObject | null>(() => {
@@ -163,16 +167,20 @@ export class LightboxDialogComponent implements OnInit {
 	});
 
 	readonly zoomTransformation = computed<string>(() => {
-		const { x, y, width, naturalWidth, height, naturalHeight } = this.zoomStyles();
+		const { x, y, width, naturalWidth, height, naturalHeight, zoomWindowWidth, zoomWindowHeight } =
+			this.zoomStyles();
+		const halfZoomX = (zoomWindowWidth || 160) / 2;
+		const halfZoomY = (zoomWindowHeight || 160) / 2;
+
 		if (this.config.zoomSize === 'originalSize') {
 			const scaleX = width > 0 ? naturalWidth / width : 1;
 			const scaleY = height > 0 ? naturalHeight / height : 1;
-			const translateX = -1 * (x * scaleX - 80);
-			const translateY = -1 * (y * scaleY - 80);
+			const translateX = -1 * (x * scaleX - halfZoomX);
+			const translateY = -1 * (y * scaleY - halfZoomY);
 			return `translate(${translateX}px, ${translateY}px)`;
 		}
 		const scale = typeof this.config.zoomSize === 'number' ? this.config.zoomSize : 2;
-		return `translate(${-1 * (x * scale - 80)}px, ${-1 * (y * scale - 80)}px)`;
+		return `translate(${-1 * (x * scale - halfZoomX)}px, ${-1 * (y * scale - halfZoomY)}px)`;
 	});
 
 	readonly zoomWidth = computed<string>(() => {
@@ -322,13 +330,18 @@ export class LightboxDialogComponent implements OnInit {
 			}
 		}
 
+		const zoomElement = this.zoomElement()?.nativeElement;
+		const zoomWindowWidth = zoomElement?.offsetWidth || this.zoomStyles().zoomWindowWidth || 160;
+		const zoomWindowHeight = zoomElement?.offsetHeight || this.zoomStyles().zoomWindowHeight || 160;
+
 		this.zoomStyles.update((current) => ({
 			...current,
 			x: offsetX,
 			y: offsetY,
+			zoomWindowWidth,
+			zoomWindowHeight,
 		}));
 
-		const zoomElement = this.zoomElement()?.nativeElement;
 		if (zoomElement) {
 			zoomElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 		}
@@ -345,6 +358,9 @@ export class LightboxDialogComponent implements OnInit {
 		const fitted = this.calculateFittedDimensions(naturalWidth, naturalHeight);
 		const width = imageElement.clientWidth || fitted.width;
 		const height = imageElement.clientHeight || fitted.height;
+		const zoomElement = this.zoomElement()?.nativeElement;
+		const zoomWindowWidth = zoomElement?.offsetWidth || this.zoomStyles().zoomWindowWidth || 160;
+		const zoomWindowHeight = zoomElement?.offsetHeight || this.zoomStyles().zoomWindowHeight || 160;
 
 		this.zoomStyles.update((current) => ({
 			...current,
@@ -352,6 +368,8 @@ export class LightboxDialogComponent implements OnInit {
 			naturalWidth,
 			height,
 			naturalHeight,
+			zoomWindowWidth,
+			zoomWindowHeight,
 		}));
 	}
 
