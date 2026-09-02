@@ -4,7 +4,7 @@ Custom implementation of CDK to display image gallery in lightbox.
 
 ## Demo
 
-https://www.davidmyska.com/ngx-cdk-lightbox/
+https://storage.davidmyska.com/ngx-cdk-lightbox/
 
 ## Installation
 
