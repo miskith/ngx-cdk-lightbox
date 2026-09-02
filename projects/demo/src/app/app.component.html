@@ -1,116 +1,402 @@
-<h1>
-	ngx-cdk-lightbox
-</h1>
-<mat-tab-group>
-	<mat-tab label="Install">
-		<mat-card>
-			<mat-card-title>
-				Install dependencies
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="installCommand[0]!" language="bash"></code></pre>
-				or
-				<pre><code [highlight]="installCommand[1]!" language="bash"></code></pre>
-			</mat-card-content>
-		</mat-card>
-		<mat-card>
-			<mat-card-title>
-				Use in your component
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="sampleUsage[0]!" language="typescript"></code></pre>
-				<pre><code [highlight]="sampleUsage[1]!" language="typescript"></code></pre>
-				<pre><code [highlight]="sampleUsage[2]!" language="typescript"></code></pre>
-			</mat-card-content>
-		</mat-card>
-	</mat-tab>
-	<mat-tab label="Photogallery Demo">
-		<mat-card>
-			<mat-card-title>
-				Gallery with default configuration
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="config1 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config1)">
-					Open gallery
-				</button>
-			</mat-card-actions>
-		</mat-card>
+<div class="demo-container">
+	<!-- Hero Header -->
+	<header class="demo-header">
+		<span class="badge-pill">Angular CDK Lightbox</span>
+		<h1>ngx-cdk-lightbox</h1>
+		<p>
+			A lightweight, performant, and flexible lightbox gallery component and service built on top
+			of Angular CDK. Supports responsive images, multiple video resolutions, zoom, and customizable templates.
+		</p>
+		<div class="header-links">
+			<a href="https://github.com/miskith/ngx-cdk-lightbox" target="_blank" rel="noopener noreferrer">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+					<path
+						d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+					/>
+				</svg>
+				GitHub Repository
+			</a>
+		</div>
+	</header>
 
-		<mat-card>
-			<mat-card-title>
-				Gallery with enabled zoom functionality
-			</mat-card-title>
-			<mat-card-content>
-					<pre><code [highlight]="config2 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config2)">
-					Open gallery
-				</button>
-			</mat-card-actions>
-		</mat-card>
+	<!-- Navigation Tabs -->
+	<nav class="demo-tabs" role="tablist">
+		<button
+			type="button"
+			class="tab-btn"
+			[class.active]="activeTab() === 'photo-gallery'"
+			(click)="selectTab('photo-gallery')"
+		>
+			🖼️ Photo Gallery
+		</button>
+		<button
+			type="button"
+			class="tab-btn"
+			[class.active]="activeTab() === 'mixed-gallery'"
+			(click)="selectTab('mixed-gallery')"
+		>
+			🎬 Mixed Media & Video
+		</button>
+		<button
+			type="button"
+			class="tab-btn"
+			[class.active]="activeTab() === 'custom-loader'"
+			(click)="selectTab('custom-loader')"
+		>
+			⚡ Custom Loader & Config
+		</button>
+		<button
+			type="button"
+			class="tab-btn"
+			[class.active]="activeTab() === 'playground'"
+			(click)="selectTab('playground')"
+		>
+			🎛️ Live Playground
+		</button>
+		<button
+			type="button"
+			class="tab-btn"
+			[class.active]="activeTab() === 'getting-started'"
+			(click)="selectTab('getting-started')"
+		>
+			📦 Getting Started
+		</button>
+	</nav>
 
-		<mat-card>
-			<mat-card-title>
-				Gallery starting at different index, no animations, custom loader template
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="config3 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config3Usable)">
-					Open gallery
-				</button>
-			</mat-card-actions>
-			<ng-template #matLoaderTemplate>
-				<mat-spinner [diameter]="35"></mat-spinner>
-			</ng-template>
-		</mat-card>
+	<!-- TAB 1: Photo Gallery -->
+	@if (activeTab() === 'photo-gallery') {
+		<div class="cards-grid">
+			<!-- Card 1: Default Gallery -->
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>Standard Gallery</h2>
+					<span class="feature-tag">Default Options</span>
+				</div>
+				<div class="card-body">
+					<p>Looping photo gallery with preloading, smooth transition animations, and image counter.</p>
+					<div class="code-block">
+						<pre><code [highlight]="configDefault | json" language="json"></code></pre>
+					</div>
+					<div class="thumbnails-strip">
+						@for (img of demoImages; track img.source; let i = $index) {
+							<div class="thumb-item" (click)="openGallery(demoImages, configDefault, i)" [title]="img.description || 'Open at image ' + (i + 1)">
+								<img [src]="img.source" [alt]="img.description || 'Thumbnail'" loading="lazy" />
+							</div>
+						}
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(demoImages, configDefault)">
+						Launch Gallery
+					</button>
+				</div>
+			</div>
 
-		<mat-card>
-			<mat-card-title>
-				Hide arrows, hide close icon, disable click on image, disable image preloading
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="config4 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config4)">
-					Open gallery
-				</button>
-			</mat-card-actions>
-		</mat-card>
+			<!-- Card 2: Zoom & Pan -->
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>High-Res Zoom & Pan</h2>
+					<span class="feature-tag">Interactive Zoom</span>
+				</div>
+				<div class="card-body">
+					<p>Hover over high-resolution photos to dynamically zoom in 2.5x and pan seamlessly.</p>
+					<div class="code-block">
+						<pre><code [highlight]="configZoom | json" language="json"></code></pre>
+					</div>
+					<div class="thumbnails-strip">
+						@for (img of demoImages.slice(0, 4); track img.source; let i = $index) {
+							<div class="thumb-item" (click)="openGallery(demoImages, configZoom, i)" [title]="img.description || 'Open at image ' + (i + 1)">
+								<img [src]="img.source" [alt]="img.description || 'Thumbnail'" loading="lazy" />
+							</div>
+						}
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(demoImages, configZoom)">
+						Launch Zoom Gallery
+					</button>
+				</div>
+			</div>
 
-		<mat-card>
-			<mat-card-title>
-				Set zoom to x3, change image counter text
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="config5 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openLightbox(config5)">
-					Open gallery
+			<!-- Card 3: Localized & Formatted -->
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>Custom Labels & Starting Index</h2>
+					<span class="feature-tag">Customized Format</span>
+				</div>
+				<div class="card-body">
+					<p>Opens at slide 2 (`startingIndex: 1`), with original size zoom and custom counter pattern.</p>
+					<div class="code-block">
+						<pre><code [highlight]="configCustomLocalized | json" language="json"></code></pre>
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(demoImages, configCustomLocalized)">
+						Launch Custom Gallery
+					</button>
+				</div>
+			</div>
+
+			<!-- Card 4: Minimalist Presentation -->
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>Minimalist Kiosk Mode</h2>
+					<span class="feature-tag">Clean View</span>
+				</div>
+				<div class="card-body">
+					<p>Hidden arrows and close icons, perfect for presentation slides or embedded kiosks.</p>
+					<div class="code-block">
+						<pre><code [highlight]="configMinimal | json" language="json"></code></pre>
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(demoImages, configMinimal)">
+						Launch Minimal Gallery
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+
+	<!-- TAB 2: Mixed Media Gallery -->
+	@if (activeTab() === 'mixed-gallery') {
+		<div class="cards-grid">
+			<div class="demo-card" style="grid-column: 1 / -1;">
+				<div class="card-header">
+					<h2>Mixed Photos & Adaptive Video Resolutions</h2>
+					<span class="feature-tag">Video + Image Gallery</span>
+				</div>
+				<div class="card-body">
+					<p>
+						Seamlessly navigate between HTML5 videos and photos in a single gallery. Videos support multiple
+						streams (240p, 480p, 720p) with native playback controls.
+					</p>
+					<div class="code-block">
+						<pre><code [highlight]="configDefault | json" language="json"></code></pre>
+					</div>
+					<div class="thumbnails-strip">
+						@for (item of mixedMedia; track item; let i = $index) {
+							<div class="thumb-item" (click)="openGallery(mixedMedia, configDefault, i)" [title]="item.description || 'Open item ' + (i + 1)">
+								@if (item.type === 'image') {
+									<img [src]="item.source" [alt]="item.description || 'Thumbnail'" loading="lazy" />
+								} @else {
+									<div class="video-badge">▶ VIDEO</div>
+								}
+							</div>
+						}
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(mixedMedia, configDefault)">
+						Launch Mixed Media Gallery
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+
+	<!-- TAB 3: Custom Loader -->
+	@if (activeTab() === 'custom-loader') {
+		<div class="cards-grid">
+			<div class="demo-card" style="grid-column: 1 / -1;">
+				<div class="card-header">
+					<h2>Custom CSS Loader Template & Instant Transitions</h2>
+					<span class="feature-tag">Custom TemplateRef</span>
+				</div>
+				<div class="card-body">
+					<p>
+						Pass any custom Angular <code>TemplateRef</code> as <code>loaderTemplate</code> to display
+						custom brand spinners while high-resolution media loads.
+					</p>
+					<div class="code-block">
+						<pre><code [highlight]="'// Configuration\n{\n  startingIndex: 2,\n  enableAnimations: false,\n  loaderTemplate: customLoaderTemplate\n}'" language="typescript"></code></pre>
+					</div>
+
+					<div style="margin: 1.5rem 0; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-around;">
+						<div>
+							<strong>Preview of Custom Loader Template:</strong>
+						</div>
+						<div class="custom-pulse-loader">
+							<div class="pulse-ring"></div>
+							<div class="pulse-core"></div>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="button" class="btn-primary" (click)="openGallery(demoImages, configCustomLoader)">
+						Launch with Custom Loader
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Angular ng-template for Custom Loader -->
+		<ng-template #customLoaderTemplate>
+			<div class="custom-pulse-loader">
+				<div class="pulse-ring"></div>
+				<div class="pulse-core"></div>
+			</div>
+		</ng-template>
+	}
+
+	<!-- TAB 4: Live Playground -->
+	@if (activeTab() === 'playground') {
+		<div class="demo-card">
+			<div class="card-header">
+				<h2>Interactive Gallery Configurator</h2>
+				<span class="feature-tag">Live Testing</span>
+			</div>
+			<div class="card-body">
+				<div class="playground-grid">
+					<!-- Config Form -->
+					<div class="config-form">
+						<div class="form-group">
+							<label for="zoomSizeSelect">Zoom Size</label>
+							<select id="zoomSizeSelect" (change)="updateZoomSize($event)">
+								<option value="2">2x Magnification</option>
+								<option value="2.5" selected>2.5x Magnification</option>
+								<option value="4">4x Magnification</option>
+								<option value="originalSize">Original Image Resolution</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="startingIndexInput">Starting Slide Index</label>
+							<input
+								id="startingIndexInput"
+								type="number"
+								min="0"
+								[max]="demoImages.length - 1"
+								[value]="pgStartingIndex()"
+								(input)="updateStartingIndex($event)"
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="counterTextInput">Counter Text Template</label>
+							<input
+								id="counterTextInput"
+								type="text"
+								[value]="pgCounterText()"
+								(input)="updateCounterText($event)"
+							/>
+						</div>
+
+						<div class="checkbox-grid">
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableZoom()"
+									(change)="pgEnableZoom.set(!pgEnableZoom())"
+								/>
+								Enable Zoom
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgLoop()"
+									(change)="pgLoop.set(!pgLoop())"
+								/>
+								Loop Gallery
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableCounter()"
+									(change)="pgEnableCounter.set(!pgEnableCounter())"
+								/>
+								Show Counter
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableAnimations()"
+									(change)="pgEnableAnimations.set(!pgEnableAnimations())"
+								/>
+								Animations
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableArrows()"
+									(change)="pgEnableArrows.set(!pgEnableArrows())"
+								/>
+								Navigation Arrows
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableClose()"
+									(change)="pgEnableClose.set(!pgEnableClose())"
+								/>
+								Close Icon
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgEnableClick()"
+									(change)="pgEnableClick.set(!pgEnableClick())"
+								/>
+								Click to Next
+							</label>
+							<label class="checkbox-item">
+								<input
+									type="checkbox"
+									[checked]="pgPreloading()"
+									(change)="pgPreloading.set(!pgPreloading())"
+								/>
+								Preload Next
+							</label>
+						</div>
+					</div>
+
+					<!-- Live JSON Preview -->
+					<div>
+						<label style="font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: block;">
+							Generated Configuration JSON
+						</label>
+						<div class="code-block">
+							<pre><code [highlight]="playgroundJson" language="json"></code></pre>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="button" class="btn-primary" (click)="launchPlayground()">
+					Launch Configured Lightbox
 				</button>
-			</mat-card-actions>
-		</mat-card>
-	</mat-tab>
-	<mat-tab label="Mixed Gallery Demo">
-		<mat-card>
-			<mat-card-title>
-				Gallery with images and videos
-			</mat-card-title>
-			<mat-card-content>
-				<pre><code [highlight]="config1 | json" language="json"></code></pre>
-			</mat-card-content>
-			<mat-card-actions>
-				<button mat-raised-button color="accent" (click)="openMixedLightbox(config1)">
-					Open gallery
-				</button>
-			</mat-card-actions>
-		</mat-card>
-	</mat-tab>
-</mat-tab-group>
+			</div>
+		</div>
+	}
+
+	<!-- TAB 5: Getting Started -->
+	@if (activeTab() === 'getting-started') {
+		<div class="cards-col">
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>Installation</h2>
+					<span class="feature-tag">NPM / PNPM / Yarn</span>
+				</div>
+				<div class="card-body">
+					<p>Install the package into your Angular application using your preferred package manager:</p>
+					<div class="code-block">
+						<pre><code [highlight]="installNpm" language="bash"></code></pre>
+					</div>
+				</div>
+			</div>
+
+			<div class="demo-card">
+				<div class="card-header">
+					<h2>Component & Service Usage</h2>
+					<span class="feature-tag">Angular Standalone</span>
+				</div>
+				<div class="card-body">
+					<p>Inject <code>NgxCdkLightboxService</code> and open media collections anywhere in your app:</p>
+					<div class="code-block">
+						<pre><code [highlight]="usageService" language="typescript"></code></pre>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
