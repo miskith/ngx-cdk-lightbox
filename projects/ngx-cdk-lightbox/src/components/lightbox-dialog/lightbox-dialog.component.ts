@@ -60,6 +60,12 @@ interface IDimensions {
 	height: string;
 }
 
+interface IMediaDimensions {
+	width: number;
+	height: number;
+	preloadedImage?: HTMLImageElement;
+}
+
 @Component({
 	selector: 'lib-lightbox-dialog',
 	templateUrl: 'lightbox-dialog.component.html',
@@ -92,7 +98,7 @@ export class LightboxDialogComponent implements OnInit {
 	private readonly ngZone: NgZone = inject<NgZone>(NgZone);
 	private readonly injector: Injector = inject<Injector>(Injector);
 	private readonly liveAnnouncer: LiveAnnouncer = inject<LiveAnnouncer>(LiveAnnouncer);
-	private readonly preloadedImagesCache = new Map<string, Observable<HTMLImageElement>>();
+	private readonly preloadedMediaDimensionsCache = new Map<string, Observable<IMediaDimensions>>();
 
 	private mouseMoveSubscription?: Subscription;
 	private touchStartXCoordinate = 0;
@@ -250,7 +256,7 @@ export class LightboxDialogComponent implements OnInit {
 
 		this.destroyRef.onDestroy(() => {
 			this.mouseMoveSubscription?.unsubscribe();
-			this.preloadedImagesCache.clear();
+			this.preloadedMediaDimensionsCache.clear();
 			this.liveAnnouncer.clear();
 		});
 
@@ -292,14 +298,27 @@ export class LightboxDialogComponent implements OnInit {
 	onVideoMetadataLoaded(event: Event): void {
 		const videoElement = event.target as HTMLVideoElement;
 		if (videoElement && videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+			const activeVideo = this.currentVideo();
+			if (activeVideo && !activeVideo.resolution) {
+				activeVideo.resolution = {
+					width: videoElement.videoWidth,
+					height: videoElement.videoHeight,
+				};
+			}
 			const targetDimensions = this.calculateFittedDimensions(
 				videoElement.videoWidth,
 				videoElement.videoHeight,
 			);
-			this.wrapperDimensions.set({
-				width: `${targetDimensions.width}px`,
-				height: `${targetDimensions.height}px`,
-			});
+			const currentDimensions = this.wrapperDimensions();
+			const targetWidth = `${targetDimensions.width}px`;
+			const targetHeight = `${targetDimensions.height}px`;
+
+			if (currentDimensions.width !== targetWidth || currentDimensions.height !== targetHeight) {
+				this.wrapperDimensions.set({
+					width: targetWidth,
+					height: targetHeight,
+				});
+			}
 		}
 	}
 
@@ -486,9 +505,12 @@ export class LightboxDialogComponent implements OnInit {
 			return;
 		}
 
-		this.currentIndex.set(targetIndex);
+		if (this.isFirstLoad) {
+			this.currentIndex.set(targetIndex);
+		}
 
 		if (!this.config.enableAnimations) {
+			this.currentIndex.set(targetIndex);
 			this.wrapperDimensions.set({ width: 'auto', height: 'auto' });
 			this.imageOpacity.set(1);
 			this.isLoading.set(true);
@@ -499,13 +521,13 @@ export class LightboxDialogComponent implements OnInit {
 					catchError((error) => {
 						console.error('Failed to load display object:', error);
 						this.isLoading.set(false);
-						return of(void 0);
+						return of<IMediaDimensions>({ width: 900, height: 600 });
 					}),
 				)
 				.subscribe({
-					next: (preloadedImage) => {
-						if (preloadedImage) {
-							this.setImageDetails(preloadedImage);
+					next: (mediaDimensions) => {
+						if (mediaDimensions.preloadedImage) {
+							this.setImageDetails(mediaDimensions.preloadedImage);
 						}
 						queueMicrotask(() => {
 							const videoElementRef = this.videoElement();
@@ -538,25 +560,17 @@ export class LightboxDialogComponent implements OnInit {
 					console.error('Failed to load display object:', error);
 					this.isLoading.set(false);
 					this.imageOpacity.set(1);
-					return of(void 0);
+					return of<IMediaDimensions>({ width: 900, height: 600 });
 				}),
-				switchMap((preloadedImage) => {
-					let naturalWidth = 900;
-					let naturalHeight = 600;
-
-					if (preloadedImage) {
-						naturalWidth = preloadedImage.naturalWidth;
-						naturalHeight = preloadedImage.naturalHeight;
-						this.setImageDetails(preloadedImage);
-					} else if (this.isGalleryVideo(targetObject) && targetObject.resolution) {
-						naturalWidth = targetObject.resolution.width;
-						naturalHeight = targetObject.resolution.height;
-					} else if (this.isGalleryImage(targetObject) && targetObject.resolution) {
-						naturalWidth = targetObject.resolution.width;
-						naturalHeight = targetObject.resolution.height;
+				switchMap((mediaDimensions) => {
+					if (mediaDimensions.preloadedImage) {
+						this.setImageDetails(mediaDimensions.preloadedImage);
 					}
 
-					const targetDimensions = this.calculateFittedDimensions(naturalWidth, naturalHeight);
+					const targetDimensions = this.calculateFittedDimensions(
+						mediaDimensions.width,
+						mediaDimensions.height,
+					);
 					const delayTime = this.isFirstLoad ? 30 : 10;
 					this.isFirstLoad = false;
 
@@ -568,14 +582,15 @@ export class LightboxDialogComponent implements OnInit {
 							});
 						}),
 						switchMap(() => timer(350)),
-						map(() => preloadedImage),
+						map(() => mediaDimensions),
 					);
 				}),
 			)
 			.subscribe({
-				next: (preloadedImage) => {
-					if (preloadedImage) {
-						this.setImageDetails(preloadedImage);
+				next: (mediaDimensions) => {
+					this.currentIndex.set(targetIndex);
+					if (mediaDimensions.preloadedImage) {
+						this.setImageDetails(mediaDimensions.preloadedImage);
 					}
 
 					queueMicrotask(() => {
@@ -590,6 +605,7 @@ export class LightboxDialogComponent implements OnInit {
 					this.prefetchAdjacentObjects();
 				},
 				error: () => {
+					this.currentIndex.set(targetIndex);
 					this.isLoading.set(false);
 					this.imageOpacity.set(1);
 				},
@@ -640,27 +656,74 @@ export class LightboxDialogComponent implements OnInit {
 		}
 	}
 
-	private preloadDisplayObject(
-		displayObject: TGalleryDisplayObject,
-	): Observable<HTMLImageElement | void> {
+	private preloadDisplayObject(displayObject: TGalleryDisplayObject): Observable<IMediaDimensions> {
 		if (this.isGalleryImage(displayObject)) {
-			if (!this.preloadedImagesCache.has(displayObject.source)) {
+			const sourceUrl = displayObject.source;
+			if (!this.preloadedMediaDimensionsCache.has(sourceUrl)) {
 				const preloadedImageInstance = new Image();
-				this.preloadedImagesCache.set(
-					displayObject.source,
-					fromEvent(preloadedImageInstance, 'load').pipe(
-						map(() => preloadedImageInstance),
-						shareReplay({
-							bufferSize: 1,
-							refCount: true,
-						}),
-					),
+				const imageObservable = fromEvent(preloadedImageInstance, 'load').pipe(
+					map(() => ({
+						width: preloadedImageInstance.naturalWidth,
+						height: preloadedImageInstance.naturalHeight,
+						preloadedImage: preloadedImageInstance,
+					})),
+					catchError(() => of<IMediaDimensions>({ width: 900, height: 600 })),
+					shareReplay({
+						bufferSize: 1,
+						refCount: true,
+					}),
 				);
-				preloadedImageInstance.src = displayObject.source;
+				this.preloadedMediaDimensionsCache.set(sourceUrl, imageObservable);
+				preloadedImageInstance.src = sourceUrl;
 			}
-			return this.preloadedImagesCache.get(displayObject.source)!;
+			return this.preloadedMediaDimensionsCache.get(sourceUrl)!;
 		}
-		return of(void 0);
+
+		if (this.isGalleryVideo(displayObject)) {
+			if (displayObject.resolution) {
+				return of<IMediaDimensions>({
+					width: displayObject.resolution.width,
+					height: displayObject.resolution.height,
+				});
+			}
+
+			const videoSourceUrl =
+				typeof displayObject.mp4Source === 'string'
+					? displayObject.mp4Source
+					: (Object.values(displayObject.mp4Source).find(Boolean) ?? '');
+
+			if (!videoSourceUrl) {
+				return of<IMediaDimensions>({ width: 1280, height: 720 });
+			}
+
+			if (!this.preloadedMediaDimensionsCache.has(videoSourceUrl)) {
+				if (typeof document === 'undefined') {
+					return of<IMediaDimensions>({ width: 1280, height: 720 });
+				}
+				const temporaryVideoElement = document.createElement('video');
+				temporaryVideoElement.preload = 'metadata';
+				temporaryVideoElement.muted = true;
+				const videoObservable = fromEvent(temporaryVideoElement, 'loadedmetadata').pipe(
+					map(() => {
+						const width = temporaryVideoElement.videoWidth || 1280;
+						const height = temporaryVideoElement.videoHeight || 720;
+						displayObject.resolution = { width, height };
+						return { width, height };
+					}),
+					catchError(() => of<IMediaDimensions>({ width: 1280, height: 720 })),
+					shareReplay({
+						bufferSize: 1,
+						refCount: true,
+					}),
+				);
+				this.preloadedMediaDimensionsCache.set(videoSourceUrl, videoObservable);
+				temporaryVideoElement.src = videoSourceUrl;
+				temporaryVideoElement.load();
+			}
+			return this.preloadedMediaDimensionsCache.get(videoSourceUrl)!;
+		}
+
+		return of<IMediaDimensions>({ width: 900, height: 600 });
 	}
 
 	private isGalleryImage(

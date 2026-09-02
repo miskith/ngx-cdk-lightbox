@@ -128,12 +128,11 @@ export class AppComponent implements OnInit {
 		{
 			type: 'video',
 			mp4Source: {
-				240: 'assets/videos/240p.mp4',
-				480: 'assets/videos/480p.mp4',
 				720: 'assets/videos/720p.mp4',
+				480: 'assets/videos/480p.mp4',
+				240: 'assets/videos/240p.mp4',
 			},
-			description: 'Big Buck Bunny (Multi-resolution 240p / 480p / 720p)',
-			resolution: { width: 1280, height: 720 },
+			description: 'Big Buck Bunny (Multi-resolution 720p / 480p / 240p)',
 			copyright: 'Blender Foundation | Creative Commons',
 		},
 		{
@@ -146,7 +145,6 @@ export class AppComponent implements OnInit {
 			type: 'video',
 			mp4Source: 'assets/videos/720p.mp4',
 			description: 'Single-source 720p Video',
-			resolution: { width: 1280, height: 720 },
 			copyright: 'Blender Foundation',
 		},
 	];
