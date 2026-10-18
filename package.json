@@ -51,7 +51,7 @@
 		"@eslint/js": "^10.0.1",
 		"@types/node": "~26.4.1",
 		"angular-eslint": "^22.2.0",
-		"baseline-browser-mapping": "^2.11.20",
+		"baseline-browser-mapping": "^2.11.28",
 		"eslint": "^10.9.1",
 		"eslint-plugin-unused-imports": "^4.4.1",
 		"husky": "^9.1.7",
